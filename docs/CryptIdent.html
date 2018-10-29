@@ -87,13 +87,14 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    
-<p>Include and interact with <code>CryptIdent</code> to add authentication to
-a Hanami controller action.</p>
+    <p>Include and interact with <code>CryptIdent</code> to add authentication to a
+Hanami controller action.</p>
 
-<p>Note the emphasis on <em>controller action</em>; this module interacts with
-session data, which is quite theoretically possible in an Interactor but
-practically <em>quite</em> the PITA. YHBW.</p>
+<p>Note the emphasis on <em>controller action</em>; this module interacts with session
+data, which is quite theoretically possible in an Interactor but practically
+<em>quite</em> the PITA. YHBW.</p>
+
+<p>FIXME: Disable :reek:UnusedParameters; we have not yet added code.</p>
 
 
   </div>
@@ -109,8 +110,7 @@ practically <em>quite</em> the PITA. YHBW.</p>
       
       
         
-        <div class='inline'>
-<p>Jeff Dickey</p>
+        <div class='inline'><p>Jeff Dickey</p>
 </div>
       
     </li>
@@ -125,8 +125,7 @@ practically <em>quite</em> the PITA. YHBW.</p>
       
       
         
-        <div class='inline'>
-<p>0.1.0</p>
+        <div class='inline'><p>0.1.0</p>
 </div>
       
     </li>
@@ -145,8 +144,7 @@ practically <em>quite</em> the PITA. YHBW.</p>
         <dt id="VERSION-constant" class="">VERSION =
           <div class="docstring">
   <div class="discussion">
-    
-<p>Version number for Gem. Uses Semantic Versioning.</p>
+    <p>Version number for Gem. Uses Semantic Versioning.</p>
 
 
   </div>
@@ -192,8 +190,7 @@ practically <em>quite</em> the PITA. YHBW.</p>
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Set configuration information at the class (actually, module) level.</p>
+    <span class="summary_desc"><div class='inline'><p>Set configuration information at the class (actually, module) level.</p>
 </div></span>
   
 </li>
@@ -225,10 +222,7 @@ practically <em>quite</em> the PITA. YHBW.</p>
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Build a Hash of attributes suitable for instantiating and persisting an
-Entity, with a <code>:hashed_password</code> attribute containing the
-encrypted value of the Clear-Text Password passed in as a parameter.</p>
+    <span class="summary_desc"><div class='inline'><p>Build a Hash of attributes suitable for instantiating and persisting an Entity, with a <code>:hashed_password</code> attribute containing the encrypted value of the Clear-Text Password passed in as a parameter.</p>
 </div></span>
   
 </li>
@@ -251,8 +245,7 @@ encrypted value of the Clear-Text Password passed in as a parameter.</p>
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Change an Authenticated User&#39;s password.</p>
+    <span class="summary_desc"><div class='inline'><p>Change an Authenticated User&#39;s password.</p>
 </div></span>
   
 </li>
@@ -275,8 +268,7 @@ encrypted value of the Clear-Text Password passed in as a parameter.</p>
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Request a Password Reset Token.</p>
+    <span class="summary_desc"><div class='inline'><p>Request a Password Reset Token.</p>
 </div></span>
   
 </li>
@@ -299,8 +291,7 @@ encrypted value of the Clear-Text Password passed in as a parameter.</p>
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Reset the password for the User associated with a Password Reset Token.</p>
+    <span class="summary_desc"><div class='inline'><p>Reset the password for the User associated with a Password Reset Token.</p>
 </div></span>
   
 </li>
@@ -323,9 +314,7 @@ encrypted value of the Clear-Text Password passed in as a parameter.</p>
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Restart the Session Expiration timestamp mechanism, to avoid prematurely
-signing out a User.</p>
+    <span class="summary_desc"><div class='inline'><p>Restart the Session Expiration timestamp mechanism, to avoid prematurely signing out a User.</p>
 </div></span>
   
 </li>
@@ -348,8 +337,7 @@ signing out a User.</p>
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Determine whether the Session has Expired due to User inactivity.</p>
+    <span class="summary_desc"><div class='inline'><p>Determine whether the Session has Expired due to User inactivity.</p>
 </div></span>
   
 </li>
@@ -372,10 +360,7 @@ signing out a User.</p>
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Attempt to Authenticate a User, passing in an Entity for that User (which
-<strong>must</strong> contain a <code>password_hash</code> attribute), and
-a Clear-Text Password.</p>
+    <span class="summary_desc"><div class='inline'><p>Attempt to Authenticate a User, passing in an Entity for that User (which <strong>must</strong> contain a <code>password_hash</code> attribute), and a Clear-Text Password.</p>
 </div></span>
   
 </li>
@@ -398,8 +383,7 @@ a Clear-Text Password.</p>
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Sign out a previously Authenticated User.</p>
+    <span class="summary_desc"><div class='inline'><p>Sign out a previously Authenticated User.</p>
 </div></span>
   
 </li>
@@ -425,21 +409,18 @@ a Clear-Text Password.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p>
-<p>Set configuration information at the class (actually, module) level.</p>
+    <p class="note returns_void">This method returns an undefined value.</p><p>Set configuration information at the class (actually, module) level.</p>
 
 <p><strong>IMPORTANT:</strong> Even though we follow time-honoured convention
-here and call the variable yielded by the
-<code>CryptIdent.configure_crypt_ident</code> block <code>config</code>,
-settings <em>are not</em> being stored in an <em>instance variable</em>
-called <code>@config</code>. That is <em>too likely</em> to conflict with
-something Important; remember, we&#39;re a module, not a class, and good
-table manners are <em>also</em> Important.</p>
+here and call the variable yielded by the <code>CryptIdent.configure_crypt_ident</code>
+block <code>config</code>, settings <em>are not</em> being stored in an <em>instance variable</em>
+called <code>@config</code>. That is <em>too likely</em> to conflict with something Important;
+remember, we&#39;re a module, not a class, and good table manners are <em>also</em>
+Important.</p>
 
-<p>This is normally run from the <code>controller.prepare</code> block inside
-your app&#39;s <code>apps/&lt;app name&gt;/application.rb</code> file,
-where the default for <code>app_name</code> in a Hanami app is
-<code>web</code>.</p>
+<p>This is normally run from the <code>controller.prepare</code> block inside your app&#39;s
+<code>apps/&lt;app name&gt;/application.rb</code> file, where the default for <code>app_name</code> in a
+Hanami app is <code>web</code>.</p>
 
 
   </div>
@@ -470,8 +451,7 @@ where the default for <code>app_name</code> in a Hanami app is
       
       
         
-        <div class='inline'>
-<p>0.1.0</p>
+        <div class='inline'><p>0.1.0</p>
 </div>
       
     </li>
@@ -486,8 +466,7 @@ where the default for <code>app_name</code> in a Hanami app is
       
       
         
-        <div class='inline'>
-<p>Irrelevant; normally called during framework setup.</p>
+        <div class='inline'><p>Irrelevant; normally called during framework setup.</p>
 </div>
       
     </li>
@@ -502,8 +481,7 @@ where the default for <code>app_name</code> in a Hanami app is
       
       
         
-        <div class='inline'>
-<p>Irrelevant; normally called during framework setup.</p>
+        <div class='inline'><p>Irrelevant; normally called during framework setup.</p>
 </div>
       
     </li>
@@ -518,8 +496,7 @@ where the default for <code>app_name</code> in a Hanami app is
       
       
         
-        <div class='inline'>
-<p>None; only related to demonstrated configuration settings.</p>
+        <div class='inline'><p>None; only related to demonstrated configuration settings.</p>
 </div>
       
     </li>
@@ -532,14 +509,16 @@ where the default for <code>app_name</code> in a Hanami app is
       <pre class="lines">
 
 
-43
-44</pre>
+44
+45
+46</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 43</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 44</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_configure_crypt_ident'>configure_crypt_ident</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
+  <span class='comment'># To be implemented.
+</span><span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -562,10 +541,9 @@ where the default for <code>app_name</code> in a Hanami app is
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Build a Hash of attributes suitable for instantiating and persisting an
-Entity, with a <code>:hashed_password</code> attribute containing the
-encrypted value of the Clear-Text Password passed in as a parameter.</p>
+    <p>Build a Hash of attributes suitable for instantiating and persisting an
+Entity, with a <code>:hashed_password</code> attribute containing the encrypted value
+of the Clear-Text Password passed in as a parameter.</p>
 
 
   </div>
@@ -597,8 +575,8 @@ encrypted value of the Clear-Text Password passed in as a parameter.</p>
       
       
         &mdash;
-        <div class='inline'>
-<p>Hash of Entity attributes <em>not</em> including any password attributes.</p>
+        <div class='inline'><p>Hash of Entity attributes <em>not</em> including
+any password attributes.</p>
 </div>
       
     </li>
@@ -613,8 +591,8 @@ encrypted value of the Clear-Text Password passed in as a parameter.</p>
       
       
         &mdash;
-        <div class='inline'>
-<p>New Clear-Text Password to encrypt and add to return value</p>
+        <div class='inline'><p>New Clear-Text Password to encrypt and add to
+return value</p>
 </div>
       
     </li>
@@ -632,8 +610,7 @@ encrypted value of the Clear-Text Password passed in as a parameter.</p>
       
       
         &mdash;
-        <div class='inline'>
-<p>Entity attributes, including encrypted <code>password_hash</code>.</p>
+        <div class='inline'><p>Entity attributes, including encrypted <code>password_hash</code>.</p>
 </div>
       
     </li>
@@ -648,8 +625,7 @@ encrypted value of the Clear-Text Password passed in as a parameter.</p>
       
       
         
-        <div class='inline'>
-<p>0.1.0</p>
+        <div class='inline'><p>0.1.0</p>
 </div>
       
     </li>
@@ -664,8 +640,7 @@ encrypted value of the Clear-Text Password passed in as a parameter.</p>
       
       
         
-        <div class='inline'>
-<p>Must not be authenticated.</p>
+        <div class='inline'><p>Must not be authenticated.</p>
 </div>
       
     </li>
@@ -680,9 +655,7 @@ encrypted value of the Clear-Text Password passed in as a parameter.</p>
       
       
         
-        <div class='inline'>
-<p><code>:current_user</code> <strong>must not</strong> be other than
-<code>nil</code> or the Guest User.</p>
+        <div class='inline'><p><code>:current_user</code> <strong>must not</strong> be other than <code>nil</code> or the Guest User.</p>
 </div>
       
     </li>
@@ -697,15 +670,12 @@ encrypted value of the Clear-Text Password passed in as a parameter.</p>
       
       
         
-        <div class='inline'><ul><li>
-<p>Authentication</p>
-</li><li>
-<p>Clear-Text Password</p>
-</li><li>
-<p>Entity</p>
-</li><li>
-<p>Guest User</p>
-</li></ul>
+        <div class='inline'><ul>
+<li>Authentication</li>
+<li>Clear-Text Password</li>
+<li>Entity</li>
+<li>Guest User</li>
+</ul>
 </div>
       
     </li>
@@ -718,14 +688,16 @@ encrypted value of the Clear-Text Password passed in as a parameter.</p>
       <pre class="lines">
 
 
-74
-75</pre>
+76
+77
+78</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 74</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 76</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add_password'>add_password</span><span class='lparen'>(</span><span class='id identifier rubyid_other_params'>other_params</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
+  <span class='comment'># To be implemented.
+</span><span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -742,17 +714,15 @@ encrypted value of the Clear-Text Password passed in as a parameter.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Change an Authenticated User&#39;s password.</p>
+    <p>Change an Authenticated User&#39;s password.</p>
 
-<p>To change an Authenticated User&#39;s password, the current Clear-Text
-Password, new Clear-Text Password, and Clear-Text Password Confirmation are
-passed in as parameters.</p>
+<p>To change an Authenticated User&#39;s password, the current Clear-Text Password,
+new Clear-Text Password, and Clear-Text Password Confirmation are passed in
+as parameters.</p>
 
-<p>If the Encrypted Password in the <code>session[:current_user]</code> Entity
-does not match the encrypted value of the specified current Clear-Text
-Password, then the method returns <code>:bad_password</code> and no changes
-occur.</p>
+<p>If the Encrypted Password in the <code>session[:current_user]</code> Entity does
+not match the encrypted value of the specified current Clear-Text Password,
+then the method returns <code>:bad_password</code> and no changes occur.</p>
 
 <p>If the current-password check succeeds but the new Clear-Text Password and
 its confirmation do not match, then the method returns
@@ -760,10 +730,10 @@ its confirmation do not match, then the method returns
 
 <p>If the new Clear-Text Password and its confirmation match, then the
 <em>encrypted value</em> of that new Password is returned, and the
-<code>session[:current_user]</code> Entity is replaced with an Entity
-identical except that it has the new encrypted value for
-<code>hashed_password</code>. The entry in the Repository for the current
-User has also been updated to include the new Encrypted Password.</p>
+<code>session[:current_user]</code> Entity is replaced with an Entity identical
+except that it has the new encrypted value for <code>hashed_password</code>. The entry
+in the Repository for the current User has also been updated to include the
+new Encrypted Password.</p>
 
 
   </div>
@@ -805,8 +775,8 @@ User has also been updated to include the new Encrypted Password.</p>
       
       
         &mdash;
-        <div class='inline'>
-<p>The current Clear-Text Password for the Current User</p>
+        <div class='inline'><p>The current Clear-Text Password for the
+Current User</p>
 </div>
       
     </li>
@@ -821,8 +791,8 @@ User has also been updated to include the new Encrypted Password.</p>
       
       
         &mdash;
-        <div class='inline'>
-<p>The new Clear-Text Password to encrypt and add the current-user entity</p>
+        <div class='inline'><p>The new Clear-Text Password to encrypt and add
+the current-user entity</p>
 </div>
       
     </li>
@@ -851,8 +821,7 @@ User has also been updated to include the new Encrypted Password.</p>
       
       
         
-        <div class='inline'>
-<p>0.1.0</p>
+        <div class='inline'><p>0.1.0</p>
 </div>
       
     </li>
@@ -867,8 +836,7 @@ User has also been updated to include the new Encrypted Password.</p>
       
       
         
-        <div class='inline'>
-<p>Must be authenticated.</p>
+        <div class='inline'><p>Must be authenticated.</p>
 </div>
       
     </li>
@@ -883,9 +851,7 @@ User has also been updated to include the new Encrypted Password.</p>
       
       
         
-        <div class='inline'>
-<p><code>:current_user</code> <strong>must</strong> be an Entity for a
-Registered User</p>
+        <div class='inline'><p><code>:current_user</code> <strong>must</strong> be an Entity for a Registered User</p>
 </div>
       
     </li>
@@ -900,23 +866,16 @@ Registered User</p>
       
       
         
-        <div class='inline'><ul><li>
-<p>Authentication</p>
-</li><li>
-<p>Clear-Text Password</p>
-</li><li>
-<p>Clear-Text Password Confirmation</p>
-</li><li>
-<p>Encrypted Password</p>
-</li><li>
-<p>Entity</p>
-</li><li>
-<p>Guest User</p>
-</li><li>
-<p>Registered User</p>
-</li><li>
-<p>Repository</p>
-</li></ul>
+        <div class='inline'><ul>
+<li>Authentication</li>
+<li>Clear-Text Password</li>
+<li>Clear-Text Password Confirmation</li>
+<li>Encrypted Password</li>
+<li>Entity</li>
+<li>Guest User</li>
+<li>Registered User</li>
+<li>Repository</li>
+</ul>
 </div>
       
     </li>
@@ -929,14 +888,16 @@ Registered User</p>
       <pre class="lines">
 
 
-232
-233</pre>
+237
+238
+239</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 232</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 237</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_confirmation'>new_confirmation</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
+  <span class='comment'># To be implemented.
+</span><span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -953,24 +914,23 @@ Registered User</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Request a Password Reset Token</p>
+    <p>Request a Password Reset Token</p>
 
 <p>Password Reset Tokens are useful for verifying that the person requesting a
 Password Reset for an existing User is sufficiently likely to be the person
 who Registered that User or, if not, that no compromise or other harm is
 done.</p>
 
-<p>Typically, this is done by sending a link through email or other such
-medium to the address previously associated with the User purportedly
-requesting the Password Reset. <code>CryptIdent</code> <em>does not</em>
-automate generation or sending of the email message. What it <em>does</em>
-provide is a method to generate a new Password Reset Token to be embedded
-into an HTML anchor link within an email that you construct.</p>
+<p>Typically, this is done by sending a link through email or other such medium
+to the address previously associated with the User purportedly requesting
+the Password Reset. <code>CryptIdent</code> <em>does not</em> automate generation or sending
+of the email message. What it <em>does</em> provide is a method to generate a new
+Password Reset Token to be embedded into an HTML anchor link within an email
+that you construct.</p>
 
 <p>It also implements an expiry system, such that if the confirmation of the
-Password Reset request is not completed within a configurable time, that
-the token is no longer valid (and so cannot be later reused by unauthorised
+Password Reset request is not completed within a configurable time, that the
+token is no longer valid (and so cannot be later reused by unauthorised
 persons).</p>
 
 
@@ -1016,8 +976,8 @@ persons).</p>
       
       
         &mdash;
-        <div class='inline'>
-<p>The name of the User for whom a Password Reset Token is to be generated.</p>
+        <div class='inline'><p>The name of the User for whom a Password Reset
+Token is to be generated.</p>
 </div>
       
     </li>
@@ -1035,8 +995,7 @@ persons).</p>
       
       
         &mdash;
-        <div class='inline'>
-<p>True on success or error identifier on failure.</p>
+        <div class='inline'><p>True on success or error identifier on failure.</p>
 </div>
       
     </li>
@@ -1051,8 +1010,7 @@ persons).</p>
       
       
         
-        <div class='inline'>
-<p>0.1.0</p>
+        <div class='inline'><p>0.1.0</p>
 </div>
       
     </li>
@@ -1067,8 +1025,7 @@ persons).</p>
       
       
         
-        <div class='inline'>
-<p>Must not be authenticated.</p>
+        <div class='inline'><p>Must not be authenticated.</p>
 </div>
       
     </li>
@@ -1083,9 +1040,7 @@ persons).</p>
       
       
         
-        <div class='inline'>
-<p><code>:current_user</code> <strong>must not</strong> be other than
-<code>nil</code> or the Guest User.</p>
+        <div class='inline'><p><code>:current_user</code> <strong>must not</strong> be other than <code>nil</code> or the Guest User.</p>
 </div>
       
     </li>
@@ -1100,13 +1055,11 @@ persons).</p>
       
       
         
-        <div class='inline'><ul><li>
-<p>Authentication</p>
-</li><li>
-<p>Password Reset Token</p>
-</li><li>
-<p>Registered User</p>
-</li></ul>
+        <div class='inline'><ul>
+<li>Authentication</li>
+<li>Password Reset Token</li>
+<li>Registered User</li>
+</ul>
 </div>
       
     </li>
@@ -1119,14 +1072,16 @@ persons).</p>
       <pre class="lines">
 
 
-288
-289</pre>
+294
+295
+296</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 288</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 294</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_generate_reset_token'>generate_reset_token</span><span class='lparen'>(</span><span class='id identifier rubyid_user_name'>user_name</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
+  <span class='comment'># To be implemented.
+</span><span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -1143,33 +1098,31 @@ persons).</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Reset the password for the User associated with a Password Reset Token.</p>
+    <p>Reset the password for the User associated with a Password Reset Token.</p>
 
-<p>After a Password Reset Token has been <a
-href="#generate_reset_token-instance_method">generated</a> to a User, that
-User would then exercise the Client system and perform a Password Reset.</p>
+<p>After a Password Reset Token has been
+<a href="#generate_reset_token-instance_method">generated</a> to a User, that User
+would then exercise the Client system and perform a Password Reset.</p>
 
-<p>Again, this differs from a <a
-href="#change_password-instance-method">Change Password</a> activity since
-the User in question <em>is not Authenticated</em> at the time of the
-action.</p>
+<p>Again, this differs from a
+<a href="#change_password-instance-method">Change Password</a> activity since the User
+in question <em>is not Authenticated</em> at the time of the action.</p>
 
-<p>The <code>#reset_password</code> method is called with a Password Reset
-Token, a new Clear-Text Password, and a Clear-Text Password Confirmation.</p>
+<p>The <code>#reset_password</code> method is called with a Password Reset Token, a new
+Clear-Text Password, and a Clear-Text Password Confirmation.</p>
 
-<p>If the token is invalid or has expired, <code>reset_password</code> returns
-a value of <code>:invalid_token</code>.</p>
+<p>If the token is invalid or has expired, <code>reset_password</code> returns a value of
+<code>:invalid_token</code>.</p>
 
-<p>If the new password and confirmation do not match,
-<code>reset_password</code> returns <code>:mismatched_password</code>.</p>
+<p>If the new password and confirmation do not match, <code>reset_password</code> returns
+<code>:mismatched_password</code>.</p>
 
-<p>If the new Clear-Text Password and its confirmation match, then the value
-of that new Encrypted Password is returned, and the Repository record for
-that Registered User is updated to include the new Encrypted Password.</p>
+<p>If the new Clear-Text Password and its confirmation match, then the
+value of that new Encrypted Password is returned, and the Repository record
+for that Registered User is updated to include the new Encrypted Password.</p>
 
-<p>In no event are session values, including the Current User, changed. After
-a successful Password Reset, the User must Authenticate as usual.</p>
+<p>In no event are session values, including the Current User, changed. After a
+successful Password Reset, the User must Authenticate as usual.</p>
 
 
   </div>
@@ -1215,8 +1168,8 @@ a successful Password Reset, the User must Authenticate as usual.</p>
       
       
         &mdash;
-        <div class='inline'>
-<p>The Password Reset Token previously communicated to the User.</p>
+        <div class='inline'><p>The Password Reset Token previously communicated to
+the User.</p>
 </div>
       
     </li>
@@ -1231,8 +1184,8 @@ a successful Password Reset, the User must Authenticate as usual.</p>
       
       
         &mdash;
-        <div class='inline'>
-<p>New Clear-Text Password to encrypt and add to return value</p>
+        <div class='inline'><p>New Clear-Text Password to encrypt and add to
+return value</p>
 </div>
       
     </li>
@@ -1247,8 +1200,7 @@ a successful Password Reset, the User must Authenticate as usual.</p>
       
       
         &mdash;
-        <div class='inline'>
-<p>Clear-Text Password Confirmation.</p>
+        <div class='inline'><p>Clear-Text Password Confirmation.</p>
 </div>
       
     </li>
@@ -1266,8 +1218,7 @@ a successful Password Reset, the User must Authenticate as usual.</p>
       
       
         &mdash;
-        <div class='inline'>
-<p>True on success or error identifier on failure.</p>
+        <div class='inline'><p>True on success or error identifier on failure.</p>
 </div>
       
     </li>
@@ -1282,8 +1233,7 @@ a successful Password Reset, the User must Authenticate as usual.</p>
       
       
         
-        <div class='inline'>
-<p>0.1.0</p>
+        <div class='inline'><p>0.1.0</p>
 </div>
       
     </li>
@@ -1298,8 +1248,7 @@ a successful Password Reset, the User must Authenticate as usual.</p>
       
       
         
-        <div class='inline'>
-<p>Must not be authenticated.</p>
+        <div class='inline'><p>Must not be authenticated.</p>
 </div>
       
     </li>
@@ -1314,9 +1263,7 @@ a successful Password Reset, the User must Authenticate as usual.</p>
       
       
         
-        <div class='inline'>
-<p><code>:current_user</code> <strong>must not</strong> be other than
-<code>nil</code> or the Guest User.</p>
+        <div class='inline'><p><code>:current_user</code> <strong>must not</strong> be other than <code>nil</code> or the Guest User.</p>
 </div>
       
     </li>
@@ -1331,19 +1278,14 @@ a successful Password Reset, the User must Authenticate as usual.</p>
       
       
         
-        <div class='inline'><ul><li>
-<p>Authentication</p>
-</li><li>
-<p>Clear-Text Password</p>
-</li><li>
-<p>Clear-Text Password Confirmation</p>
-</li><li>
-<p>Encrypted Password</p>
-</li><li>
-<p>Password Reset Token</p>
-</li><li>
-<p>Registered User</p>
-</li></ul>
+        <div class='inline'><ul>
+<li>Authentication</li>
+<li>Clear-Text Password</li>
+<li>Clear-Text Password Confirmation</li>
+<li>Encrypted Password</li>
+<li>Password Reset Token</li>
+<li>Registered User</li>
+</ul>
 </div>
       
     </li>
@@ -1356,14 +1298,16 @@ a successful Password Reset, the User must Authenticate as usual.</p>
       <pre class="lines">
 
 
-356
-357</pre>
+363
+364
+365</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 356</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 363</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_password'>reset_password</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='id identifier rubyid_confirmation'>confirmation</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
+  <span class='comment'># To be implemented.
+</span><span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -1380,8 +1324,7 @@ a successful Password Reset, the User must Authenticate as usual.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p>
-<p>Restart the Session Expiration timestamp mechanism, to avoid prematurely
+    <p class="note returns_void">This method returns an undefined value.</p><p>Restart the Session Expiration timestamp mechanism, to avoid prematurely
 signing out a User.</p>
 
 
@@ -1410,8 +1353,7 @@ signing out a User.</p>
       
       
         
-        <div class='inline'>
-<p>0.1.0</p>
+        <div class='inline'><p>0.1.0</p>
 </div>
       
     </li>
@@ -1426,8 +1368,7 @@ signing out a User.</p>
       
       
         
-        <div class='inline'>
-<p>Must be authenticated.</p>
+        <div class='inline'><p>Must be authenticated.</p>
 </div>
       
     </li>
@@ -1442,10 +1383,8 @@ signing out a User.</p>
       
       
         
-        <div class='inline'>
-<p><code>:current_user</code> <strong>must</strong> be an Entity for a
-Registered User on entry <code>:start_time</code> set to
-<code>Time.now</code> on exit</p>
+        <div class='inline'><p><code>:current_user</code> <strong>must</strong> be an Entity for a Registered User on entry
+<code>:start_time</code>   set to <code>Time.now</code> on exit</p>
 </div>
       
     </li>
@@ -1460,11 +1399,10 @@ Registered User on entry <code>:start_time</code> set to
       
       
         
-        <div class='inline'><ul><li>
-<p>Authentication</p>
-</li><li>
-<p>Session Expiration</p>
-</li></ul>
+        <div class='inline'><ul>
+<li>Authentication</li>
+<li>Session Expiration</li>
+</ul>
 </div>
       
     </li>
@@ -1477,14 +1415,16 @@ Registered User on entry <code>:start_time</code> set to
       <pre class="lines">
 
 
-380
-381</pre>
+388
+389
+390</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 380</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 388</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_restart_session_counter'>restart_session_counter</span>
-<span class='kw'>end</span></pre>
+  <span class='comment'># To be implemented.
+</span><span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -1501,16 +1441,14 @@ Registered User on entry <code>:start_time</code> set to
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Determine whether the Session has Expired due to User inactivity.</p>
+    <p>Determine whether the Session has Expired due to User inactivity.</p>
 
-<p>This is determined by comparing the current time as reported by
-<code>Time.now</code> to the timestamp resulting from adding
-<code>session[:start_time]</code> and <code>config.session_expiry</code>.</p>
+<p>This is determined by comparing the current time as reported by <code>Time.now</code>
+to the timestamp resulting from adding <code>session[:start_time]</code> and
+<code>config.session_expiry</code>.</p>
 
-<p>Will return <code>false</code> if <code>session[:current_user]</code> is
-<code>nil</code> or has the value specified by
-<code>config.guest_user</code>.</p>
+<p>Will return <code>false</code> if <code>session[:current_user]</code> is <code>nil</code> or has the value
+specified by <code>config.guest_user</code>.</p>
 
 
   </div>
@@ -1551,8 +1489,7 @@ Registered User on entry <code>:start_time</code> set to
       
       
         
-        <div class='inline'>
-<p>0.1.0</p>
+        <div class='inline'><p>0.1.0</p>
 </div>
       
     </li>
@@ -1567,8 +1504,7 @@ Registered User on entry <code>:start_time</code> set to
       
       
         
-        <div class='inline'>
-<p>Must be authenticated.</p>
+        <div class='inline'><p>Must be authenticated.</p>
 </div>
       
     </li>
@@ -1583,10 +1519,8 @@ Registered User on entry <code>:start_time</code> set to
       
       
         
-        <div class='inline'>
-<p><code>:current_user</code> <strong>must</strong> be an Entity for a
-Registered User on entry <code>:start_time</code> read during determination
-of expiry status</p>
+        <div class='inline'><p><code>:current_user</code> <strong>must</strong> be an Entity for a Registered User on entry
+<code>:start_time</code>   read during determination of expiry status</p>
 </div>
       
     </li>
@@ -1601,11 +1535,10 @@ of expiry status</p>
       
       
         
-        <div class='inline'><ul><li>
-<p>Authentication</p>
-</li><li>
-<p>Session Expiration</p>
-</li></ul>
+        <div class='inline'><ul>
+<li>Authentication</li>
+<li>Session Expiration</li>
+</ul>
 </div>
       
     </li>
@@ -1618,14 +1551,16 @@ of expiry status</p>
       <pre class="lines">
 
 
-408
-409</pre>
+417
+418
+419</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 408</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 417</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_session_expired?'>session_expired?</span>
-<span class='kw'>end</span></pre>
+  <span class='comment'># To be implemented.
+</span><span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -1642,34 +1577,30 @@ of expiry status</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Attempt to Authenticate a User, passing in an Entity for that User (which
-<strong>must</strong> contain a <code>password_hash</code> attribute), and
-a Clear-Text Password.</p>
+    <p>Attempt to Authenticate a User, passing in an Entity for that User (which
+<strong>must</strong> contain a <code>password_hash</code> attribute), and a Clear-Text Password.</p>
 
 <p>On <em>success:</em></p>
-<ul><li>
-<p><code>session[:start_time]</code> is set to the current time as returned by
-<code>Time.now</code> when called from within the method;</p>
-</li><li>
-<p><code>session[:current_user]</code> is set to tne <em>Entity</em> (not the
-ID value from the  Repository) for the successfully-Authenticated User.
-This is to eliminate  repeated reads of the Repository.</p>
-</li></ul>
+
+<ul>
+<li><code>session[:start_time]</code> is set to the current time as returned by
+<code>Time.now</code> when called from within the method;</li>
+<li><code>session[:current_user]</code> is set to tne <em>Entity</em> (not the ID value from the
+Repository) for the successfully-Authenticated User. This is to eliminate
+repeated reads of the Repository.</li>
+</ul>
 
 <p>On <em>failure:</em></p>
-<ul><li>
-<p><code>session[:start_time]</code> is set to <code>0000-01-01 00:00:00
-+0000</code> (which should  <em>always</em> trigger
-<code>#session_expired?</code>)</p>
-</li><li>
-<p><code>session[:current_user]</code> is set to
-<code>config.guest_user</code></p>
-</li></ul>
+
+<ul>
+<li><code>session[:start_time]</code> is set to <code>0000-01-01 00:00:00 +0000</code> (which should
+<em>always</em> trigger <code>#session_expired?</code>)</li>
+<li><code>session[:current_user]</code> is set to <code>config.guest_user</code></li>
+</ul>
 
 <p>If a <em>different User</em> is Authenticated (as evidenced by
-<code>session[:current_user]</code>), then <code>sign_in</code> returns
-<code>false</code> and the <code>session</code> data remains unchanged.</p>
+<code>session[:current_user]</code>), then <code>sign_in</code> returns <code>false</code> and the <code>session</code>
+data remains unchanged.</p>
 
 
   </div>
@@ -1709,8 +1640,7 @@ This is to eliminate  repeated reads of the Repository.</p>
       
       
         &mdash;
-        <div class='inline'>
-<p>Entity representing a User to be Authenticated;</p>
+        <div class='inline'><p>Entity representing a User to be Authenticated;</p>
 </div>
       
     </li>
@@ -1725,8 +1655,7 @@ This is to eliminate  repeated reads of the Repository.</p>
       
       
         &mdash;
-        <div class='inline'>
-<p>Claimed Clear-Text Password for the specified User.</p>
+        <div class='inline'><p>Claimed Clear-Text Password for the specified User.</p>
 </div>
       
     </li>
@@ -1755,8 +1684,7 @@ This is to eliminate  repeated reads of the Repository.</p>
       
       
         
-        <div class='inline'>
-<p>0.1.0</p>
+        <div class='inline'><p>0.1.0</p>
 </div>
       
     </li>
@@ -1771,8 +1699,7 @@ This is to eliminate  repeated reads of the Repository.</p>
       
       
         
-        <div class='inline'>
-<p>Must not be authenticated.</p>
+        <div class='inline'><p>Must not be authenticated.</p>
 </div>
       
     </li>
@@ -1787,12 +1714,10 @@ This is to eliminate  repeated reads of the Repository.</p>
       
       
         
-        <div class='inline'>
-<p><code>:current_user</code> <strong>must not</strong> be other than
-<code>nil</code> or the Guest User.</p>
+        <div class='inline'><p><code>:current_user</code> <strong>must not</strong> be other than <code>nil</code> or the Guest User.</p>
 
-<p><code>:start_time</code> is set to either the current time (on success) or
-the  distant past (on failure)</p>
+<p><code>:start_time</code> is set to either the current time (on success) or the
+  distant past (on failure)</p>
 </div>
       
     </li>
@@ -1807,19 +1732,14 @@ the  distant past (on failure)</p>
       
       
         
-        <div class='inline'><ul><li>
-<p>Authenticated User</p>
-</li><li>
-<p>Authentication</p>
-</li><li>
-<p>Clear-Text Password</p>
-</li><li>
-<p>Entity</p>
-</li><li>
-<p>Guest User</p>
-</li><li>
-<p>Repository</p>
-</li></ul>
+        <div class='inline'><ul>
+<li>Authenticated User</li>
+<li>Authentication</li>
+<li>Clear-Text Password</li>
+<li>Entity</li>
+<li>Guest User</li>
+<li>Repository</li>
+</ul>
 </div>
       
     </li>
@@ -1832,14 +1752,16 @@ the  distant past (on failure)</p>
       <pre class="lines">
 
 
-131
-132</pre>
+134
+135
+136</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 131</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 134</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_in'>sign_in</span><span class='lparen'>(</span><span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
+  <span class='comment'># To be implemented.
+</span><span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -1856,17 +1778,15 @@ the  distant past (on failure)</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Sign out a previously Authenticated User.</p>
+    <p>Sign out a previously Authenticated User.</p>
 
-<p>If the <code>session[:current_user]</code> value <em>does not</em> have the
-value of <code>nil</code> or <code>config.guest_user</code>, then
-<code>session[:start_time]</code> is set to <code>0000-01-01 00:00:00
-+0000</code>, and the method returns <code>true</code>.</p>
+<p>If the <code>session[:current_user]</code> value <em>does not</em> have the value of <code>nil</code> or
+<code>config.guest_user</code>, then <code>session[:start_time]</code> is set to
+<code>0000-01-01 00:00:00 +0000</code>, and the method returns <code>true</code>.</p>
 
 <p>If <code>session[:current_user]</code> <em>is</em> the Guest User, then
-<code>session[:start_time]</code> is cleared as above, and the method
-returns <code>false</code></p>
+<code>session[:start_time]</code> is cleared as above, and the method returns
+<code>false</code></p>
 
 <p>In neither case is any data but the <code>session</code> values affected.</p>
 
@@ -1912,8 +1832,7 @@ returns <code>false</code></p>
       
       
         
-        <div class='inline'>
-<p>0.1.0</p>
+        <div class='inline'><p>0.1.0</p>
 </div>
       
     </li>
@@ -1928,8 +1847,7 @@ returns <code>false</code></p>
       
       
         
-        <div class='inline'>
-<p>Must be authenticated.</p>
+        <div class='inline'><p>Must be authenticated.</p>
 </div>
       
     </li>
@@ -1944,10 +1862,8 @@ returns <code>false</code></p>
       
       
         
-        <div class='inline'>
-<p><code>:current_user</code> <strong>must not</strong> be other than
-<code>nil</code> or the Guest User; set to  the Guest User value on
-completion;</p>
+        <div class='inline'><p><code>:current_user</code> <strong>must not</strong> be other than <code>nil</code> or the Guest User; set to
+  the Guest User value on completion;</p>
 
 <p><code>:start_time</code> is set to the distant past (on success)</p>
 </div>
@@ -1964,17 +1880,13 @@ completion;</p>
       
       
         
-        <div class='inline'><ul><li>
-<p>Authenticated User</p>
-</li><li>
-<p>Authentication</p>
-</li><li>
-<p>Entity</p>
-</li><li>
-<p>Guest User</p>
-</li><li>
-<p>Repository</p>
-</li></ul>
+        <div class='inline'><ul>
+<li>Authenticated User</li>
+<li>Authentication</li>
+<li>Entity</li>
+<li>Guest User</li>
+<li>Repository</li>
+</ul>
 </div>
       
     </li>
@@ -1987,14 +1899,16 @@ completion;</p>
       <pre class="lines">
 
 
-171
-172</pre>
+175
+176
+177</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 171</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 175</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_out'>sign_out</span>
-<span class='kw'>end</span></pre>
+  <span class='comment'># To be implemented.
+</span><span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -2005,9 +1919,9 @@ completion;</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Oct 22 20:24:43 2018 by
+  Generated on Tue Oct 30 03:24:26 2018 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.16 (ruby-2.5.1).
+  0.9.16 (ruby-2.5.3).
 </div>
 
     </div>

@@ -17,3 +17,5 @@ SimpleCov.start do
   add_filter '/tmp/gemset/'
   # self.formatters = SimpleCov::Formatter::HTMLFormatter
 end
+
+require 'crypt_ident'

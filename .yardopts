@@ -1,13 +1,14 @@
 --hide-void-return
+--markup-provider redcarpet
 --markup markdown
 --output docs
 --private
 --protected
+--readme README.md
 --tag authenticated:"Required Authentication Status"
 --tag session_data:"Session Data Interacted With"
 --tag ubiq_lang:"Ubiquitous Language Terms"
 --readme README.md
 -
-lib/**/*.rb
 CODE_OF_CONDUCT.md
 LICENSE.txt
