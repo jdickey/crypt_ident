@@ -3,3 +3,6 @@
 detectors:
   IrresponsibleModule:
     enabled: false
+
+  LongParameterList:
+    max_params: 4 # If it's good enough for Sandi, it's good enough for us

@@ -47,23 +47,59 @@ module CryptIdent
 
   ############################################################################ #
 
-  # Build a Hash of attributes suitable for instantiating and persisting an
-  # Entity, with a `:hashed_password` attribute containing the encrypted value
-  # of the Clear-Text Password passed in as a parameter.
+  # Persist a new User to a Repository based on passed-in attributes, with a
+  # `:password_hash` attribute containing the encrypted value of the Clear-Text
+  # Password passed in as the `password` attribute.
+  #
+  # On success, the block is yielded to with two parameters: `user`, an Entity
+  # representing the contents of the newly-added record in the Repository, and
+  # `cryptid_config`, which contains the data in the CryptIdent configuration,
+  # such as `success_key` and `error_key`. Any value returned from the block *is
+  # not* preserved. Rather, the method returns the same Entity passed into the
+  # block as `user`. The block **should** assign to the exposed `@user` instance
+  # variable, as well as any other side-effects (logging, etc) that are
+  # appropriate.
+  #
+  # On failure, the block *is not* yielded to, and the method returns a Symbol
+  # designating the cause of the failure. This will be one of the following:
+  #
+  # * If `#sign_up` was called with a `current_user` parameter that was not
+  #   `nil` or the Guest User, it returns `:current_user_exists`;
+  # * If the specified `name` attribute value matches a record that already
+  #   exists in the Repository, the return value is `:user_already_created`;
+  # * If a record containing the specified attributes could not be created in
+  #   the Repository, this method returns `:user_creation_failed`.
   #
   # @since 0.1.0
   # @authenticated Must not be authenticated.
-  # @param [Hash] other_params Hash of Entity attributes *not* including
-  #               any password attributes.
-  # @param [String] password New Clear-Text Password to encrypt and add to
-  #                 return value
-  # @return [Hash] Entity attributes, including encrypted `password_hash`.
+  # @param [Hash] attribs Hash of attributes for new User Entity and record.
+  #               **Must** include `name` and `password` as well as any other
+  #               attributes required by the underlying database schema, as well
+  #               as a (clear-text) `password` attribute which will be replaced
+  #               in the created Entity/record by a `password_hash` attribute.
+  # @param [String] current_user: Entity representing the current Authenticated
+  #               User, or the Guest User. A value of `nil` is treated as though
+  #               the Guest User had been specified.
+  # @param [Hanami::Repository] repo Repository to be used for accessing User
+  #               data. A value of `nil` indicates that the default Repository
+  #               specified in the Configuration should be used.
+  # @param [Method, Proc, `nil`] The method or Proc to be called in case of an
+  #               error, or `nil` if none is defined.
+  # @param [Block] Block containing code to be called on success; see earlier
+  #               description.
+  # @return [User, Symbol] Entity representing created User on success, or a
+  #               Symbol identifying the reason for failure.
   # @example
-  #   def call(params) # #valid? has already returned `true`
-  #     password = params[:password]
-  #     others = params.reject { |k, _| k == :password }
-  #     attribs = add_password(others, password)
-  #     config.repo.create(attribs)
+  #   def call(_params)
+  #     call_params = { current_user: session[:current_user],
+  #                 on_error: method(:report_errors) }.merge(params.to_h)
+  #     sign_up(call_params) do |user, cryptident_config|
+  #       @user = user
+  #       session[:current_user] = user
+  #       message = "#{user.name} successfully created. You may sign in now."
+  #       flash[cryptident_config.success_key] = message
+  #       redirect_to routes.root_path
+  #     end
   #   end
   # @session_data
   #   `:current_user` **must not** be other than `nil` or the Guest User.
@@ -72,8 +108,10 @@ module CryptIdent
   #   - Clear-Text Password
   #   - Entity
   #   - Guest User
+  #   - Repository
+  #   - User
   #
-  def add_password(other_params, password)
+  def sign_up(attribs, current_user:, repo: nil, on_error: nil, &on_success)
     # To be implemented.
   end
 
@@ -193,9 +231,9 @@ module CryptIdent
   # If the new Clear-Text Password and its confirmation match, then the
   # *encrypted value* of that new Password is returned, and the
   # `session[:current_user]` Entity is replaced with an Entity identical
-  # except that it has the new encrypted value for `hashed_password`. The entry
-  # in the Repository for the current User has also been updated to include the
-  # new Encrypted Password.
+  # except that it has the new encrypted value for `password_hash`. The entry in
+  # the Repository for the current User has also been updated to include the new
+  # Encrypted Password.
   #
   # @since 0.1.0
   # @authenticated Must be authenticated.
