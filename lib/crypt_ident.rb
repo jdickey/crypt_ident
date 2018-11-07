@@ -2,6 +2,8 @@
 
 require 'crypt_ident/version'
 
+require_relative './crypt_ident/config'
+
 # Include and interact with `CryptIdent` to add authentication to a
 # Hanami controller action.
 #
@@ -26,23 +28,28 @@ module CryptIdent
   # `apps/<app name>/application.rb` file, where the default for `app_name` in a
   # Hanami app is `web`.
   #
+  # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
   # @authenticated Irrelevant; normally called during framework setup.
-  # @return (void)
+  # @return {CryptIdent::Config}
   # @example
-  #   CryptIdent.configure_crypt_ident do |config|
-  #     config.repository = MainApp::Repositories::User.new
-  #     config.error_key = :alert
-  #     config.hashing_cost = 6 # less secure and less resource-intensive
-  #     config.token_bytes = 20
-  #     config.reset_expiry = 7200 # two hours; "we run a tight ship here"
-  #     config.guest_user = UserRepository.new.guest_user
+  #   CryptIdent.configure_crypt_ident do |config| # show defaults
+  #     config.error_key = :error
+  #     config.guest_user = nil
+  #     config.hashing_cost = 8
+  #     config.repository = UserRepository.new
+  #     config.guest_user = config.repository.guest_user
+  #     config.reset_expiry = (24 * 60 * 60)
+  #     config.session_expiry = 900
+  #     config.success_key = :success
+  #     config.token_bytes = 17
   #   end
   # @session_data Irrelevant; normally called during framework setup.
   # @ubiq_lang None; only related to demonstrated configuration settings.
   #
+  # rubocop:disable Lint/UnusedMethodArgument FIXME: Kill this when completed.
   def self.configure_crypt_ident(&block)
-    # To be implemented.
+    Config.new
   end
 
   ############################################################################ #
@@ -72,7 +79,8 @@ module CryptIdent
   #
   # @since 0.1.0
   # @authenticated Must not be authenticated.
-  # @param [Hash] attribs Hash of attributes for new User Entity and record.
+  # @param [Hash] params Hash-like object of attributes for new User Entity and
+  #               record, confirming to
   #               **Must** include `name` and `password` as well as any other
   #               attributes required by the underlying database schema, as well
   #               as a (clear-text) `password` attribute which will be replaced
@@ -83,8 +91,8 @@ module CryptIdent
   # @param [Hanami::Repository] repo Repository to be used for accessing User
   #               data. A value of `nil` indicates that the default Repository
   #               specified in the Configuration should be used.
-  # @param [Method, Proc, `nil`] The method or Proc to be called in case of an
-  #               error, or `nil` if none is defined.
+  # @param [Method, Proc, `nil`] on_error: The method or Proc to be called in
+  #               case of an error, or `nil` if none is defined.
   # @param [Block] Block containing code to be called on success; see earlier
   #               description.
   # @return [User, Symbol] Entity representing created User on success, or a
@@ -117,6 +125,8 @@ module CryptIdent
 
   # Attempt to Authenticate a User, passing in an Entity for that User (which
   # **must** contain a `password_hash` attribute), and a Clear-Text Password.
+  # It also passes in the Current User; if an Authenticated User, then the call
+  # will fail immediately, otherwise, the password match will be attempted.
   #
   # On *success:*
   #
@@ -136,25 +146,22 @@ module CryptIdent
   # `session[:current_user]`), then `sign_in` returns `false` and the `session`
   # data remains unchanged.
   #
+  # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
   # @authenticated Must not be authenticated.
   # @param [Object] user Entity representing a User to be Authenticated;
   # @param [String] password Claimed Clear-Text Password for the specified User.
   # @return [Boolean]
   # @example
-  #   def initialize(config)
-  #     @config = config
-  #   end
-  #
   #   def call(params)
-  #     true
-  #   end
-  #
-  #   def valid?(params)
+  #     config = CryptIdent::configure_crypt_ident
   #     user = UserRepository.new.find_by_email(params[:email])
   #     @user = user || @config.guest_user
   #     return false unless user
-  #     sign_in(@user, params[:password])
+  #     signed_in = sign_in(@user, params[:password],
+  #                         current_user: @current_user)
+  #     session[:current_user] = signed_in ? @user : @config.guest_user
+  #     session[:start_time] = signed_in ? Time.now : Time.new(0)
   #   end
   # @session_data
   #   `:current_user` **must not** be other than `nil` or the Guest User.
@@ -185,6 +192,7 @@ module CryptIdent
   #
   # In neither case is any data but the `session` values affected.
   #
+  # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
   # @authenticated Must be authenticated.
   # @return [Boolean]
@@ -235,6 +243,7 @@ module CryptIdent
   # the Repository for the current User has also been updated to include the new
   # Encrypted Password.
   #
+  # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
   # @authenticated Must be authenticated.
   # @param [String] current_password The current Clear-Text Password for the
@@ -359,6 +368,7 @@ module CryptIdent
   # In no event are session values, including the Current User, changed. After a
   # successful Password Reset, the User must Authenticate as usual.
   #
+  # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
   # @authenticated Must not be authenticated.
   # @param [String] token The Password Reset Token previously communicated to
@@ -407,6 +417,7 @@ module CryptIdent
   # Restart the Session Expiration timestamp mechanism, to avoid prematurely
   # signing out a User.
   #
+  # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
   # @authenticated Must be authenticated.
   # @return (void)
@@ -436,6 +447,7 @@ module CryptIdent
   # Will return `false` if `session[:current_user]` is `nil` or has the value
   # specified by `config.guest_user`.
   #
+  # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
   # @authenticated Must be authenticated.
   # @return [Boolean]
@@ -455,4 +467,5 @@ module CryptIdent
   def session_expired?
     # To be implemented.
   end
+  # rubocop:enable Lint/UnusedMethodArgument FIXME: Kill this when completed.
 end

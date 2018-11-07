@@ -21,6 +21,8 @@ It *does not* implement features such as
 
 These either violate current best-practice recommendations from security leaders (e.g., NIST and others no longer recommend password ageing as a defence against cracking) or have other Gems that focus on the features in question (e.g., [`bdmac/strong_password`](https://github.com/bdmac/strong_password)).
 
+
+
 # Installation
 
 Add this line to your application's Gemfile:
@@ -41,103 +43,45 @@ Or install it yourself as:
 
 ## Database/Repository Setup
 
-`CryptIdent` assumes that the entities being worked with are named `User` and the repository used to read and update the underlying database table is named `UserRepository`; that can be changed below.
+`CryptIdent` assumes that the repository used to read and update the underlying database table is named `UserRepository`; that can be changed using the [_Configuration_](#configuration) settings.
 
-The database table for that repository **must** have the following fields:
+We further assume that the Repository object
 
-<table>
-<thead>
-<tr>
-<th style="text-align:left">Field</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><code>password_hash</code></td>
-<td>text</td>
-<td>Encrypted password string.</td>
-</tr>
-<tr>
-<td style="text-align:left"><code>reset_sent_at</code></td>
-<td>timestamp without time zone</td>
-<td>Defaults to <code>nil</code>; set this to the current time (<code>Time.now</code>) when responding to a password-reset request (e.g., by email). The <code>token</code> (below) will expire at this time offset by the <code>reset_expiry</code> configuration value (below).</td>
-</tr>
-<tr>
-<td style="text-align:left"><code>token</code></td>
-<td>text</td>
-<td>A URL-safe secure random number (see <a href="https://ruby-doc.org/stdlib-2.5.1/libdoc/securerandom/rdoc/Random/Formatter.html#method-i-urlsafe_base64">standard-library documentation</a>) used to uniquely identify a password-reset request.</td>
-</tr>
-</tbody>
-</table>
+1. Has a _class method_ named `.entity_name` that returns the name of the Entity used by that Repository *as a string* (e.g., `"User"` for a `UserRepository`);
+2. Has a class method named `.guest_user` that returns an Entity with a descriptive name (e.g., "Guest User") and is otherwise invalid for persistence (e.g., it has an invalid `id` attribute); and
+3. Implements the "usual" common methods (`#create`, `#update`, `#delete`, etc) conforming to an interface compatible with [`Hanami::Repository`](https://github.com/hanami/model/blob/master/lib/hanami/repository.rb). This interface is suitably generic and sufficiently widely implemented, even in ORMs such as ActiveRecord that make no claim to implementing the [Repository Pattern](https://8thlight.com/blog/mike-ebert/2013/03/23/the-repository-pattern.html).
+
+The database table for that Repository **must** have the following fields, in any order within the schema:
+
+| Field | Type | Description |
+|:----- | ---- | ----------- |
+| `name` | string | The name of an individual User to be Authenticated |
+| `email` | string | The Email Address for that User, to be used for Password Recovery, for example. |
+| `password_hash` | text | The *encrypted* Password associated with that User. |
+| `password_reset_sent_at` | timestamp without time zone | Defaults to `nil`; set this to the current time (`Time.now`) when responding to a Password Reset request (e.g., by email). The `token` (below) will expire at this time offset by the `reset_expiry` configuration value (see _Configuration_, below). |
+| `token` | text | Defaults to `nil`. A Password Reset Token; a URL-safe secure random number (see [standard-library documentation](https://ruby-doc.org/stdlib-2.5.1/libdoc/securerandom/rdoc/Random/Formatter.html#method-i-urlsafe_base64)) used to uniquely identify a Password Reset request. |
+
 
 ## Configuration
 
 The currently-configurable details for `CryptIdent` are as follows:
 
-<table>
-<thead>
-<tr>
-<th style="text-align:left">Key</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><code>error_key</code></td>
-<td><code>:error</code></td>
-<td>Modify this setting if you want to use a different key for flash messages reporting unsuccessful actions.</td>
-</tr>
-<tr>
-<td style="text-align:left"><code>hashing_cost</code></td>
-<td>8</td>
-<td>This is the <a href="https://github.com/codahale/bcrypt-ruby#cost-factors">hashing cost</a> used to <em>encrypt a password</em> and is applied at the hashed-password-creation step; it <strong>does not</strong> modify the default cost for the encryption engine. <strong>Note that</strong> any change to this value <em>should</em> invalidate and make useless all existing hashed-password stored values.</td>
-</tr>
-<tr>
-<td style="text-align:left"><code>guest_user</code></td>
-<td><code>nil</code></td>
-<td>This value is used for the session variable <code>session[:current_user]</code> when no user has <a href="#signing-in">signed in</a>, or after a previously-authenticated user has <a href="#signing-out">signed out</a>. If your application makes use of the <a href="https://en.wikipedia.org/wiki/Null_object_pattern">Null Object pattern</a>, you would assign your null object instance to this configuration setting. (See <a href="https://robots.thoughtbot.com/rails-refactoring-example-introduce-null-object">this Thoughtbot post</a> for a good discussion of Null Objects in Ruby.)</td>
-</tr>
-<tr>
-<td style="text-align:left"><code>repository</code></td>
-<td><code>UserRepository.new</code></td>
-<td>Modify this if your user records are in a different (or namespaced) class.</td>
-</tr>
-<tr>
-<td style="text-align:left"><code>reset_expiry</code></td>
-<td>86400</td>
-<td>Number of seconds from the time a password-reset request token is stored before it becomes invalid.</td>
-</tr>
-<tr>
-<td style="text-align:left"><code>session_expiry</code></td>
-<td>900</td>
-<td>Number of seconds <em>from either</em> the time that a user is successfully authenticated <em>or</em> the <code>restart_session_counter</code> method is called <em>before</em> a call to <code>session_expired?</code> will return <code>true</code>.</td>
-</tr>
-<tr>
-<td style="text-align:left"><code>success_key</code></td>
-<td><code>:success</code></td>
-<td>Modify this setting if you want to use a different key for flash messages reporting successful actions.</td>
-</tr>
-<tr>
-<td style="text-align:left"><code>token_bytes</code></td>
-<td>16</td>
-<td>Number of bytes of random data to generate when building a password-reset token. See <code>token</code> in the <a href="#databaserepository-setup">database/repository setup</a> section, above.</td>
-</tr>
-<tr>
-<td style="text-align:left"><code>validity_time</code></td>
-<td>600</td>
-<td>Number of seconds from the time a user successfully <a href="#signing-in">signs in</a> before a call to <code>session_expired?</code> will return <code>true</code> rather than <code>false</code>.</td>
-</tr>
-</tbody>
-</table>
+| Key | Default | Description |
+|:--- | ------- | ----------- |
+| `error_key` | `:error` | Modify this setting if you want to use a different key for flash messages reporting unsuccessful actions. |
+| `guest_user` | Return value from `repository` `.guest_user` method | This value is used for the session variable `session[:current_user]` when no User has [signed in](#signing-in), or after a previously Authenticated User has [signed out](#signing-out). If your application *does not* make use of the [Null Object pattern](https://en.wikipedia.org/wiki/Null_object_pattern), you would assign `nil` to this configuration setting. (See [this Thoughtbot post](https://robots.thoughtbot.com/rails-refactoring-example-introduce-null-object) for a good discussion of Null Objects in Ruby.) |
+| `hashing_cost` | 8 | This is the [hashing cost](https://github.com/codahale/bcrypt-ruby#cost-factors) used to *encrypt a password* and is applied at the hashed-password-creation step; it **does not** modify the default cost for the encryption engine. **Note that** any change to this value **will** invalidate and make useless all existing Encrypted Password stored values. |
+| `:repository` | `UserRepository.new` | Modify this if your user records are in a different (or namespaced) class. |
+| `:reset_expiry` | 86400 | Number of seconds from the time a password-reset request token is stored before it becomes invalid. |
+| `:session_expiry` | 900 | Number of seconds *from either* the time that a User is successfully Authenticated *or* the `restart_session_counter` method is called *before* a call to `session_expired?` will return `true`. |
+| `:success_key` | `:success` | Modify this setting if you want to use a different key for flash messages reporting successful actions. |
+| `:token_bytes` | 16 | Number of bytes of random data to generate when building a password-reset token. See `token` in the [_Database/Repository Setup_](#databaserepository-setup) section, above.
 
 For example
 
 ```ruby
   include CryptIdent
-  CryptIdent.configureure_crypt_id do |config|
+  CryptIdent.configure_crypt_id do |config|
     config.repository = MainApp::Repositories::User.new # note: *not* a Hanami recommended practice!
     config.error_key = :alert
     config.hashing_cost = 6 # less secure and less resource-intensive
@@ -149,27 +93,94 @@ For example
 
 would change the configuration as you would expect whenever that code was run. (We **recommend** that this be done inside the `controller.prepare` block of your Hanami `web` (or equivalent) app's `application.rb` file.)
 
-## Use-Case Workflows
+## Introductory Notes on Workflows
 
-First, if you've set up your `controller.prepare` block as **recommended** in the preceding section, `CryptIdent` is loaded and configured but *does not* implement session-handling "out of the box"; as with [other libraries](https://github.com/sebastjan-hribar/tachiban#session-handling), it must be implemented *by you* as described in the [*Session Expiration*](#session-expiration) description below.
+### Session Handling Not Automatic
 
-Note that these workflows demonstrate *sample* `User` Entity and Repository layouts; you are free to adapt them, with the aid of the [_Configuration_](#configuration) settings detailed above, to your specific needs.
+If you've set up your `controller.prepare` block as **recommended** in the preceding section, `CryptIdent` is loaded and configured but *does not* implement session-handling "out of the box"; as with [other libraries](https://github.com/sebastjan-hribar/tachiban#session-handling), it must be implemented *by you* as described in the [*Session Expiration*](#session-expiration) description below.
 
-Code examples are not included here, but are shown in the [API Reference](docs/CryptIdent.html).
+### Code Samples in API Reference are Authoritative
 
-Finally, a note on terminology. Terms that have meaning (e.g., _Repository_) within this module's domain language, or [Ubiquitous Language](https://www.martinfowler.com/bliki/UbiquitousLanguage.html), should be capitalised, at least on first use within a paragraph. This is to stress to the reader that, while these terms may have "obvious" meanings, their use within this module and its related documents (including this one) **should** be consistent, specific, and rigorous in their meaning. In the [API Documentation](docs/CryptIdent.html), each of these terms **must** be listed in the _Ubiquitous Language Terms_ section under each method description in which they are used.
+Only minimal code snippets are included here to help explain use cases.  However, the [API Reference](docs/CryptIdent.html) should be considered authoritative; any discrepancies between the API and/or code snippets there and here should be regarded as a bug (and a [report](https://github.com/jdickey/crypt_ident/issues/) filed if not already filed.
+
+### Terminology and the project Ubiquitous Language
+
+Finally, a note on terminology. Terms that have meaning (e.g., _Guest User_) within this module's domain language, or [Ubiquitous Language](https://www.martinfowler.com/bliki/UbiquitousLanguage.html), **must** be capitalised, at least on first use within a paragraph. This is to stress to the reader that, while these terms may have "obvious" meanings, their use within this module and its related documents (including this one) **should** be consistent, specific, and rigorous in their meaning. In the [API Documentation](docs/CryptIdent.html), each of these terms **must** be listed in the _Ubiquitous Language Terms_ section under each method description in which they are used.
 
 After the first usage in a paragraph, the term **may** be used less strictly (e.g., by referring to a _Clear-Text Password_ simply as a _password_ *if* doing so does not introduce ambiguity or confusion. The reader should feel free to [open an issue report](https://github.com/jdickey/cript_ident/issues) if you spot any lapses. (Thank you!)
 
+## Use-Case Workflows
+
 ### Registration
 
-To build an Entity suitable for saving to the appropriate Repository, call the `add_password` method, passing in a Hash of attributes and a plain-text password as parameters. The method returns a Hash containing the entries supplied in the parameter, with the addition of a `password_hash` entry whose value is the encrypted value of the supplied plain-text password.
+#### Overview
 
-If the supplied plain-text password is an empty string, blank, or `nil`, then the `password_hash` attribute of the returned entity will be randomised, requiring a [_Password Reset_](#password-reset) before the user can [_Sign In_](#signing-in).
+Method involved:
 
-Once the new attribute Hash with an encrypted `password_hash` has been returned from `add_password`, it may be used to build and persist an Entity as you normally would.
+```ruby
+  module CryptIdent
+    def sign_up(params, current_user:, repo: nil, on_error: nil, &on_success)
+      # ...
+    end
+  end
+```
 
-### Signing In
+This is the first of our use cases that involves calling a function which expects a block to be supplied; if one isn't, then a log-format warning message will remind you of the error.
+
+The `params` parameter is a Hash-like object such as a `Hanami::Action::Params` instance. It **must** have a `:name` entry, as well as any other keys and matching field values required by the Entity which will be created from the `params` values, *other than* a `:password_hash` key. It **should** have a `:password` entry; if none is specified, then a *random* `:password_hash` attribute (rather than one created by encrypting the `:password`) will be assigned to the resulting Entity.
+
+Pass in the value of the `session[:current_user]` session variable as the `:current_user` parameter. This **should** be an Entity value; if it is an integer, it will be used as an `id` to `#find` from the Repository in use by the method.
+
+If a Repository instance different than that loaded by the [_Configuration_](#configuration) is to be used, pass it in as the `repo:` parameter. Leaving the default value, `nil`, **should** work in a properly-designed application.
+
+To have the `#sign_up` method call a Callable (`Proc` or lambda) when an error is detected, supply it as the `on_error:` parameter. The parameters to be passed to it include
+
+1. an error ID Symbol, which will also be the value returned by the `#sign_up` method itself;
+2. the `params` passed to the `#sign_up` method;
+3. a {CryptID::Config} instance describing the active configuration values;
+4. a Hash of any other information relevant to the error; this will be documented in the {file:docs/CryptIdent.md API Guide} when relevant, defaulting to an empty Hash otherwise.
+
+The block associated with the `#sign_up` call (documented as `&on_success` above) will be called *if and only if* the method is successful (and returns a User instance). The block **must** accept two parameters:
+
+1. the User Entity that was created; and
+2. a {CryptID::Config} instance describing the active configuration values.
+
+These will be further described below:
+
+#### Success, aka Golden Path
+
+If the `params` include all values required by the underlying schema, including a valid `name` attribute that does not exist in the underlying data store, and an entry for `password`, then the specified `password` will be encrypted into a URL-safe string and used for the `password_hash` attribute of the new Entity. If the `password` is `nil`, empty, or blank, the resulting`password_hash` attribute will be randomised, requiring a [_Password Reset_](#password-reset) before the user can [_Sign In_](#signing-in).
+
+The `&on_success` block will be called with the newly-created User Entity and Config object as parameters. This would typically be used to define UI interactions such as flash messages, redirection, and so on.
+
+#### Error Conditions
+
+##### Authenticated User as `current_user:` Parameter
+
+If the specified `current_user:` parameter is a valid User instance or ID, then that is presumed to be the Current User of the application. Authenticated Users are prohibited from creating other Users, and so the call will fail and return `:current_user_exists`. This will also be the error ID passed to any defined `on_error:` handler.
+
+#### Specified `:name` Attribute Already Used for an Existing User
+
+If the specified `:name` attribute exists in a record within the Repository, then the call will fail and the returned error ID will be `:user_already_created`.
+
+##### Record Could Not be Created Within Repository
+
+If the Repository method `#create` returned an error, then the call will fail and the returned error ID will be `:user_creation_failed`.
+
+### Signing In -- TODO: FIXME
+
+#### Overview
+
+Method involved:
+
+```ruby
+  module CryptIdent
+    def sign_in(params, current_user:, repo: nil, on_error: nil, &on_success)
+      # ...
+    end
+
+```
+
 
 Once a user has been [Registered](#registration), signing in is a matter of retrieving that user's Entity (containing a `password_hash` attribute) and calling `#sign_in` passing in that Entity and the supplied clear-text password, and seeing what the return value is.
 
@@ -191,7 +202,7 @@ On *failure*:
 
 If a *different user* is logged in (as evidenced by `session[:current_user]`), then `#sign_in` returns `false` and the `session` data remains unchanged.
 
-### Signing Out
+### Signing Out -- TODO: FIXME
 
 Signing out a previously Authenticated user is straightforward: call the `sign_out` method.
 
@@ -201,7 +212,7 @@ If `session[:current_user]` _is_ the Guest User, then `session[:start_time]` is 
 
 In neither case is any data but the `session` values affected.
 
-### Password Change
+### Password Change -- TODO: FIXME
 
 To change an [authenticated](#signing-in) user's password, the current clear-text password, new clear-text password, and clear-text password confirmation are passed to `change_password`.
 
@@ -209,9 +220,9 @@ If the Encrypted Password in the `session[:current_user]` entity does not match 
 
 If the current-password check succeeds but the new Clear-Text Password and its confirmation do not match, then the method returns `:mismatched_password` and no changes occur.
 
-If the new Clear-Text Password and its confirmation match, then the _encrypted value_ of that new password is returned, and the `session[:current_user]` Entity is replaced with an Entity identical except that it has the new encrypted value for `hashed_password`.
+If the new Clear-Text Password and its confirmation match, then the _encrypted value_ of that new password is returned, and the `session[:current_user]` Entity is replaced with an Entity identical except that it has the new encrypted value for `password_hash`.
 
-### Password Reset
+### Password Reset -- TODO: FIXME
 
 To reset a User's password when the User *is not* [authenticated](#signing-in) is a two-step process:
 
@@ -235,9 +246,9 @@ If the token is invalid or has expired, `reset_password` returns `:invalid_token
 
 If the new password and confirmation do not match, `reset_password` returns `:mismatched_password` and no changes occur.
 
-If the clear-text new password and its confirmation match, then the hashed value of that new password is returned, and the `session[:current_user]` Entity is replaced with an Entity identical except that it has the new value for `hashed_password`.
+If the clear-text new password and its confirmation match, then the hashed value of that new password is returned, and the `session[:current_user]` Entity is replaced with an Entity identical except that it has the new value for `password_hash`.
 
-### Session Expiration
+### Session Expiration -- TODO: FIXME
 
 Session management is a necessary part of implementing authentication (and authorisation) within an app. However,  it's not something that an authentication *library* can fully implement without making the client application excessively inflexible and brittle.
 
