@@ -750,12 +750,12 @@ the current-user entity</p>
       <pre class="lines">
 
 
+284
 285
-286
-287</pre>
+286</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 285</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 284</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_confirmation'>new_confirmation</span><span class='rparen'>)</span>
   <span class='comment'># To be implemented.
@@ -934,12 +934,12 @@ Token is to be generated.</p>
       <pre class="lines">
 
 
+341
 342
-343
-344</pre>
+343</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 342</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 341</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_generate_reset_token'>generate_reset_token</span><span class='lparen'>(</span><span class='id identifier rubyid_user_name'>user_name</span><span class='rparen'>)</span>
   <span class='comment'># To be implemented.
@@ -1167,12 +1167,12 @@ return value</p>
       <pre class="lines">
 
 
+411
 412
-413
-414</pre>
+413</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 412</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 411</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_password'>reset_password</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='id identifier rubyid_confirmation'>confirmation</span><span class='rparen'>)</span>
   <span class='comment'># To be implemented.
@@ -1291,12 +1291,12 @@ signing out a User.</p>
       <pre class="lines">
 
 
+437
 438
-439
-440</pre>
+439</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 438</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 437</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_restart_session_counter'>restart_session_counter</span>
   <span class='comment'># To be implemented.
@@ -1434,12 +1434,12 @@ specified by <code>config.guest_user</code>.</p>
       <pre class="lines">
 
 
+467
 468
-469
-470</pre>
+469</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 468</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 467</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_session_expired?'>session_expired?</span>
   <span class='comment'># To be implemented.
@@ -1504,7 +1504,7 @@ data remains unchanged.</p>
     
       
       <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_config'>config</span> <span class='op'>=</span> <span class='const'>CryptId</span>
+  <span class='id identifier rubyid_config'>config</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='op'>::</span><span class='id identifier rubyid_configure_crypt_ident'><span class='object_link'><a href="#configure_crypt_ident-class_method" title="CryptIdent.configure_crypt_ident (method)">configure_crypt_ident</a></span></span>
   <span class='id identifier rubyid_user'>user</span> <span class='op'>=</span> <span class='const'>UserRepository</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_find_by_email'>find_by_email</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:email</span><span class='rbracket'>]</span><span class='rparen'>)</span>
   <span class='ivar'>@user</span> <span class='op'>=</span> <span class='id identifier rubyid_user'>user</span> <span class='op'>||</span> <span class='ivar'>@config</span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span>
   <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_user'>user</span>
@@ -1640,12 +1640,12 @@ data remains unchanged.</p>
       <pre class="lines">
 
 
+179
 180
-181
-182</pre>
+181</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 180</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 179</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_in'>sign_in</span><span class='lparen'>(</span><span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='rparen'>)</span>
   <span class='comment'># To be implemented.
@@ -1794,12 +1794,12 @@ data remains unchanged.</p>
       <pre class="lines">
 
 
+221
 222
-223
-224</pre>
+223</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 222</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 221</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_out'>sign_out</span>
   <span class='comment'># To be implemented.
@@ -2054,16 +2054,14 @@ Symbol identifying the reason for failure.</p>
 
 122
 123
-124
-125</pre>
+124</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 122</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>on_error:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_on_success'>on_success</span><span class='rparen'>)</span>
   <span class='comment'># To be implemented.
-</span>  <span class='symbol'>:oops</span>
-<span class='kw'>end</span></pre>
+</span><span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -2074,7 +2072,7 @@ Symbol identifying the reason for failure.</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Nov  8 01:07:11 2018 by
+  Generated on Thu Nov  8 02:03:54 2018 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.16 (ruby-2.5.3).
 </div>

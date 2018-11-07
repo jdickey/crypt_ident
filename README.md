@@ -159,7 +159,7 @@ The `&on_success` block will be called with the newly-created User Entity and Co
 
 If the specified `current_user:` parameter is a valid User instance or ID, then that is presumed to be the Current User of the application. Authenticated Users are prohibited from creating other Users, and so the call will fail and return `:current_user_exists`. This will also be the error ID passed to any defined `on_error:` handler.
 
-#### Specified `:name` Attribute Already Used for an Existing User
+##### Specified `:name` Attribute Already Used for an Existing User
 
 If the specified `:name` attribute exists in a record within the Repository, then the call will fail and the returned error ID will be `:user_already_created`.
 
