@@ -37,6 +37,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'bcrypt', '>= 3.1.12'
   # hanami-model 1.2.0 depends on *18* other Gems. Just as a reminder...
   spec.add_runtime_dependency 'hanami-model', '>= 1.2.0'
+  spec.add_runtime_dependency 'hanami-controller', '>= 1.2.0'
 
   spec.add_development_dependency "bundler", '>= 1.16.6'
   spec.add_development_dependency "rake", '>= 12.3.1'
@@ -51,7 +52,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pry-byebug', '3.6.0'
   spec.add_development_dependency 'pry-doc', '0.13.4'
   spec.add_development_dependency 'reek', '5.2.0'
-  spec.add_development_dependency 'rubocop', '0.59.2'
+  spec.add_development_dependency 'rubocop', '0.60.0'
   spec.add_development_dependency 'simplecov', '0.16.1'
   spec.add_development_dependency 'yard', '0.9.16'
   spec.add_development_dependency 'yard-classmethods', '1.0.0'

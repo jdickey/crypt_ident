@@ -54,6 +54,8 @@ gem install --ignore-dependencies \
     dry-types:0.11.1 \
     transproc:1.0.2 \
     hanami-utils:1.2.0 \
+    rack:2.0.5 \
+    hanami-controller:1.2.0 \
     dry-initializer:1.4.1 \
     rom-mapper:0.5.1 \
     rom:3.3.3 \
@@ -90,7 +92,7 @@ gem install --ignore-dependencies \
     rainbow:3.0.0 \
     reek:5.2.0 \
     unicode-display_width:1.4.0 \
-    rubocop:0.59.2 \
+    rubocop:0.60.0 \
     simplecov-html:0.10.2 \
     simplecov:0.16.1 \
     yard-classmethods:1.0.0 \
