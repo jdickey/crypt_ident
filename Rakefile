@@ -10,6 +10,7 @@ require 'flog_task'
 require 'inch/rake'
 require 'reek/rake/task'
 require 'rubocop/rake_task'
+require 'fileutils'
 
 Dir.glob('lib/tasks/*.rake').each { |r| load r }
 
@@ -35,7 +36,9 @@ FlogTask.new do |t|
   t.dirs = %w(lib) # Look, Ma; no tests! Run the tool manually every so often for those.
 end
 
-Inch::Rake::Suggest.new
+Inch::Rake::Suggest.new do |suggest|
+  suggest.args = '--pedantic'
+end
 
 Reek::Rake::Task.new do |t|
   t.config_file = 'config.reek'
@@ -57,5 +60,20 @@ RuboCop::RakeTask.new(:rubocop) do |task|
   task.options << '--display-cop-names'
 end
 
-task default: [:test, :flog, :flay, :reek, :rubocop]
+namespace :minitest do
+  desc 'Reset mean-time reporter stats by removing previous-runs data file'
+  task :reset_statistics do
+    # *DO NOT* call `Minitest::Reporters::MeanTimeReporter.reset_statistics!`.
+    # Ever. Or at least until it's officially fixed. It writes an empty file to
+    # the previous-runs file, which crashes any future run of this reporter.
+    # FIXME!
+    require 'minitest/reporters/mean_time_reporter'
+    mtr = Minitest::Reporters::MeanTimeReporter.new
+    prfile = mtr.send :previous_runs_filename
+    _unlinked = FileUtils.rm_f prfile
+    puts 'The mean time reporter statistics have been reset.'
+  end
+end
+
+task default: [:test, :flog, :flay, :reek, :rubocop, :inch]
 task spec: :test
