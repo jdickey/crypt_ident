@@ -2,13 +2,14 @@
 --markup-provider redcarpet
 --markup markdown
 --output docs
---private
+--no-private
 --protected
 --readme README.md
 --tag authenticated:"Required Authentication Status"
 --tag session_data:"Session Data Interacted With"
 --tag ubiq_lang:"Ubiquitous Language Terms"
 --readme README.md
+--title 'crypt_ident Module Documentation'
 -
 CODE_OF_CONDUCT.md
 LICENSE.txt

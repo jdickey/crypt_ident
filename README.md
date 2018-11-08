@@ -137,13 +137,13 @@ To have the `#sign_up` method call a Callable (`Proc` or lambda) when an error i
 
 1. an error ID Symbol, which will also be the value returned by the `#sign_up` method itself;
 2. the `params` passed to the `#sign_up` method;
-3. a {CryptID::Config} instance describing the active configuration values;
+3. a {CryptIdent::Config} instance describing the active configuration values;
 4. a Hash of any other information relevant to the error; this will be documented in the {file:docs/CryptIdent.md API Guide} when relevant, defaulting to an empty Hash otherwise.
 
 The block associated with the `#sign_up` call (documented as `&on_success` above) will be called *if and only if* the method is successful (and returns a User instance). The block **must** accept two parameters:
 
 1. the User Entity that was created; and
-2. a {CryptID::Config} instance describing the active configuration values.
+2. a {CryptIdent::Config} instance describing the active configuration values.
 
 These will be further described below:
 
@@ -236,7 +236,7 @@ Password Reset Tokens are useful for verifying that the person requesting a Pass
 Typically, this is done by sending a link through email or other such medium to the address previously associated with the User purportedly requesting the Password Reset. `CryptIdent` *does not* automate generation or sending of the email message. What it *does* provide is a method to generate a new Password Reset Token to be embedded into an HTML anchor link within an email
 that you construct.
 
-It also implements an expiry system, such that if the confirmation of the Password Reset request is not completed within a [configurable](#Configuration) time, that the token is no longer valid (and cannot be later reused by unauthorised persons). 
+It also implements an expiry system, such that if the confirmation of the Password Reset request is not completed within a [configurable](#Configuration) time, that the token is no longer valid (and cannot be later reused by unauthorised persons).
 
 #### Actually reset the password
 

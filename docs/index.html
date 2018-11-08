@@ -6,7 +6,7 @@
 <title>
   File: README
   
-    &mdash; Documentation by YARD 0.9.16
+    &mdash; crypt_ident Module Documentation
   
 </title>
 
@@ -261,7 +261,7 @@
 <ol>
 <li>an error ID Symbol, which will also be the value returned by the <code>#sign_up</code> method itself;</li>
 <li>the <code>params</code> passed to the <code>#sign_up</code> method;</li>
-<li>a CryptID::Config instance describing the active configuration values;</li>
+<li>a <span class='object_link'><a href="CryptIdent/Config.html" title="CryptIdent::Config (class)">CryptIdent::Config</a></span> instance describing the active configuration values;</li>
 <li>a Hash of any other information relevant to the error; this will be documented in the <a href="file.CryptIdent.html" title="API Guide">API Guide</a> when relevant, defaulting to an empty Hash otherwise.</li>
 </ol>
 
@@ -269,7 +269,7 @@
 
 <ol>
 <li>the User Entity that was created; and</li>
-<li>a CryptID::Config instance describing the active configuration values.</li>
+<li>a <span class='object_link'><a href="CryptIdent/Config.html" title="CryptIdent::Config (class)">CryptIdent::Config</a></span> instance describing the active configuration values.</li>
 </ol>
 
 <p>These will be further described below:</p>
@@ -367,7 +367,7 @@
 <p>Typically, this is done by sending a link through email or other such medium to the address previously associated with the User purportedly requesting the Password Reset. <code>CryptIdent</code> <em>does not</em> automate generation or sending of the email message. What it <em>does</em> provide is a method to generate a new Password Reset Token to be embedded into an HTML anchor link within an email
 that you construct.</p>
 
-<p>It also implements an expiry system, such that if the confirmation of the Password Reset request is not completed within a <a href="#Configuration">configurable</a> time, that the token is no longer valid (and cannot be later reused by unauthorised persons). </p>
+<p>It also implements an expiry system, such that if the confirmation of the Password Reset request is not completed within a <a href="#Configuration">configurable</a> time, that the token is no longer valid (and cannot be later reused by unauthorised persons).</p>
 
 <h4>Actually reset the password</h4>
 
@@ -455,7 +455,7 @@ that you construct.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Thu Nov  8 02:03:54 2018 by
+  Generated on Fri Nov  9 01:24:17 2018 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.16 (ruby-2.5.3).
 </div>

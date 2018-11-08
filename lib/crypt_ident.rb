@@ -15,6 +15,9 @@ require_relative './crypt_ident/config'
 # @version 0.1.0
 # FIXME: Disable :reek:UnusedParameters; we have not yet added code.
 module CryptIdent
+  include Hanami::Utils::ClassAttribute
+  class_attribute :cryptid_config
+
   # Set configuration information at the class (actually, module) level.
   #
   # **IMPORTANT:** Even though we follow time-honoured convention
@@ -28,7 +31,6 @@ module CryptIdent
   # `apps/<app name>/application.rb` file, where the default for `app_name` in a
   # Hanami app is `web`.
   #
-  # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
   # @authenticated Irrelevant; normally called during framework setup.
   # @return {CryptIdent::Config}
@@ -42,14 +44,52 @@ module CryptIdent
   #     config.reset_expiry = (24 * 60 * 60)
   #     config.session_expiry = 900
   #     config.success_key = :success
-  #     config.token_bytes = 17
+  #     config.token_bytes = 16
   #   end
   # @session_data Irrelevant; normally called during framework setup.
   # @ubiq_lang None; only related to demonstrated configuration settings.
+  # @yieldparam [Struct] config Mutable Struct initialised to default config.
+  # @yieldreturn [void]
+  def self.configure_crypt_ident
+    config = _starting_config
+    yield config if block_given?
+    @cryptid_config = Config.new(config.to_h)
+  end
+
+  # Get initial config settings for `.configure_crypt_ident`.
   #
-  # rubocop:disable Lint/UnusedMethodArgument FIXME: Kill this when completed.
-  def self.configure_crypt_ident(&block)
-    Config.new
+  # This exists solely to get Flog's score down into the single digits.
+  #
+  # @private
+  # @since 0.1.0
+  # @return {CryptIdent::Config}
+  def self._starting_config
+    starting_config = @cryptid_config || Config.new
+    hash = starting_config.to_h
+    Struct.new(*hash.keys).new(*hash.values)
+  end
+
+  # Reset configuration information to default values.
+  #
+  # This **should** primarily be used during testing, and would normally be run
+  # from a `before` block for a test suite.
+  #
+  # @since 0.1.0
+  # @authenticated Irrelevant; normally called during framework setup.
+  # @return {CryptIdent::Config}
+  # @example Show how a modified configuration value is reset.
+  #   CryptIdent.configure_crypt_ident do |config|
+  #     config.hashing_cost = 20 # default 8
+  #   end
+  #   # ...
+  #   foo = CryptIdent.configure_crypt_ident.hashing_cost # 20
+  #   # ...
+  #   CryptIdent.reset_crypt_ident_config
+  #   foo == CryptIdent.configure_crypt_ident.hashing_cost # default, 8
+  # @session_data Irrelevant; normally called during testing
+  # @ubiq_lang None; only related to demonstrated configuration settings.
+  def self.reset_crypt_ident_config
+    self.cryptid_config = Config.new
   end
 
   ############################################################################ #
@@ -79,22 +119,22 @@ module CryptIdent
   #
   # @since 0.1.0
   # @authenticated Must not be authenticated.
-  # @param [Hash] params Hash-like object of attributes for new User Entity and
+  # @param [Hash] attribs Hash-like object of attributes for new User Entity and
   #               record, confirming to
   #               **Must** include `name` and `password` as well as any other
   #               attributes required by the underlying database schema, as well
   #               as a (clear-text) `password` attribute which will be replaced
   #               in the created Entity/record by a `password_hash` attribute.
-  # @param [String] current_user: Entity representing the current Authenticated
+  # @param [String] current_user Entity representing the current Authenticated
   #               User, or the Guest User. A value of `nil` is treated as though
   #               the Guest User had been specified.
   # @param [Hanami::Repository] repo Repository to be used for accessing User
   #               data. A value of `nil` indicates that the default Repository
   #               specified in the Configuration should be used.
-  # @param [Method, Proc, `nil`] on_error: The method or Proc to be called in
+  # @param [Method, Proc, `nil`] on_error The method or Proc to be called in
   #               case of an error, or `nil` if none is defined.
-  # @param [Block] Block containing code to be called on success; see earlier
-  #               description.
+  # @param [Block] on_success Block containing code to be called on success; see
+  #               earlier description.
   # @return [User, Symbol] Entity representing created User on success, or a
   #               Symbol identifying the reason for failure.
   # @example
@@ -467,5 +507,4 @@ module CryptIdent
   def session_expired?
     # To be implemented.
   end
-  # rubocop:enable Lint/UnusedMethodArgument FIXME: Kill this when completed.
 end

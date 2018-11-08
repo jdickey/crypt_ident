@@ -18,8 +18,12 @@ require 'hanami/controller'
 require 'hanami/action/session'
 require 'hanami/model'
 
-Reporter = Minitest::Reporters::HtmlReporter
-ReporterArgs = { reports_dir: 'tmp/test_reports' }.freeze
+# Reporter = Minitest::Reporters::DefaultReporter
+# ReporterArgs = { slow_count: 5, slow_suite_count: 3 }
+# Reporter = Minitest::Reporters::HtmlReporter
+# ReporterArgs = { reports_dir: 'tmp/test_reports' }
+Reporter = Minitest::Reporters::SpecReporter
+ReporterArgs = {}
 Minitest::Reporters.use! Reporter.new(ReporterArgs)
 
 SimpleCov.start do
