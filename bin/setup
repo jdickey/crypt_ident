@@ -88,7 +88,7 @@ gem install --ignore-dependencies \
     parser:2.5.1.2 \
     powerpack:0.1.2 \
     pry-byebug:3.6.0 \
-    pry-doc:0.13.4 \
+    pry-doc:0.13.5 \
     rainbow:3.0.0 \
     reek:5.2.0 \
     unicode-display_width:1.4.0 \

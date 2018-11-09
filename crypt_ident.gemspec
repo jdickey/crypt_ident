@@ -50,7 +50,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'minitest-reporters', '1.3.5'
   spec.add_development_dependency 'minitest-tagz', '1.6.0'
   spec.add_development_dependency 'pry-byebug', '3.6.0'
-  spec.add_development_dependency 'pry-doc', '0.13.4'
+  spec.add_development_dependency 'pry-doc', '0.13.5'
   spec.add_development_dependency 'reek', '5.2.0'
   spec.add_development_dependency 'rubocop', '0.60.0'
   spec.add_development_dependency 'simplecov', '0.16.1'
