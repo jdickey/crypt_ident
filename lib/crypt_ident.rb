@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'bcrypt'
+
 require 'crypt_ident/version'
 
 require_relative './crypt_ident/config'
@@ -159,9 +161,31 @@ module CryptIdent
   #   - Repository
   #   - User
   #
+  # Reek sees a :reek:ControlParameter in `repo`. Oh, well.
+  # FIXME: Reek also sees :reek:TooManyStatements. Break this out/up.
+  # rubocop:disable all # FIXME: Remove when complete.
   def sign_up(attribs, current_user:, repo: nil, on_error: nil, &on_success)
-    # To be implemented.
+    return :current_user_exists if current_user && !current_user.guest_user?
+
+    ci_config = CryptIdent.configure_crypt_ident
+    repository = repo || ci_config.repository
+    password = attribs[:password].to_s.strip
+    require 'securerandom'
+    password = SecureRandom.urlsafe_base64(64) if password.empty?
+    password_hash = ::BCrypt::Password.create(password)
+    all_attribs = { password_hash: password_hash }.merge(attribs)
+    record = nil
+    success = false
+    begin
+      record = repository.create(all_attribs)
+      success = true
+    rescue Hanami::Model::UniqueConstraintViolationError
+      record = :user_already_created
+    end
+    yield record, ci_config if success && block_given?
+    record
   end
+  # rubocop:enable all # FIXME: Remove when complete.
 
   # Attempt to Authenticate a User, passing in an Entity for that User (which
   # **must** contain a `password_hash` attribute), and a Clear-Text Password.

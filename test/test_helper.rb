@@ -15,6 +15,7 @@ tags << 'focus'
 Minitest::Tagz.choose_tags(*tags, run_all_if_no_match: true)
 
 require 'hanami/controller'
+require 'hanami/action'
 require 'hanami/action/session'
 require 'hanami/model'
 
@@ -50,6 +51,10 @@ class User < Hanami::Entity
     attribute :created_at, Types::Time.default { Time.now }
     attribute :updated_at, Types::Time.default { Time.now }
   end
+
+  def guest_user?
+    @attributes[:id] && @attributes[:id] < 1
+  end
 end
 
 class UserRepository
@@ -76,11 +81,19 @@ class UserRepository
     @records = {}
   end
 
+  # Returns nil if named user already in repo
   def create(data)
-    attribs = { id: next_id }.merge data.to_h
+    unless find_by_name(data.to_h[:name]).empty?
+      message = 'PG::UniqueViolation: ERROR:  ' \
+        'duplicate key value violates unique constraint "users_name_key"' \
+        "\nDETAIL: Key(name)=(#{data.to_h[:name]}) already exists."
+      raise Hanami::Model::UniqueConstraintViolationError, message
+    end
+    extra_attribs = { id: @next_id, created_at: Time.now, updated_at: Time.now }
+    attribs = extra_attribs.merge data.to_h
     record = User.new attribs
     @records[next_id] = record
-    next_id += 1
+    @next_id += 1
     record
   end
 
@@ -103,6 +116,10 @@ class UserRepository
 
   def find(id)
     records[id]
+  end
+
+  def find_by_name(name)
+    records.values.select { |other| other.name == name }
   end
 
   def first
