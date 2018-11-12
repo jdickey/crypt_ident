@@ -174,16 +174,22 @@ module CryptIdent
     password = SecureRandom.urlsafe_base64(64) if password.empty?
     password_hash = ::BCrypt::Password.create(password)
     all_attribs = { password_hash: password_hash }.merge(attribs)
-    record = nil
+    result = nil
     success = false
     begin
-      record = repository.create(all_attribs)
+      result = repository.create(all_attribs)
       success = true
     rescue Hanami::Model::UniqueConstraintViolationError
-      record = :user_already_created
+      result = :user_already_created
+    rescue Hanami::Model::Error
+      result = :user_creation_failed
     end
-    yield record, ci_config if success && block_given?
-    record
+    if success
+      yield result, ci_config if block_given?
+    else
+      on_error.call(result, ci_config) if on_error
+    end
+    result
   end
   # rubocop:enable all # FIXME: Remove when complete.
 

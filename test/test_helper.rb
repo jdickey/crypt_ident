@@ -19,22 +19,24 @@ require 'hanami/action'
 require 'hanami/action/session'
 require 'hanami/model'
 
-if ENV['HTML_REPORTS']
-  Reporter = Minitest::Reporters::HtmlReporter
-  ReporterArgs = { reports_dir: 'tmp/test_reports' }
-else
-  Reporter = Minitest::Reporters::SpecReporter
-  ReporterArgs = {}
-end
-# Reporter = Minitest::Reporters::DefaultReporter
-# ReporterArgs = { slow_count: 5, slow_suite_count: 3 }
+reporter_name = ENV['REPORTER'] || 'SpecReporter'
+reporter_name = 'minitest/reporters/' + reporter_name
+reporter_name = Hanami::Utils::String.classify(reporter_name)
+Reporter = Hanami::Utils::Class.load(reporter_name)
+AllReporterArgs = {
+  Minitest::Reporters::DefaultReporter => {
+    slow_count: 5,
+    slow_suite_count: 3
+  },
+  Minitest::Reporters::HtmlReporter => { reports_dir: 'tmp/test_reports' }
+}
+ReporterArgs = AllReporterArgs.fetch(Reporter, {})
 Minitest::Reporters.use! Reporter.new(ReporterArgs)
 
 SimpleCov.start do
   coverage_dir './tmp/coverage'
   add_filter '/lib/tasks/'
   add_filter '/tmp/gemset/'
-  # self.formatters = SimpleCov::Formatter::HTMLFormatter
 end
 
 require 'crypt_ident'
@@ -81,7 +83,6 @@ class UserRepository
     @records = {}
   end
 
-  # Returns nil if named user already in repo
   def create(data)
     unless find_by_name(data.to_h[:name]).empty?
       message = 'PG::UniqueViolation: ERROR:  ' \
@@ -92,7 +93,7 @@ class UserRepository
     extra_attribs = { id: @next_id, created_at: Time.now, updated_at: Time.now }
     attribs = extra_attribs.merge data.to_h
     record = User.new attribs
-    @records[next_id] = record
+    @records[@next_id] = record
     @next_id += 1
     record
   end
@@ -111,15 +112,15 @@ class UserRepository
   end
 
   def all
-    records.values.sort_by(&:id)
+    @records.values.sort_by(&:id)
   end
 
   def find(id)
-    records[id]
+    @records[id]
   end
 
   def find_by_name(name)
-    records.values.select { |other| other.name == name }
+    @records.values.select { |other| other.name == name }
   end
 
   def first
@@ -133,10 +134,6 @@ class UserRepository
   def clear
     @records = {}
   end
-
-  private
-
-  attr_reader :next_id, :records
 end
 
 class Login

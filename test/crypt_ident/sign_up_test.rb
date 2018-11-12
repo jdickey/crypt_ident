@@ -5,6 +5,13 @@ require 'test_helper'
 include CryptIdent
 
 describe 'CryptIdent#sign_up' do
+  let(:existing) do
+    attribs = valid_input_params
+    password_hash = ::BCrypt::Password.create(attribs[:password])
+    all_attribs = { password_hash: password_hash }.merge(valid_input_params)
+    repo.create(all_attribs)
+  end
+  let(:params) { { repo: repo, current_user: nil } }
   let(:repo) { UserRepository.new }
   let(:valid_input_params) do
     { name: 'J Random User', password: 'Suitably Entropic Password!' }
@@ -21,7 +28,6 @@ describe 'CryptIdent#sign_up' do
 
     it 'yields the expected parameters to the block' do
       saved = {}
-      params = { repo: repo, current_user: nil }
       ret_user = sign_up(valid_input_params, params) do |user, conf|
         saved = { conf: conf, user: user }
       end
@@ -31,7 +37,6 @@ describe 'CryptIdent#sign_up' do
 
     describe 'when a Password is specified' do
       it 'the User can Authenticate correctly' do
-        params = { repo: repo, current_user: nil }
         user = sign_up(valid_input_params, params)
         # FIXME: Rewrite using #sign_in when working
         actual = user.password_hash == valid_input_params[:password]
@@ -41,7 +46,6 @@ describe 'CryptIdent#sign_up' do
 
     describe 'Encrypts a random Password value when input is' do
       let(:input_params) { valid_input_params }
-      let(:params) { { repo: repo, current_user: nil } }
 
       it 'not supplied, aka nil' do
         input_params.delete :password
@@ -68,14 +72,6 @@ describe 'CryptIdent#sign_up' do
   end # describe 'with no Authenticated Current User and valid attributes'
 
   describe 'with an existing User having the same :name attribute' do
-    let(:existing) do
-      attribs = valid_input_params
-      password_hash = ::BCrypt::Password.create(attribs[:password])
-      all_attribs = { password_hash: password_hash }.merge(valid_input_params)
-      repo.create(all_attribs)
-    end
-    let(:params) { { repo: repo, current_user: nil } }
-
     before { _ = existing }
 
     it 'returns :user_already_created from the method' do
@@ -99,12 +95,6 @@ describe 'CryptIdent#sign_up' do
   end # describe 'with an existing User having the same :name attribute'
 
   describe 'with an Authenticated Current User' do
-    let(:existing) do
-      attribs = valid_input_params
-      password_hash = ::BCrypt::Password.create(attribs[:password])
-      all_attribs = { password_hash: password_hash }.merge(valid_input_params)
-      repo.create(all_attribs)
-    end
     let(:params) { { repo: repo, current_user: existing } }
 
     it 'returns :current_user_exists from the method' do
@@ -115,11 +105,13 @@ describe 'CryptIdent#sign_up' do
 
     it 'does not call the block supplied to the method' do
       valid_input_params[:name] = 'N Other User'
+      block_called = false
       # :nocov:
       actual = sign_up(valid_input_params, params) do |_, _|
-        fail 'Block should not be called'
+        block_called = true
       end
       # :nocov:
+      expect(block_called).must_equal false
     end
 
     it 'does not change the contents of the Repository' do
@@ -132,10 +124,58 @@ describe 'CryptIdent#sign_up' do
   end # describe 'with an Authenticated Current User'
 
   describe 'if the new User could not be created in the Repository' do
-    it 'returns :user_creation_failed from the method'
+    let(:actual) { sign_up(valid_input_params, params) }
 
-    it 'does not call the block supplied to the method'
+    before do
+      repo.define_singleton_method :create do |data|
+        raise Hanami::Model::Error, 'Something broke. Oh, well.'
+      end
+    end
 
-    it 'does not change the contents of the Repository'
+    it 'returns :user_creation_failed from the method' do
+      expect(actual).must_equal :user_creation_failed
+    end
+
+    it 'does not call the block supplied to the method' do
+      block_called = false
+      # :nocov:
+      sign_up(valid_input_params, params) do |_, _|
+        block_called = true
+      end
+      # :nocov:
+      expect(block_called).must_equal false
+    end
+
+    it 'does not change the contents of the Repository' do
+      sign_up(valid_input_params, params)
+      expect(repo.all.count).must_be :zero?
+    end
   end # describe 'if the new User could not be created in the Repository'
+
+  describe 'when no :repo parameter is specified' do
+    it 'uses the :repository from the configuration object' do
+      user = sign_up(valid_input_params, current_user: nil)
+      repo = CryptIdent.configure_crypt_ident.repository
+      expect(repo.all.count).must_equal 1
+      expect(repo.last).must_equal user
+    end
+  end # describe 'when no :repo parameter is specified'
+
+  describe 'when an :on_error handler is specified' do
+    it 'and no error is encountered' do
+      proc_called = false
+      on_error = Proc.new { |_error, _config| proc_called = true }
+      user = sign_up(valid_input_params, current_user: nil, on_error: on_error)
+      expect(proc_called).must_equal false
+    end
+
+    it 'and an error is encountered' do
+      _ = existing
+      proc_called = false
+      on_error = Proc.new { |_error, _config| proc_called = true }
+      params = { current_user: nil, on_error: on_error, repo: repo }
+      user = sign_up(valid_input_params, params)
+      expect(proc_called).must_equal true
+    end
+  end # describe 'when an :on_error handler is specified'
 end
