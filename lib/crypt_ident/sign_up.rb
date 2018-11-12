@@ -26,15 +26,6 @@ module CryptIdent
       result
     end
 
-    # Reek sees a :reek:NilCheck in the `on_error` call. Yep.
-    def call_block_with_result(on_error)
-      if success
-        yield
-      else
-        on_error&.call(result, ci_config)
-      end
-    end
-
     private
 
     attr_reader :ci_config, :result, :success
@@ -42,6 +33,15 @@ module CryptIdent
     def all_attribs(attribs)
       password_hash = hashed_password(attribs[:password])
       { password_hash: password_hash }.merge(attribs)
+    end
+
+    # Reek sees a :reek:NilCheck in the `on_error` call. Yep.
+    def call_block_with_result(on_error)
+      if success
+        yield
+      else
+        on_error&.call(result, ci_config)
+      end
     end
 
     def config_with_repo(repo)
