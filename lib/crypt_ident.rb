@@ -5,6 +5,7 @@ require 'bcrypt'
 require 'crypt_ident/version'
 
 require_relative './crypt_ident/config'
+require_relative './crypt_ident/sign_up'
 
 # Include and interact with `CryptIdent` to add authentication to a
 # Hanami controller action.
@@ -135,8 +136,8 @@ module CryptIdent
   #               specified in the Configuration should be used.
   # @param [Method, Proc, `nil`] on_error The method or Proc to be called in
   #               case of an error, or `nil` if none is defined.
-  # @param [Block] on_success Block containing code to be called on success; see
-  #               earlier description.
+  # @param [Block] _on_success Block containing code to be called on success;
+  #               see earlier description.
   # @return [User, Symbol] Entity representing created User on success, or a
   #               Symbol identifying the reason for failure.
   # @example
@@ -161,37 +162,13 @@ module CryptIdent
   #   - Repository
   #   - User
   #
-  # Reek sees a :reek:ControlParameter in `repo`. Oh, well.
-  # FIXME: Reek also sees :reek:TooManyStatements. Break this out/up.
-  # rubocop:disable all # FIXME: Remove when complete.
-  def sign_up(attribs, current_user:, repo: nil, on_error: nil, &on_success)
+  def sign_up(attribs, current_user:, repo: nil, on_error: nil, &_on_success)
     return :current_user_exists if current_user && !current_user.guest_user?
 
-    ci_config = CryptIdent.configure_crypt_ident
-    repository = repo || ci_config.repository
-    password = attribs[:password].to_s.strip
-    require 'securerandom'
-    password = SecureRandom.urlsafe_base64(64) if password.empty?
-    password_hash = ::BCrypt::Password.create(password)
-    all_attribs = { password_hash: password_hash }.merge(attribs)
-    result = nil
-    success = false
-    begin
-      result = repository.create(all_attribs)
-      success = true
-    rescue Hanami::Model::UniqueConstraintViolationError
-      result = :user_already_created
-    rescue Hanami::Model::Error
-      result = :user_creation_failed
+    SignUp.new(repo).call(attribs, on_error: on_error) do |user, ci_conf|
+      yield user, ci_conf if block_given?
     end
-    if success
-      yield result, ci_config if block_given?
-    else
-      on_error.call(result, ci_config) if on_error
-    end
-    result
   end
-  # rubocop:enable all # FIXME: Remove when complete.
 
   # Attempt to Authenticate a User, passing in an Entity for that User (which
   # **must** contain a `password_hash` attribute), and a Clear-Text Password.

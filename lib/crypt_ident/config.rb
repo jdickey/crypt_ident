@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'hanami/entity'
-require 'pry-byebug'
 
 # Configuration info for CryptIdent.
 #
