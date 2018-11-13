@@ -172,49 +172,60 @@ module CryptIdent
 
   # Attempt to Authenticate a User, passing in an Entity for that User (which
   # **must** contain a `password_hash` attribute), and a Clear-Text Password.
-  # It also passes in the Current User; if an Authenticated User, then the call
-  # will fail immediately, otherwise, the password match will be attempted.
+  # It also passes in the Current User.
   #
-  # On *success:*
+  # If the Current User is a User *other than* the Guest User or the User Entity
+  # passed in, the method returns `nil`. Otherwise, the User Entity's
+  # `password_hash` attribute is used to attempt a match against the passed-in
+  # Clear-Text Password. If and only if a match is determined, the method
+  # returns the passed-in User Entity, indicating success. Otherwise, the method
+  # returns `nil`.
   #
-  # * `session[:start_time]` is set to the current time as returned by
-  #   `Time.now` when called from within the method;
-  # * `session[:current_user]` is set to tne *Entity* (not the ID value from the
-  #   Repository) for the successfully-Authenticated User. This is to eliminate
-  #   repeated reads of the Repository.
+  # On *success,* the Controller-level client code **must** set:
   #
-  # On *failure:*
+  # * `session[:start_time]` to the current time as returned by `Time.now`;
+  # * `session[:current_user]` to tne returned *Entity* for the successfully
+  #   Authenticated User. This is to eliminate possible repeated reads of the
+  #   Repository.
   #
-  # * `session[:start_time]` is set to `0000-01-01 00:00:00 +0000` (which should
-  #   *always* trigger `#session_expired?`)
-  # * `session[:current_user]` is set to `config.guest_user`
+  # On *failure,* the Controller-level client code **should** set:
   #
-  # If a *different User* is Authenticated (as evidenced by
-  # `session[:current_user]`), then `sign_in` returns `false` and the `session`
-  # data remains unchanged.
+  # * `session[:start_time]` to some sufficiently-past time to *always* trigger
+  #   `#session_expired?`; `Hanami::Utils::Kernel.Time(0)` does this quite well
+  #   (returning midnight GMT on 1 January 1970, converted to local time).
+  # * `session[:current_user]` to `nil` or the Guest User.
   #
-  # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
-  # @authenticated Must not be authenticated.
-  # @param [Object] user Entity representing a User to be Authenticated;
+  # @authenticated Must not be Authenticated as a different User.
+  # @param [User] user Entity representing a User to be Authenticated.
   # @param [String] password Claimed Clear-Text Password for the specified User.
-  # @return [Boolean]
-  # @example
+  # @param [User, nil] current_user Entity representing the currently
+  #               Authenticated User Entity; either `nil` or the Guest User if
+  #               none.
+  # @return [User, nil] See method descriptive text.
+  # @example As in a Controller Action Class (which you'd refactor somewhat):
   #   def call(params)
-  #     config = CryptIdent::configure_crypt_ident
   #     user = UserRepository.new.find_by_email(params[:email])
-  #     @user = user || @config.guest_user
-  #     return false unless user
-  #     signed_in = sign_in(@user, params[:password],
-  #                         current_user: @current_user)
-  #     session[:current_user] = signed_in ? @user : @config.guest_user
-  #     session[:start_time] = signed_in ? Time.now : Time.new(0)
+  #     guest_user = CryptIdent::configure_crypt_ident.guest_user
+  #     return update_session_data(guest_user, 0) unless user
+  #
+  #     @user = sign_in(user, params[:password],
+  #                     current_user: session[:current_user])
+  #     if @user
+  #       update_session_data(@user, Time.now)
+  #     else
+  #       update_session_data(guest_user, 0)
+  #     end
+  #   end
+  #
+  #   private
+  #
+  #   def update_session_data(user, time)
+  #     session[:current_user] = user
+  #     session[:start_time] == Hanami::Utils::Kernel.Time(time)
   #   end
   # @session_data
   #   `:current_user` **must not** be other than `nil` or the Guest User.
-  #
-  #   `:start_time` is set to either the current time (on success) or the
-  #     distant past (on failure)
   # @ubiq_lang
   #   - Authenticated User
   #   - Authentication
@@ -223,7 +234,7 @@ module CryptIdent
   #   - Guest User
   #   - Repository
   #
-  def sign_in(user, password)
+  def sign_in(user, password, current_user: nil)
     # To be implemented.
   end
 

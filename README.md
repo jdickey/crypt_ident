@@ -167,7 +167,7 @@ If the specified `:name` attribute exists in a record within the Repository, the
 
 If the Repository method `#create` returned an error, then the call will fail and the returned error ID will be `:user_creation_failed`.
 
-### Signing In -- TODO: FIXME
+### Signing In
 
 #### Overview
 
@@ -175,32 +175,33 @@ Method involved:
 
 ```ruby
   module CryptIdent
-    def sign_in(params, current_user:, repo: nil, on_error: nil, &on_success)
+    def sign_in(user, password, current_user: nil)
       # ...
     end
-
+  end
 ```
 
+Once a User has been [Registered](#registration), Signing In is a matter of retrieving that user's Entity (containing a `password_hash` attribute) and calling `#sign_in` passing in that Entity, the purported Clear-Text Password, and the currently Authenticated User (if any), then seeing what the return value is.
 
-Once a user has been [Registered](#registration), signing in is a matter of retrieving that user's Entity (containing a `password_hash` attribute) and calling `#sign_in` passing in that Entity and the supplied clear-text password, and seeing what the return value is.
+If the passed-in `current_user` is a User Entity *other than* the specified `user` Entity *or* the Guest User, no match will be attempted, and the method will return `:current_user_exists`. (A value of `nil` is treated as equivalent to the Guest User.)
 
-If the supplied clear-text password is *incorrect*, then `#sign_in` will return `nil`.
+If the supplied Clear-Text Password is *incorrect*, then `#sign_in` will return `nil`.
 
-If it is *correct*, then the return value will be `true`.
+If it is *correct*, then the return value will be a User Entity with the same attributes as the one passed in.
 
-**Note that** `#sign_in` interacts with session data if available. (In unit tests, it often is not.) Specifically:
+**Note that** this method **does not** interact with a Repository, and therefore doesn't need to account for an invalid User Name parameter, for instance. Nor does it modify session data, although the associated Controller Action Class code **must** set `session[:current_user]` and `session[:start_time]` as below.
 
-On *success*:
+On *success*, the Controller Action Class calling code **must** set:
 
-* `session[:start_time]` is set to the current time as returned by `Time.now` when called from within the method;
-* `session[:current_user]` is set to the *Entity* (not the ID value from the Repository) for the now-logged-in user.  This is to eliminate repeated reads of the Repository.
+* `session[:start_time]` to the current time as returned by `Time.now`; and
+* `session[:current_user]` to the *Entity* (not the ID value from the Repository) for the newly-Authenticated User.  This is to eliminate repeated reads of the Repository.
 
-On *failure*:
+On *failure*, the Controller Action Class calling code **must** set:
 
-* `session[:start_time]` is set to `0000-01-01 00:00:00 +0000`;
-* `session[:current_user]` is set to [`config.guest_user`](#configuration).
+* `session[:start_time]` to some sufficiently-past time to *always* trigger `#session_expired?`; `Hanami::Utils::Kernel.Time(0)` does this quite well, returning midnight GMT on 1 January 1970, converted to local time.
+* `session[:current_user]` to `nil` or to the Guest User (see [_Configuration_](#configuration)).
 
-If a *different user* is logged in (as evidenced by `session[:current_user]`), then `#sign_in` returns `false` and the `session` data remains unchanged.
+*However*, the developer is again reminded that this method **does not** manipulate `session` data directly.
 
 ### Signing Out -- TODO: FIXME
 
