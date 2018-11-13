@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
+require 'bcrypt'
+
 require 'crypt_ident/version'
+
+require_relative './crypt_ident/config'
+require_relative './crypt_ident/sign_up'
 
 # Include and interact with `CryptIdent` to add authentication to a
 # Hanami controller action.
@@ -13,6 +18,9 @@ require 'crypt_ident/version'
 # @version 0.1.0
 # FIXME: Disable :reek:UnusedParameters; we have not yet added code.
 module CryptIdent
+  include Hanami::Utils::ClassAttribute
+  class_attribute :cryptid_config
+
   # Set configuration information at the class (actually, module) level.
   #
   # **IMPORTANT:** Even though we follow time-honoured convention
@@ -28,42 +36,121 @@ module CryptIdent
   #
   # @since 0.1.0
   # @authenticated Irrelevant; normally called during framework setup.
-  # @return (void)
+  # @return {CryptIdent::Config}
   # @example
-  #   CryptIdent.configure_crypt_ident do |config|
-  #     config.repository = MainApp::Repositories::User.new
-  #     config.error_key = :alert
-  #     config.hashing_cost = 6 # less secure and less resource-intensive
-  #     config.token_bytes = 20
-  #     config.reset_expiry = 7200 # two hours; "we run a tight ship here"
-  #     config.guest_user = UserRepository.new.guest_user
+  #   CryptIdent.configure_crypt_ident do |config| # show defaults
+  #     config.error_key = :error
+  #     config.guest_user = nil
+  #     config.hashing_cost = 8
+  #     config.repository = UserRepository.new
+  #     config.guest_user = config.repository.guest_user
+  #     config.reset_expiry = (24 * 60 * 60)
+  #     config.session_expiry = 900
+  #     config.success_key = :success
+  #     config.token_bytes = 16
   #   end
   # @session_data Irrelevant; normally called during framework setup.
   # @ubiq_lang None; only related to demonstrated configuration settings.
+  # @yieldparam [Struct] config Mutable Struct initialised to default config.
+  # @yieldreturn [void]
+  def self.configure_crypt_ident
+    config = _starting_config
+    yield config if block_given?
+    @cryptid_config = Config.new(config.to_h)
+  end
+
+  # Get initial config settings for `.configure_crypt_ident`.
   #
-  def self.configure_crypt_ident(&block)
-    # To be implemented.
+  # This exists solely to get Flog's score down into the single digits.
+  #
+  # @private
+  # @since 0.1.0
+  # @return {CryptIdent::Config}
+  def self._starting_config
+    starting_config = @cryptid_config || Config.new
+    hash = starting_config.to_h
+    Struct.new(*hash.keys).new(*hash.values)
+  end
+
+  # Reset configuration information to default values.
+  #
+  # This **should** primarily be used during testing, and would normally be run
+  # from a `before` block for a test suite.
+  #
+  # @since 0.1.0
+  # @authenticated Irrelevant; normally called during framework setup.
+  # @return {CryptIdent::Config}
+  # @example Show how a modified configuration value is reset.
+  #   CryptIdent.configure_crypt_ident do |config|
+  #     config.hashing_cost = 20 # default 8
+  #   end
+  #   # ...
+  #   foo = CryptIdent.configure_crypt_ident.hashing_cost # 20
+  #   # ...
+  #   CryptIdent.reset_crypt_ident_config
+  #   foo == CryptIdent.configure_crypt_ident.hashing_cost # default, 8
+  # @session_data Irrelevant; normally called during testing
+  # @ubiq_lang None; only related to demonstrated configuration settings.
+  def self.reset_crypt_ident_config
+    self.cryptid_config = Config.new
   end
 
   ############################################################################ #
 
-  # Build a Hash of attributes suitable for instantiating and persisting an
-  # Entity, with a `:hashed_password` attribute containing the encrypted value
-  # of the Clear-Text Password passed in as a parameter.
+  # Persist a new User to a Repository based on passed-in attributes, with a
+  # `:password_hash` attribute containing the encrypted value of the Clear-Text
+  # Password passed in as the `password` attribute.
+  #
+  # On success, the block is yielded to with two parameters: `user`, an Entity
+  # representing the contents of the newly-added record in the Repository, and
+  # `cryptid_config`, which contains the data in the CryptIdent configuration,
+  # such as `success_key` and `error_key`. Any value returned from the block *is
+  # not* preserved. Rather, the method returns the same Entity passed into the
+  # block as `user`. The block **should** assign to the exposed `@user` instance
+  # variable, as well as any other side-effects (logging, etc) that are
+  # appropriate.
+  #
+  # On failure, the block *is not* yielded to, and the method returns a Symbol
+  # designating the cause of the failure. This will be one of the following:
+  #
+  # * If `#sign_up` was called with a `current_user` parameter that was not
+  #   `nil` or the Guest User, it returns `:current_user_exists`;
+  # * If the specified `name` attribute value matches a record that already
+  #   exists in the Repository, the return value is `:user_already_created`;
+  # * If a record containing the specified attributes could not be created in
+  #   the Repository, this method returns `:user_creation_failed`.
   #
   # @since 0.1.0
   # @authenticated Must not be authenticated.
-  # @param [Hash] other_params Hash of Entity attributes *not* including
-  #               any password attributes.
-  # @param [String] password New Clear-Text Password to encrypt and add to
-  #                 return value
-  # @return [Hash] Entity attributes, including encrypted `password_hash`.
+  # @param [Hash] attribs Hash-like object of attributes for new User Entity and
+  #               record, confirming to
+  #               **Must** include `name` and `password` as well as any other
+  #               attributes required by the underlying database schema, as well
+  #               as a (clear-text) `password` attribute which will be replaced
+  #               in the created Entity/record by a `password_hash` attribute.
+  # @param [String] current_user Entity representing the current Authenticated
+  #               User, or the Guest User. A value of `nil` is treated as though
+  #               the Guest User had been specified.
+  # @param [Hanami::Repository] repo Repository to be used for accessing User
+  #               data. A value of `nil` indicates that the default Repository
+  #               specified in the Configuration should be used.
+  # @param [Method, Proc, `nil`] on_error The method or Proc to be called in
+  #               case of an error, or `nil` if none is defined.
+  # @param [Block] _on_success Block containing code to be called on success;
+  #               see earlier description.
+  # @return [User, Symbol] Entity representing created User on success, or a
+  #               Symbol identifying the reason for failure.
   # @example
-  #   def call(params) # #valid? has already returned `true`
-  #     password = params[:password]
-  #     others = params.reject { |k, _| k == :password }
-  #     attribs = add_password(others, password)
-  #     config.repo.create(attribs)
+  #   def call(_params)
+  #     call_params = { current_user: session[:current_user],
+  #                 on_error: method(:report_errors) }.merge(params.to_h)
+  #     sign_up(call_params) do |user, cryptident_config|
+  #       @user = user
+  #       session[:current_user] = user
+  #       message = "#{user.name} successfully created. You may sign in now."
+  #       flash[cryptident_config.success_key] = message
+  #       redirect_to routes.root_path
+  #     end
   #   end
   # @session_data
   #   `:current_user` **must not** be other than `nil` or the Guest User.
@@ -72,13 +159,21 @@ module CryptIdent
   #   - Clear-Text Password
   #   - Entity
   #   - Guest User
+  #   - Repository
+  #   - User
   #
-  def add_password(other_params, password)
-    # To be implemented.
+  def sign_up(attribs, current_user:, repo: nil, on_error: nil, &_on_success)
+    return :current_user_exists if current_user && !current_user.guest_user?
+
+    SignUp.new(repo).call(attribs, on_error: on_error) do |user, ci_conf|
+      yield user, ci_conf if block_given?
+    end
   end
 
   # Attempt to Authenticate a User, passing in an Entity for that User (which
   # **must** contain a `password_hash` attribute), and a Clear-Text Password.
+  # It also passes in the Current User; if an Authenticated User, then the call
+  # will fail immediately, otherwise, the password match will be attempted.
   #
   # On *success:*
   #
@@ -98,25 +193,22 @@ module CryptIdent
   # `session[:current_user]`), then `sign_in` returns `false` and the `session`
   # data remains unchanged.
   #
+  # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
   # @authenticated Must not be authenticated.
   # @param [Object] user Entity representing a User to be Authenticated;
   # @param [String] password Claimed Clear-Text Password for the specified User.
   # @return [Boolean]
   # @example
-  #   def initialize(config)
-  #     @config = config
-  #   end
-  #
   #   def call(params)
-  #     true
-  #   end
-  #
-  #   def valid?(params)
+  #     config = CryptIdent::configure_crypt_ident
   #     user = UserRepository.new.find_by_email(params[:email])
   #     @user = user || @config.guest_user
   #     return false unless user
-  #     sign_in(@user, params[:password])
+  #     signed_in = sign_in(@user, params[:password],
+  #                         current_user: @current_user)
+  #     session[:current_user] = signed_in ? @user : @config.guest_user
+  #     session[:start_time] = signed_in ? Time.now : Time.new(0)
   #   end
   # @session_data
   #   `:current_user` **must not** be other than `nil` or the Guest User.
@@ -147,6 +239,7 @@ module CryptIdent
   #
   # In neither case is any data but the `session` values affected.
   #
+  # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
   # @authenticated Must be authenticated.
   # @return [Boolean]
@@ -193,10 +286,11 @@ module CryptIdent
   # If the new Clear-Text Password and its confirmation match, then the
   # *encrypted value* of that new Password is returned, and the
   # `session[:current_user]` Entity is replaced with an Entity identical
-  # except that it has the new encrypted value for `hashed_password`. The entry
-  # in the Repository for the current User has also been updated to include the
-  # new Encrypted Password.
+  # except that it has the new encrypted value for `password_hash`. The entry in
+  # the Repository for the current User has also been updated to include the new
+  # Encrypted Password.
   #
+  # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
   # @authenticated Must be authenticated.
   # @param [String] current_password The current Clear-Text Password for the
@@ -321,6 +415,7 @@ module CryptIdent
   # In no event are session values, including the Current User, changed. After a
   # successful Password Reset, the User must Authenticate as usual.
   #
+  # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
   # @authenticated Must not be authenticated.
   # @param [String] token The Password Reset Token previously communicated to
@@ -369,6 +464,7 @@ module CryptIdent
   # Restart the Session Expiration timestamp mechanism, to avoid prematurely
   # signing out a User.
   #
+  # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
   # @authenticated Must be authenticated.
   # @return (void)
@@ -398,6 +494,7 @@ module CryptIdent
   # Will return `false` if `session[:current_user]` is `nil` or has the value
   # specified by `config.guest_user`.
   #
+  # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
   # @authenticated Must be authenticated.
   # @return [Boolean]
