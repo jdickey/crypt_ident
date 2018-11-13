@@ -5,6 +5,7 @@ require 'bcrypt'
 require 'crypt_ident/version'
 
 require_relative './crypt_ident/config'
+require_relative './crypt_ident/sign_in'
 require_relative './crypt_ident/sign_up'
 
 # Include and interact with `CryptIdent` to add authentication to a
@@ -174,12 +175,21 @@ module CryptIdent
   # **must** contain a `password_hash` attribute), and a Clear-Text Password.
   # It also passes in the Current User.
   #
+  # If the Current User is either `nil` or the Guest User, then Authentication
+  # of the specified User Entity against the specified Password proceeds as
+  # follows: The User Entity's `password_hash` attribute is used to attempt a
+  # match against the passed-in Clear-Text Password. If and only if a match is
+  # determined, the passed-in User Entity is returned, indicating success.
+  # Otherwise, the method returns `nil`.
+  #
+  # If the Current User is the *same* User as that in the specified User Entity
+  # (as compared by their attributes being equal), then Authentication proceeds
+  # normally; if the incorrect Password is specified, the method will return
+  # `nil` (and its client code can determine what to do from there).
+  #
   # If the Current User is a User *other than* the Guest User or the User Entity
-  # passed in, the method returns `nil`. Otherwise, the User Entity's
-  # `password_hash` attribute is used to attempt a match against the passed-in
-  # Clear-Text Password. If and only if a match is determined, the method
-  # returns the passed-in User Entity, indicating success. Otherwise, the method
-  # returns `nil`.
+  # passed in, the method returns `nil` without attempting to Authenticate the
+  # Clear-Text Password.
   #
   # On *success,* the Controller-level client code **must** set:
   #
@@ -232,10 +242,13 @@ module CryptIdent
   #   - Clear-Text Password
   #   - Entity
   #   - Guest User
-  #   - Repository
+  #   - User
   #
+  # ----
+  #
+  # Reek complains that this is a :reek:UtilityFunction. No state needed.
   def sign_in(user, password, current_user: nil)
-    # To be implemented.
+    SignIn.new.call(user: user, password: password, current_user: current_user)
   end
 
   # Sign out a previously Authenticated User.

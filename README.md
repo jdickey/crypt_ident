@@ -183,13 +183,29 @@ Method involved:
 
 Once a User has been [Registered](#registration), Signing In is a matter of retrieving that user's Entity (containing a `password_hash` attribute) and calling `#sign_in` passing in that Entity, the purported Clear-Text Password, and the currently Authenticated User (if any), then seeing what the return value is.
 
-If the passed-in `current_user` is a User Entity *other than* the specified `user` Entity *or* the Guest User, no match will be attempted, and the method will return `:current_user_exists`. (A value of `nil` is treated as equivalent to the Guest User.)
+#### Successfully Signing In
 
-If the supplied Clear-Text Password is *incorrect*, then `#sign_in` will return `nil`.
+While no Authenticated Member currently exists (as shown by the `session[:current_user]` having a value of either `nil` or the Guest User), supplying a User Entity and the correct Clear-Text Password for that User to a call to `#sign_in` will produce the *same* User Entity as a returned value, indicating success.
 
-If it is *correct*, then the return value will be a User Entity with the same attributes as the one passed in.
+Note that this process is unchanged if the passed-in `current_user` is *the same as* the User Entity attempting Authentication. It is up to client code to determine how to proceed if Authentication fails in this case.
 
-**Note that** this method **does not** interact with a Repository, and therefore doesn't need to account for an invalid User Name parameter, for instance. Nor does it modify session data, although the associated Controller Action Class code **must** set `session[:current_user]` and `session[:start_time]` as below.
+#### Error Conditions
+
+##### Incorrect Password Supplied
+
+While no Authenticated Member currently exists (as shown by the `session[:current_user]` having a value of either `nil` or the Guest User), supplying a User Entity and an *incorrect* Clear-Text Password for that User to a call to `#sign_in` will return a value of `nil`, indicating failure.
+
+##### Authenticated User Exists
+
+If the passed-in `current_user` is a User Entity *other than* the specified `user` Entity *or* the Guest User, no match will be attempted, and the method will return `nil`. (A value of `nil` for the `:current_user` parameter is treated as equivalent to the Guest User.)
+
+##### Guest User Attempts Authentication
+
+While no Authenticated Member currently exists (as shown by the `session[:current_user]` having a value of either `nil` or the Guest User), supplying *the Guest User* as the User Entity to be Authenticated will fail without attempting to authenticate any supplied Clear-Text Password.
+
+#### Other Notes
+
+This method **does not** interact with a Repository, and therefore doesn't need to account for an invalid User Name parameter, for instance. Nor does it directly modify session data, although the associated Controller Action Class code **must** set `session[:current_user]` and `session[:start_time]` as below. This is to support extraction of this code (along with anything else not using `Hanami::Controller`-dependent input validation, redirects, flash messages, etc) to an Interactor, into which would be explicitly passed `session[:current_user]`.
 
 On *success*, the Controller Action Class calling code **must** set:
 
@@ -200,8 +216,6 @@ On *failure*, the Controller Action Class calling code **must** set:
 
 * `session[:start_time]` to some sufficiently-past time to *always* trigger `#session_expired?`; `Hanami::Utils::Kernel.Time(0)` does this quite well, returning midnight GMT on 1 January 1970, converted to local time.
 * `session[:current_user]` to `nil` or to the Guest User (see [_Configuration_](#configuration)).
-
-*However*, the developer is again reminded that this method **does not** manipulate `session` data directly.
 
 ### Signing Out -- TODO: FIXME
 

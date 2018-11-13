@@ -294,42 +294,58 @@
 
 <p>If the Repository method <code>#create</code> returned an error, then the call will fail and the returned error ID will be <code>:user_creation_failed</code>.</p>
 
-<h3>Signing In -- TODO: FIXME</h3>
+<h3>Signing In</h3>
 
 <h4>Overview</h4>
 
 <p>Method involved:</p>
 
-<pre class="code ruby"><code class="ruby">  module CryptIdent
-    def sign_in(params, current_user:, repo: nil, on_error: nil, &amp;on_success)
-      # ...
-    end
-
+<pre class="code ruby"><code class="ruby">  <span class='kw'>module</span> <span class='const'><span class='object_link'><a href="CryptIdent.html" title="CryptIdent (module)">CryptIdent</a></span></span>
+    <span class='kw'>def</span> <span class='id identifier rubyid_sign_in'>sign_in</span><span class='lparen'>(</span><span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+      <span class='comment'># ...
+</span>    <span class='kw'>end</span>
+  <span class='kw'>end</span>
 </code></pre>
 
-<p>Once a user has been <a href="#registration">Registered</a>, signing in is a matter of retrieving that user&#39;s Entity (containing a <code>password_hash</code> attribute) and calling <code>#sign_in</code> passing in that Entity and the supplied clear-text password, and seeing what the return value is.</p>
+<p>Once a User has been <a href="#registration">Registered</a>, Signing In is a matter of retrieving that user&#39;s Entity (containing a <code>password_hash</code> attribute) and calling <code>#sign_in</code> passing in that Entity, the purported Clear-Text Password, and the currently Authenticated User (if any), then seeing what the return value is.</p>
 
-<p>If the supplied clear-text password is <em>incorrect</em>, then <code>#sign_in</code> will return <code>nil</code>.</p>
+<h4>Successfully Signing In</h4>
 
-<p>If it is <em>correct</em>, then the return value will be <code>true</code>.</p>
+<p>While no Authenticated Member currently exists (as shown by the <code>session[:current_user]</code> having a value of either <code>nil</code> or the Guest User), supplying a User Entity and the correct Clear-Text Password for that User to a call to <code>#sign_in</code> will produce the <em>same</em> User Entity as a returned value, indicating success.</p>
 
-<p><strong>Note that</strong> <code>#sign_in</code> interacts with session data if available. (In unit tests, it often is not.) Specifically:</p>
+<p>Note that this process is unchanged if the passed-in <code>current_user</code> is <em>the same as</em> the User Entity attempting Authentication. It is up to client code to determine how to proceed if Authentication fails in this case.</p>
 
-<p>On <em>success</em>:</p>
+<h4>Error Conditions</h4>
+
+<h5>Incorrect Password Supplied</h5>
+
+<p>While no Authenticated Member currently exists (as shown by the <code>session[:current_user]</code> having a value of either <code>nil</code> or the Guest User), supplying a User Entity and an <em>incorrect</em> Clear-Text Password for that User to a call to <code>#sign_in</code> will return a value of <code>nil</code>, indicating failure.</p>
+
+<h5>Authenticated User Exists</h5>
+
+<p>If the passed-in <code>current_user</code> is a User Entity <em>other than</em> the specified <code>user</code> Entity <em>or</em> the Guest User, no match will be attempted, and the method will return <code>nil</code>. (A value of <code>nil</code> for the <code>:current_user</code> parameter is treated as equivalent to the Guest User.)</p>
+
+<h5>Guest User Attempts Authentication</h5>
+
+<p>While no Authenticated Member currently exists (as shown by the <code>session[:current_user]</code> having a value of either <code>nil</code> or the Guest User), supplying <em>the Guest User</em> as the User Entity to be Authenticated will fail without attempting to authenticate any supplied Clear-Text Password.</p>
+
+<h4>Other Notes</h4>
+
+<p>This method <strong>does not</strong> interact with a Repository, and therefore doesn&#39;t need to account for an invalid User Name parameter, for instance. Nor does it directly modify session data, although the associated Controller Action Class code <strong>must</strong> set <code>session[:current_user]</code> and <code>session[:start_time]</code> as below. This is to support extraction of this code (along with anything else not using <code>Hanami::Controller</code>-dependent input validation, redirects, flash messages, etc) to an Interactor, into which would be explicitly passed <code>session[:current_user]</code>.</p>
+
+<p>On <em>success</em>, the Controller Action Class calling code <strong>must</strong> set:</p>
 
 <ul>
-<li><code>session[:start_time]</code> is set to the current time as returned by <code>Time.now</code> when called from within the method;</li>
-<li><code>session[:current_user]</code> is set to the <em>Entity</em> (not the ID value from the Repository) for the now-logged-in user.  This is to eliminate repeated reads of the Repository.</li>
+<li><code>session[:start_time]</code> to the current time as returned by <code>Time.now</code>; and</li>
+<li><code>session[:current_user]</code> to the <em>Entity</em> (not the ID value from the Repository) for the newly-Authenticated User.  This is to eliminate repeated reads of the Repository.</li>
 </ul>
 
-<p>On <em>failure</em>:</p>
+<p>On <em>failure</em>, the Controller Action Class calling code <strong>must</strong> set:</p>
 
 <ul>
-<li><code>session[:start_time]</code> is set to <code>0000-01-01 00:00:00 +0000</code>;</li>
-<li><code>session[:current_user]</code> is set to <a href="#configuration"><code>config.guest_user</code></a>.</li>
+<li><code>session[:start_time]</code> to some sufficiently-past time to <em>always</em> trigger <code>#session_expired?</code>; <code>Hanami::Utils::Kernel.Time(0)</code> does this quite well, returning midnight GMT on 1 January 1970, converted to local time.</li>
+<li><code>session[:current_user]</code> to <code>nil</code> or to the Guest User (see <a href="#configuration"><em>Configuration</em></a>).</li>
 </ul>
-
-<p>If a <em>different user</em> is logged in (as evidenced by <code>session[:current_user]</code>), then <code>#sign_in</code> returns <code>false</code> and the <code>session</code> data remains unchanged.</p>
 
 <h3>Signing Out -- TODO: FIXME</h3>
 
@@ -455,7 +471,7 @@ that you construct.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Tue Nov 13 13:26:23 2018 by
+  Generated on Wed Nov 14 03:12:28 2018 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.16 (ruby-2.5.3).
 </div>
