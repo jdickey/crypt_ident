@@ -377,7 +377,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#sign_out-instance_method" title="#sign_out (instance method)">#<strong>sign_out</strong>  &#x21d2; Boolean </a>
+      <a href="#sign_out-instance_method" title="#sign_out (instance method)">#<strong>sign_out</strong>(&amp;_block) {|config| ... } </a>
     
 
     
@@ -888,7 +888,7 @@ the current-user entity</p>
       
       
         
-        <div class='inline'><p>Must be authenticated.</p>
+        <div class='inline'><p>Must be Authenticated.</p>
 </div>
       
     </li>
@@ -940,12 +940,12 @@ the current-user entity</p>
       <pre class="lines">
 
 
-355
-356
-357</pre>
+375
+376
+377</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 355</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 375</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_confirmation'>new_confirmation</span><span class='rparen'>)</span>
   <span class='comment'># To be implemented.
@@ -1077,7 +1077,7 @@ Token is to be generated.</p>
       
       
         
-        <div class='inline'><p>Must not be authenticated.</p>
+        <div class='inline'><p>Must not be Authenticated.</p>
 </div>
       
     </li>
@@ -1124,12 +1124,12 @@ Token is to be generated.</p>
       <pre class="lines">
 
 
-412
-413
-414</pre>
+432
+433
+434</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 412</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 432</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_generate_reset_token'>generate_reset_token</span><span class='lparen'>(</span><span class='id identifier rubyid_user_name'>user_name</span><span class='rparen'>)</span>
   <span class='comment'># To be implemented.
@@ -1307,7 +1307,7 @@ return value</p>
       
       
         
-        <div class='inline'><p>Must not be authenticated.</p>
+        <div class='inline'><p>Must not be Authenticated.</p>
 </div>
       
     </li>
@@ -1357,12 +1357,12 @@ return value</p>
       <pre class="lines">
 
 
-482
-483
-484</pre>
+502
+503
+504</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 482</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 502</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_password'>reset_password</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='id identifier rubyid_confirmation'>confirmation</span><span class='rparen'>)</span>
   <span class='comment'># To be implemented.
@@ -1434,7 +1434,7 @@ signing out a User.</p>
       
       
         
-        <div class='inline'><p>Must be authenticated.</p>
+        <div class='inline'><p>Must be Authenticated.</p>
 </div>
       
     </li>
@@ -1481,12 +1481,12 @@ signing out a User.</p>
       <pre class="lines">
 
 
-508
-509
-510</pre>
+528
+529
+530</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 508</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 528</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_restart_session_counter'>restart_session_counter</span>
   <span class='comment'># To be implemented.
@@ -1577,7 +1577,7 @@ specified by <code>config.guest_user</code>.</p>
       
       
         
-        <div class='inline'><p>Must be authenticated.</p>
+        <div class='inline'><p>Must be Authenticated.</p>
 </div>
       
     </li>
@@ -1624,12 +1624,12 @@ specified by <code>config.guest_user</code>.</p>
       <pre class="lines">
 
 
-538
-539
-540</pre>
+558
+559
+560</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 538</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 558</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_session_expired?'>session_expired?</span>
   <span class='comment'># To be implemented.
@@ -1887,7 +1887,7 @@ none.</p>
       <div class="method_details ">
   <h3 class="signature " id="sign_out-instance_method">
   
-    #<strong>sign_out</strong>  &#x21d2; <tt>Boolean</tt> 
+    #<strong>sign_out</strong>(&amp;_block) {|config| ... } 
   
 
   
@@ -1895,24 +1895,29 @@ none.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-  <div class="note todo">
-    <strong>TODO:</strong>
-    <div class='inline'><p>FIXME: API and docs <em>not yet finalised!</em></p>
-</div>
-  </div>
+    <p class="note returns_void">This method returns an undefined value.</p><p>Sign out a previously Authenticated User.</p>
 
-<p>Sign out a previously Authenticated User.</p>
+<p>The block is <em>required</em> for this method; in it, you should either delete or
+reset the <code>session[:current_user]</code> and <code>session[:start_time]</code> variables.</p>
 
-<p>If the <code>session[:current_user]</code> value <em>does not</em> have the value of <code>nil</code> or
-<code>config.guest_user</code>, then <code>session[:start_time]</code> is set to
-<code>0000-01-01 00:00:00 +0000</code>, and the method returns <code>true</code>.</p>
+<p>If resetting the values, we <strong>recommend</strong> they be set to</p>
 
-<p>If <code>session[:current_user]</code> <em>is</em> the Guest User, then
-<code>session[:start_time]</code> is cleared as above, and the method returns
-<code>false</code></p>
+<ul>
+<li><code>CryptIdent.configure_crypt_ident.guest_user</code> for
+<code>session[:current_user]</code> and</li>
+<li><code>Hanami::Utils::Kernel.Time(0)</code> for <code>session[:start_time]</code>, which will set
+the timestamp to midnight on 1 January 1970 -- a value which should <em>far</em>
+exceed your session-expiry limit.</li>
+</ul>
 
-<p>In neither case is any data but the <code>session</code> values affected.</p>
+<p>Calling this method when no Current User has been Authenticated is virtually
+idempotent; the only changes will be if you had reset session data in one
+call and deleted it in the other, or vice versa. Either <strong>should not</strong> have
+any impact on your application.</p>
+
+<hr>
+
+<p>Reek complains that this is a :reek:UtilityFunction. No state needed.</p>
 
 
   </div>
@@ -1923,24 +1928,76 @@ none.</p>
     <p class="tag_title">Examples:</p>
     
       
+        <p class="example_title"><div class='inline'><p>Controller Action Class method example resetting values</p>
+</div></p>
+      
       <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid__params'>_params</span><span class='rparen'>)</span>
-  <span class='kw'>true</span>
-<span class='kw'>end</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_valid?'>valid?</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='rparen'>)</span>
-  <span class='ivar'>@user_name</span> <span class='op'>=</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span>
-  <span class='id identifier rubyid_sign_out'>sign_out</span>
+  <span class='id identifier rubyid_sign_out'>sign_out</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure_crypt_ident'><span class='object_link'><a href="#configure_crypt_ident-class_method" title="CryptIdent.configure_crypt_ident (method)">configure_crypt_ident</a></span></span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span>
+    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:start_time</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'>Hanami</span><span class='op'>::</span><span class='const'>Utils</span><span class='op'>::</span><span class='const'>Kernel</span><span class='period'>.</span><span class='const'>Time</span><span class='lparen'>(</span><span class='int'>0</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></code></pre>
+    
+      
+        <p class="example_title"><div class='inline'><p>Controller Action Class method example deleting values</p>
+</div></p>
+      
+      <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid__params'>_params</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_sign_out'>sign_out</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
+    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:start_time</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></code></pre>
     
   </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>_block</span>
+      
+      
+        <span class='type'>(<tt>Block</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Required block which will always be called; see
+earlier description.</p>
+</div>
+      
+    </li>
+  
+</ul>
 
-<p class="tag_title">Returns:</p>
-<ul class="return">
+<p class="tag_title">Yield Parameters:</p>
+<ul class="yieldparam">
+  
+    <li>
+      
+        <span class='name'>config</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="CryptIdent/Config.html" title="CryptIdent::Config (class)">Config</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Immutable CryptIdent::Config instance with
+currently-active configuration values.</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Yield Returns:</p>
+<ul class="yieldreturn">
   
     <li>
       
       
-        <span class='type'>(<tt>Boolean</tt>)</span>
+        <span class='type'>(<tt>void</tt>)</span>
       
       
       
@@ -1971,7 +2028,7 @@ none.</p>
       
       
         
-        <div class='inline'><p>Must be authenticated.</p>
+        <div class='inline'><p>Should be Authenticated.</p>
 </div>
       
     </li>
@@ -1986,10 +2043,7 @@ none.</p>
       
       
         
-        <div class='inline'><p><code>:current_user</code> <strong>must not</strong> be other than <code>nil</code> or the Guest User; set to
-  the Guest User value on completion;</p>
-
-<p><code>:start_time</code> is set to the distant past (on success)</p>
+        <div class='inline'><p>See method description above.</p>
 </div>
       
     </li>
@@ -2007,8 +2061,10 @@ none.</p>
         <div class='inline'><ul>
 <li>Authenticated User</li>
 <li>Authentication</li>
+<li>Controller Action Class</li>
 <li>Entity</li>
 <li>Guest User</li>
+<li>Interactor</li>
 <li>Repository</li>
 </ul>
 </div>
@@ -2023,16 +2079,16 @@ none.</p>
       <pre class="lines">
 
 
-292
-293
-294</pre>
+312
+313
+314</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 292</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 312</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_sign_out'>sign_out</span>
-  <span class='comment'># To be implemented.
-</span><span class='kw'>end</span></pre>
+<span class='kw'>def</span> <span class='id identifier rubyid_sign_out'>sign_out</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid__block'>_block</span><span class='rparen'>)</span>
+  <span class='kw'>yield</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure_crypt_ident'><span class='object_link'><a href="#configure_crypt_ident-class_method" title="CryptIdent.configure_crypt_ident (method)">configure_crypt_ident</a></span></span>
+<span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -2229,7 +2285,7 @@ Symbol identifying the reason for failure.</p>
       
       
         
-        <div class='inline'><p>Must not be authenticated.</p>
+        <div class='inline'><p>Must not be Authenticated.</p>
 </div>
       
     </li>
@@ -2307,7 +2363,7 @@ Symbol identifying the reason for failure.</p>
 </div>
 
       <div id="footer">
-  Generated on Wed Nov 14 03:12:28 2018 by
+  Generated on Thu Nov 15 00:38:14 2018 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.16 (ruby-2.5.3).
 </div>

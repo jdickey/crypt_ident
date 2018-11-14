@@ -122,7 +122,7 @@ module CryptIdent
   #   the Repository, this method returns `:user_creation_failed`.
   #
   # @since 0.1.0
-  # @authenticated Must not be authenticated.
+  # @authenticated Must not be Authenticated.
   # @param [Hash] attribs Hash-like object of attributes for new User Entity and
   #               record, confirming to
   #               **Must** include `name` and `password` as well as any other
@@ -253,44 +253,64 @@ module CryptIdent
 
   # Sign out a previously Authenticated User.
   #
-  # If the `session[:current_user]` value *does not* have the value of `nil` or
-  # `config.guest_user`, then `session[:start_time]` is set to
-  # `0000-01-01 00:00:00 +0000`, and the method returns `true`.
+  # The block is _required_ for this method; in it, you should either delete or
+  # reset the `session[:current_user]` and `session[:start_time]` variables.
   #
-  # If `session[:current_user]` *is* the Guest User, then
-  # `session[:start_time]` is cleared as above, and the method returns
-  # `false`
+  # If resetting the values, we **recommend** they be set to
   #
-  # In neither case is any data but the `session` values affected.
+  # * `CryptIdent.configure_crypt_ident.guest_user` for
+  #   `session[:current_user]` and
+  # * `Hanami::Utils::Kernel.Time(0)` for `session[:start_time]`, which will set
+  #   the timestamp to midnight on 1 January 1970 -- a value which should *far*
+  #   exceed your session-expiry limit.
   #
-  # @todo FIXME: API and docs *not yet finalised!*
+  # Calling this method when no Current User has been Authenticated is virtually
+  # idempotent; the only changes will be if you had reset session data in one
+  # call and deleted it in the other, or vice versa. Either **should not** have
+  # any impact on your application.
+  #
   # @since 0.1.0
-  # @authenticated Must be authenticated.
-  # @return [Boolean]
-  # @example
+  # @authenticated Should be Authenticated.
+  # @param [Block] _block Required block which will always be called; see
+  #                earlier description.
+  # @return (void)
+  # @yieldparam [Config] config Immutable CryptIdent::Config instance with
+  #                      currently-active configuration values.
+  # @yieldreturn [void]
+  #
+  # @example Controller Action Class method example resetting values
   #   def call(_params)
-  #     true
+  #     sign_out do
+  #       session[:current_user] = CryptIdent.configure_crypt_ident.guest_user
+  #       session[:start_time] = Hanami::Utils::Kernel.Time(0)
+  #     end
   #   end
   #
-  #   def valid?(params)
-  #     @user_name = session[:current_user].name
-  #     sign_out
+  # @example Controller Action Class method example deleting values
+  #   def call(_params)
+  #     sign_out do
+  #       session[:current_user] = nil
+  #       session[:start_time] = nil
+  #     end
   #   end
   #
   # @session_data
-  #   `:current_user` **must not** be other than `nil` or the Guest User; set to
-  #     the Guest User value on completion;
+  #   See method description above.
   #
-  #   `:start_time` is set to the distant past (on success)
   # @ubiq_lang
   #   - Authenticated User
   #   - Authentication
+  #   - Controller Action Class
   #   - Entity
   #   - Guest User
+  #   - Interactor
   #   - Repository
   #
-  def sign_out
-    # To be implemented.
+  # ----
+  #
+  # Reek complains that this is a :reek:UtilityFunction. No state needed.
+  def sign_out(&_block)
+    yield CryptIdent.configure_crypt_ident
   end
 
   # Change an Authenticated User's password.
@@ -316,7 +336,7 @@ module CryptIdent
   #
   # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
-  # @authenticated Must be authenticated.
+  # @authenticated Must be Authenticated.
   # @param [String] current_password The current Clear-Text Password for the
   #                                  Current User
   # @param [String] new_password The new Clear-Text Password to encrypt and add
@@ -378,7 +398,7 @@ module CryptIdent
   # persons).
   #
   # @since 0.1.0
-  # @authenticated Must not be authenticated.
+  # @authenticated Must not be Authenticated.
   # @param [String] user_name The name of the User for whom a Password Reset
   #                 Token is to be generated.
   # @return [Symbol, true] True on success or error identifier on failure.
@@ -441,7 +461,7 @@ module CryptIdent
   #
   # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
-  # @authenticated Must not be authenticated.
+  # @authenticated Must not be Authenticated.
   # @param [String] token The Password Reset Token previously communicated to
   #                       the User.
   # @param [String] new_password New Clear-Text Password to encrypt and add to
@@ -490,7 +510,7 @@ module CryptIdent
   #
   # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
-  # @authenticated Must be authenticated.
+  # @authenticated Must be Authenticated.
   # @return (void)
   # @example
   #   def validate_session
@@ -520,7 +540,7 @@ module CryptIdent
   #
   # @todo FIXME: API and docs *not yet finalised!*
   # @since 0.1.0
-  # @authenticated Must be authenticated.
+  # @authenticated Must be Authenticated.
   # @return [Boolean]
   # @example
   #   def validate_session

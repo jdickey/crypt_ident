@@ -347,15 +347,28 @@
 <li><code>session[:current_user]</code> to <code>nil</code> or to the Guest User (see <a href="#configuration"><em>Configuration</em></a>).</li>
 </ul>
 
-<h3>Signing Out -- TODO: FIXME</h3>
+<h3>Signing Out</h3>
 
-<p>Signing out a previously Authenticated user is straightforward: call the <code>sign_out</code> method.</p>
+<h4>Overview</h4>
 
-<p>If the <code>session[:current_user]</code> value <em>does not</em> have the value of <a href="#configuration"><code>config.guest_user</code></a>, <code>session[:start_time]</code> is set to <code>0000-01-01 00:00:00 +0000</code>, and the method returns <code>true</code>.</p>
+<p>Method involved:</p>
 
-<p>If <code>session[:current_user]</code> <em>is</em> the Guest User, then <code>session[:start_time]</code> is cleared as above, and the method returns <code>false</code>.</p>
+<pre class="code ruby"><code class="ruby"><span class='kw'>module</span> <span class='const'><span class='object_link'><a href="CryptIdent.html" title="CryptIdent (module)">CryptIdent</a></span></span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_sign_out'>sign_out</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span>
+</code></pre>
 
-<p>In neither case is any data but the <code>session</code> values affected.</p>
+<p>Signing out any previously Authenticated User is straightforward: call the <code>sign_out</code> method, adding a block that clears your <code>session[:current_user]</code> and <code>session[:start_time]</code> variables.</p>
+
+<p>Note that, as of Release 0.1.0, the method simply passes control to the (required) block, in which you can delete or reset <code>session[:current_user]</code> and <code>session[:start_time]</code>. We <strong>recommend</strong> reset values of:</p>
+
+<ul>
+<li><code>CryptIdent.configure_crypt_ident.guest_user</code> for <code>session[:current_user]</code> and</li>
+<li><code>Hanami::Utils::Kernel.Time(0)</code> for <code>session[:start_time]</code>, which will set the timestamp to 1 January 1970 at midnight  -- a value which should *far° exceed your session-expiry limit</li>
+</ul>
+
+<p>if you decide not to simply delete the previous values.</p>
 
 <h3>Password Change -- TODO: FIXME</h3>
 
@@ -471,7 +484,7 @@ that you construct.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Wed Nov 14 03:12:28 2018 by
+  Generated on Thu Nov 15 00:38:13 2018 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.16 (ruby-2.5.3).
 </div>

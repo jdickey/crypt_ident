@@ -217,15 +217,27 @@ On *failure*, the Controller Action Class calling code **must** set:
 * `session[:start_time]` to some sufficiently-past time to *always* trigger `#session_expired?`; `Hanami::Utils::Kernel.Time(0)` does this quite well, returning midnight GMT on 1 January 1970, converted to local time.
 * `session[:current_user]` to `nil` or to the Guest User (see [_Configuration_](#configuration)).
 
-### Signing Out -- TODO: FIXME
+### Signing Out
 
-Signing out a previously Authenticated user is straightforward: call the `sign_out` method.
+#### Overview
 
-If the `session[:current_user]` value *does not* have the value of [`config.guest_user`](#configuration), `session[:start_time]` is set to `0000-01-01 00:00:00 +0000`, and the method returns `true`.
+Method involved:
 
-If `session[:current_user]` _is_ the Guest User, then `session[:start_time]` is cleared as above, and the method returns `false`.
+```
+module CryptIdent
+  def sign_out(&block)
+  end
+end
+```
 
-In neither case is any data but the `session` values affected.
+Signing out any previously Authenticated User is straightforward: call the `sign_out` method, adding a block that clears your `session[:current_user]` and `session[:start_time]` variables.
+
+Note that, as of Release 0.1.0, the method simply passes control to the (required) block, in which you can delete or reset `session[:current_user]` and `session[:start_time]`. We **recommend** reset values of:
+
+* `CryptIdent.configure_crypt_ident.guest_user` for `session[:current_user]` and
+* `Hanami::Utils::Kernel.Time(0)` for `session[:start_time]`, which will set the timestamp to 1 January 1970 at midnight  -- a value which should *far° exceed your session-expiry limit
+
+if you decide not to simply delete the previous values.
 
 ### Password Change -- TODO: FIXME
 
