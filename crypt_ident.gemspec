@@ -34,8 +34,15 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency 'bcrypt', '>= 3.1.12'
-  # hanami-model 1.2.0 depends on *18* other Gems. Just as a reminder...
+  # NOTE: **During development**, we're not specifying Gem versions, because
+  # we're bundling locally using `bin/setup` and `scripts/build-gem-list.rb`.
+  # Before merging back to `master`, at latest, this **must** be updated to show
+  # *minimum* Gem versions; e.g., `'>= 3.1.12'` for `bcrypt`. It Would Be Very
+  # Nice if we had a script to automatically rewrite the Gemspec for us each
+  # way. PRs welcome.
+  #
+  spec.add_runtime_dependency 'bcrypt'
+  # hanami-model 1.2.0 and 1.3.0 depend on *18* other Gems. Just as a reminder.
   spec.add_runtime_dependency 'hanami-model', '>= 1.2.0'
   spec.add_runtime_dependency 'hanami-controller', '>= 1.2.0'
 
