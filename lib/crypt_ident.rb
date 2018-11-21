@@ -315,64 +315,79 @@ module CryptIdent
 
   # Change an Authenticated User's password.
   #
-  # To change an Authenticated User's password, the current Clear-Text Password,
-  # new Clear-Text Password, and Clear-Text Password Confirmation are passed in
-  # as parameters.
+  # To change an Authenticated User's password, an Entity for that User, the
+  # current Clear-Text Password, and the new Clear-Text Password are required.
+  # The method accepts an optional `repo` parameter to specify a Repository
+  # instance to which the updated User Entity should be persisted; if none is
+  # specified (i.e., if the parameter has its default value of `nil`), then the
+  # `UserRepository` specified in the Configuration is used.
   #
-  # If the Encrypted Password in the `session[:current_user]` Entity does
-  # not match the encrypted value of the specified current Clear-Text Password,
-  # then the method returns `:bad_password` and no changes occur.
+  # If the passed-in `user` is the Guest User (or `nil`), the method returns
+  # `:invalid_user` and no further action is taken.
   #
-  # If the current-password check succeeds but the new Clear-Text Password and
-  # its confirmation do not match, then the method returns
-  # `:mismatched_password` and no changes occur.
+  # If the specified current Clear-Text Password cannot Authenticate against the
+  # encrypted value within the `user` Entity, then the method returns
+  # `:bad_password` and no further action is taken.
   #
-  # If the new Clear-Text Password and its confirmation match, then the
-  # *encrypted value* of that new Password is returned, and the
-  # `session[:current_user]` Entity is replaced with an Entity identical
-  # except that it has the new encrypted value for `password_hash`. The entry in
-  # the Repository for the current User has also been updated to include the new
-  # Encrypted Password.
+  # If these checks pass, then a new Entity, identical to the passed-in `user`
+  # *except* having a new value for its `password_hash`, is persisted to the
+  # Repository specified either by the `repo` parameter or, if that is `nil`,
+  # then the default Repository specified in the default configuration.
   #
-  # @todo FIXME: API and docs *not yet finalised!*
+  # If that Entity is successfully persisted, then this method will return that
+  # Entity. If persistence fails, a `:repository_error` Symbol is returned to
+  # indicate the error.
+  #
   # @since 0.1.0
-  # @authenticated Must be Authenticated.
+  # @authenticated Must Authenticate.
+  # @param [User] user The User Entity from which to get the valid Encrypted
+  #                 Password and other non-Password attributes
   # @param [String] current_password The current Clear-Text Password for the
-  #                                  Current User
+  #                 specified Current User
   # @param [String] new_password The new Clear-Text Password to encrypt and add
-  #                 the current-user entity
-  # @return [Boolean]
-  # @example
+  #                 to the returned Entity
+  # @param [Object, nil] repo The Repository to which the updated User Entity is
+  #                 to be persisted. If the default value of `nil`, then the
+  #                 UserRepository specified in the default configuration is
+  #                 used.
+  # @return [User, Symbol] A User Entity with a new Encrypted Password value on
+  #                 success, or a symbolic error identifier on failure.
+  #
+  # @example for a Controller Action Class
   #   def call(params)
   #     user = session[:current_user]
-  #     UserRepository.new.update(user.id, user) # updated user saved to repo
+  #     result = change_password(user, params[:password], params[:new_password])
+  #     @user = result if result_ok?(result)
   #   end
   #
   #   private
   #
-  #   def valid?(params)
-  #     mismatch_message = 'New password and confirmation do not match.'
-  #     result = change_password(params[:password], params[:new_password],
-  #                              params[:confirmation])
+  #   BAD_PASSWORD_MESSAGE = 'Invalid current password supplied.'
+  #   INVALID_USER_MESSAGE = 'Not an Authenticated User.'
+  #   private_constant :BAD_PASSWORD_MESSAGE, :INVALID_USER_MESSAGE
+  #
+  #   def result_ok?(result)
+  #     key = CryptIdent.configure_crypt_ident.error_key
   #     case result
-  #     when :bad_password then error!('Invalid current password supplied.')
-  #     when :mismatched_password then error!(mismatch_message)
-  #     end # else `session[:current_user]` has been updated
+  #     when :bad_password then flash[key] = BAD_PASSWORD_MESSAGE
+  #     when :invalid_user then flash[key] = INVALID_USER_MESSAGE
+  #     else return true
+  #     end
+  #     false
   #   end
   #
   # @session_data
-  #   `:current_user` **must** be an Entity for a Registered User
+  #   Implies that `:current_user` **must** be an Entity for a Registered User
   # @ubiq_lang
   #   - Authentication
   #   - Clear-Text Password
-  #   - Clear-Text Password Confirmation
   #   - Encrypted Password
   #   - Entity
   #   - Guest User
   #   - Registered User
   #   - Repository
   #
-  def change_password(current_password, new_password, new_confirmation)
+  def change_password(user, current_password, new_password, repo: nil)
     # To be implemented.
   end
 
