@@ -5,6 +5,7 @@ require 'bcrypt'
 require 'crypt_ident/version'
 
 require_relative './crypt_ident/config'
+require_relative './crypt_ident/change_password'
 require_relative './crypt_ident/sign_in'
 require_relative './crypt_ident/sign_up'
 
@@ -125,11 +126,11 @@ module CryptIdent
   # @authenticated Must not be Authenticated.
   # @param [Hash] attribs Hash-like object of attributes for new User Entity and
   #               record, confirming to
-  #               **Must** include `name` and `password` as well as any other
-  #               attributes required by the underlying database schema, as well
-  #               as a (clear-text) `password` attribute which will be replaced
-  #               in the created Entity/record by a `password_hash` attribute.
-  # @param [String] current_user Entity representing the current Authenticated
+  #               **Must** include `name` and  any other attributes required by
+  #               the underlying database schema, as well as a (clear-text)
+  #               `password` attribute which will be replaced in the created
+  #               Entity/record by a `password_hash` attribute.
+  # @param [User] current_user Entity representing the current Authenticated
   #               User, or the Guest User. A value of `nil` is treated as though
   #               the Guest User had been specified.
   # @param [Hanami::Repository] repo Repository to be used for accessing User
@@ -387,8 +388,11 @@ module CryptIdent
   #   - Registered User
   #   - Repository
   #
+  # Reek complains that this is a :reek:UtilityFunction. No state needed.
   def change_password(user, current_password, new_password, repo: nil)
-    # To be implemented.
+    ChangePassword.new(config: CryptIdent.cryptid_config, repo: repo,
+                       user: user)
+                  .call(current_password, new_password)
   end
 
   ############################################################################ #
