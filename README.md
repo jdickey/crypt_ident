@@ -239,15 +239,37 @@ Note that, as of Release 0.1.0, the method simply passes control to the (require
 
 if you decide not to simply delete the previous values.
 
-### Password Change -- TODO: FIXME
+### Password Change
 
-To change an [authenticated](#signing-in) user's password, the current clear-text password, new clear-text password, and clear-text password confirmation are passed to `change_password`.
+#### Overview
 
-If the Encrypted Password in the `session[:current_user]` entity does not match the encrypted value of the specified current Clear-Text Password, then the method returns `:bad_password` and no changes occur.
+Method involved:
 
-If the current-password check succeeds but the new Clear-Text Password and its confirmation do not match, then the method returns `:mismatched_password` and no changes occur.
+```ruby
+  module CryptIdent
+    def change_password(user, current_password, new_password, repo: nil)
+      # ...
+    end
+  end
+```
 
-If the new Clear-Text Password and its confirmation match, then the _encrypted value_ of that new password is returned, and the `session[:current_user]` Entity is replaced with an Entity identical except that it has the new encrypted value for `password_hash`.
+To change an Authenticated User's password, an Entity for that User, the current Clear-Text Password, and the new Clear-Text Password are required. The method accepts an optional `repo` parameter to specify a Repository instance to which the updated User Entity should be persisted; if none is specified (i.e., if the parameter has its default value of `nil`), then the `repository` specified in the [_Configuration_](#configuration) settings is used.
+
+#### Successfully Changing the Password
+
+If all parameters are valid and the updated User is successfully persisted, the method returns an Entity for that User with its `:password_hash` attribute updated with the newly-changed Encrypted Password. From that point, the User is able to Sign In using the User Name and updated Clear-Text Password.
+
+Client code **must** take care not to try to Authenticate using the Encrypted Password in the Entity passed in to this method, as it is no longer current. Either retain the returned User Entity from the method, or read it again from the Repository.
+
+#### Error Conditions
+
+##### Specified User is Guest User
+
+If the passed-in `user` is the Guest User (or `nil`), the method returns `:invalid_user`. Nothing further is done.
+
+##### Invalid Current Clear-Text Password
+
+If the specified Current Clear-Text Password cannot Authenticate against the encrypted value within the `user` Entity, then the method returns `:bad_password` and the Repository is not accessed.
 
 ### Password Reset -- TODO: FIXME
 

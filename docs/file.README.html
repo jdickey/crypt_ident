@@ -370,15 +370,36 @@
 
 <p>if you decide not to simply delete the previous values.</p>
 
-<h3>Password Change -- TODO: FIXME</h3>
+<h3>Password Change</h3>
 
-<p>To change an <a href="#signing-in">authenticated</a> user&#39;s password, the current clear-text password, new clear-text password, and clear-text password confirmation are passed to <code>change_password</code>.</p>
+<h4>Overview</h4>
 
-<p>If the Encrypted Password in the <code>session[:current_user]</code> entity does not match the encrypted value of the specified current Clear-Text Password, then the method returns <code>:bad_password</code> and no changes occur.</p>
+<p>Method involved:</p>
 
-<p>If the current-password check succeeds but the new Clear-Text Password and its confirmation do not match, then the method returns <code>:mismatched_password</code> and no changes occur.</p>
+<pre class="code ruby"><code class="ruby">  <span class='kw'>module</span> <span class='const'><span class='object_link'><a href="CryptIdent.html" title="CryptIdent (module)">CryptIdent</a></span></span>
+    <span class='kw'>def</span> <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+      <span class='comment'># ...
+</span>    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+</code></pre>
 
-<p>If the new Clear-Text Password and its confirmation match, then the <em>encrypted value</em> of that new password is returned, and the <code>session[:current_user]</code> Entity is replaced with an Entity identical except that it has the new encrypted value for <code>password_hash</code>.</p>
+<p>To change an Authenticated User&#39;s password, an Entity for that User, the current Clear-Text Password, and the new Clear-Text Password are required. The method accepts an optional <code>repo</code> parameter to specify a Repository instance to which the updated User Entity should be persisted; if none is specified (i.e., if the parameter has its default value of <code>nil</code>), then the <code>repository</code> specified in the <a href="#configuration"><em>Configuration</em></a> settings is used.</p>
+
+<h4>Successfully Changing the Password</h4>
+
+<p>If all parameters are valid and the updated User is successfully persisted, the method returns an Entity for that User with its <code>:password_hash</code> attribute updated with the newly-changed Encrypted Password. From that point, the User is able to Sign In using the User Name and updated Clear-Text Password.</p>
+
+<p>Client code <strong>must</strong> take care not to try to Authenticate using the Encrypted Password in the Entity passed in to this method, as it is no longer current. Either retain the returned User Entity from the method, or read it again from the Repository.</p>
+
+<h4>Error Conditions</h4>
+
+<h5>Specified User is Guest User</h5>
+
+<p>If the passed-in <code>user</code> is the Guest User (or <code>nil</code>), the method returns <code>:invalid_user</code>. Nothing further is done.</p>
+
+<h5>Invalid Current Clear-Text Password</h5>
+
+<p>If the specified Current Clear-Text Password cannot Authenticate against the encrypted value within the <code>user</code> Entity, then the method returns <code>:bad_password</code> and the Repository is not accessed.</p>
 
 <h3>Password Reset -- TODO: FIXME</h3>
 
@@ -484,7 +505,7 @@ that you construct.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Thu Nov 15 00:38:13 2018 by
+  Generated on Sat Nov 24 18:36:09 2018 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.16 (ruby-2.5.3).
 </div>

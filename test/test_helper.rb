@@ -43,6 +43,7 @@ require 'crypt_ident'
 
 require 'hanami/utils/class_attribute'
 
+
 class User < Hanami::Entity
   attributes do
     attribute :id, Types::Int
@@ -91,7 +92,7 @@ class UserRepository
       raise Hanami::Model::UniqueConstraintViolationError, message
     end
     extra_attribs = { id: @next_id, created_at: Time.now, updated_at: Time.now }
-    attribs = extra_attribs.merge data.to_h
+    attribs = extra_attribs.merge(data.to_h)
     record = User.new attribs
     @records[@next_id] = record
     @next_id += 1
@@ -101,10 +102,8 @@ class UserRepository
   def update(id, data)
     record = find(id)
     return nil unless record
-    record = User.new record.to_h
-      .merge(updated_at: Time.now)
-      .merge(data.to_h)
-    @records[record.id] = record
+    new_attribs = record.to_h.merge(updated_at: Time.now).merge(data.to_h)
+    @records[record.id] = User.new(new_attribs)
   end
 
   def delete(id)
