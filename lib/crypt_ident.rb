@@ -148,7 +148,6 @@ module CryptIdent
   #                 on_error: method(:report_errors) }.merge(params.to_h)
   #     sign_up(call_params) do |user, cryptident_config|
   #       @user = user
-  #       session[:current_user] = user
   #       message = "#{user.name} successfully created. You may sign in now."
   #       flash[cryptident_config.success_key] = message
   #       redirect_to routes.root_path
@@ -164,11 +163,19 @@ module CryptIdent
   #   - Repository
   #   - User
   #
+  # Reek complains about :reek:NilCheck and :reek:FeatureEnvy (for `result`)
+  # Reek also complains about :reek:TooManyStatements, sensibly enough
   def sign_up(attribs, current_user:, repo: nil, on_error: nil, &_on_success)
-    return :current_user_exists if current_user && !current_user.guest_user?
+    SignUp.new(repo).call(attribs, current_user: current_user) do |result|
+      result.success do |user:, config:|
+        yield user, config if block_given?
+        user
+      end
 
-    SignUp.new(repo).call(attribs, on_error: on_error) do |user, ci_conf|
-      yield user, ci_conf if block_given?
+      result.failure do |code:, config:|
+        on_error&.call code, config
+        code
+      end
     end
   end
 

@@ -2,46 +2,39 @@
 
 require 'securerandom'
 
-# Sign-up logic for CryptIdent
+require 'dry/monads/result'
+require 'dry/matcher/result_matcher'
+
+# Reworked sign-up logic for CryptIdent
 #
 # @author Jeff Dickey
 # @version 0.1.0
 module CryptIdent
-  # Sign-up logic for `CryptIdent`, extracted from original `#sign_up` method.
+  # Reworked sign-up logic for `CryptIdent`, per Issue #9
   #
   # This class *is not* part of the published API.
   # @private
   class SignUp
+    include Dry::Monads::Result::Mixin
+    include Dry::Matcher.for(:call, with: Dry::Matcher::ResultMatcher)
+
     def initialize(repo = nil)
       @ci_config = config_with_repo(repo)
-      @result = nil
-      @success = false
     end
 
-    def call(attribs, on_error: nil)
+    def call(attribs, current_user:)
+      return failure_for(:current_user_exists) if current_user?(current_user)
+
       create_result(all_attribs(attribs))
-      call_block_with_result(on_error) do
-        yield result, ci_config # Always yield; API method decides what to do.
-      end
-      result
     end
 
     private
 
-    attr_reader :ci_config, :result, :success
+    attr_reader :ci_config
 
     def all_attribs(attribs)
       password_hash = hashed_password(attribs[:password])
       { password_hash: password_hash }.merge(attribs)
-    end
-
-    # Reek sees a :reek:NilCheck in the `on_error` call. Yep.
-    def call_block_with_result(on_error)
-      if success
-        yield
-      else
-        on_error&.call(result, ci_config)
-      end
     end
 
     def config_with_repo(repo)
@@ -50,13 +43,22 @@ module CryptIdent
       Config.new config_hash
     end
 
+    # XXX: This has a Flog score of 9.8. Truly simplifying PRs welcome.
     def create_result(all_attribs)
-      @result = ci_config.repository.create(all_attribs)
-      @success = true
+      user = ci_config.repository.create(all_attribs)
+      Success(user: user, config: ci_config)
     rescue Hanami::Model::UniqueConstraintViolationError
-      @result = :user_already_created
+      failure_for(:user_already_created)
     rescue Hanami::Model::Error
-      @result = :user_creation_failed
+      failure_for(:user_creation_failed)
+    end
+
+    def current_user?(user)
+      user && !user.guest_user?
+    end
+
+    def failure_for(code)
+      Failure(code: code, config: ci_config)
     end
 
     def hashed_password(password_in)
@@ -64,5 +66,5 @@ module CryptIdent
       password = SecureRandom.urlsafe_base64(64) if password.empty?
       ::BCrypt::Password.create(password)
     end
-  end # class CryptIdent::SignUp
+  end
 end

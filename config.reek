@@ -9,3 +9,6 @@ detectors:
 
   UtilityFunction:
     public_methods_only: true
+
+  NestedIterators:
+    max_allowed_nesting: 4

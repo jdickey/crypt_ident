@@ -10,17 +10,15 @@ describe 'CryptIdent#change_password' do
   end
   let(:new_password) { 'New Clear-Text Password' }
   let(:repo) { UserRepository.new }
-  let(:user) do
-    sign_up(attribs, repo: repo, current_user: nil)
-  end
-
-  before { _ = user }
 
   describe 'Successfully change password using' do
+    before { _ = user }
+
     describe 'specified Repository' do
       let(:actual) do
         change_password(user, attribs[:password], new_password, repo: repo)
       end
+      let(:user) { sign_up(attribs, repo: repo, current_user: nil) }
 
       describe 'returns an Entity with' do
         describe 'changed attribute values for' do
@@ -91,6 +89,10 @@ describe 'CryptIdent#change_password' do
     end # describe '"user" Entity was invalid in this context'
 
     describe 'Clear-Text Password could not be Authenticated' do
+      let(:user) { sign_up(attribs, repo: repo, current_user: nil) }
+
+      before { _ = user }
+
       it 'causes the method to return :bad_password' do
         ret = change_password(user, 'bad password', 'anything', repo: repo)
         expect(ret).must_equal :bad_password
