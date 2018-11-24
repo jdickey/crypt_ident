@@ -4,7 +4,7 @@ CryptIdent
 
 Yet another fairly basic authentication Gem. (Authorisation, and batteries, sold separately.)
 
-This is initially tied to Hanami 1.2.0+; specifically, it assumes that user entities have an API compatible with `Hanami::Entity` for accessing the field/attribute values listed below in [_Database/Repository Setup_](#databaserepository-setup) (which itself assumes a Repository API compatible with that of Hanami 1.2's Repository classes). The Gem is mostly a thin layer around [BCrypt](https://github.com/codahale/bcrypt-ruby) that, in conjunction with Hanami entities or work-alikes, supports the most common use cases for password-based authentication:
+This is initially tied to Hanami 1.3.0+; specifically, it assumes that user entities have an API compatible with `Hanami::Entity` for accessing the field/attribute values listed below in [_Database/Repository Setup_](#databaserepository-setup) (which itself assumes a Repository API compatible with that of Hanami 1.3's Repository classes). The Gem is mostly a thin layer around [BCrypt](https://github.com/codahale/bcrypt-ruby) that, in conjunction with Hanami entities or work-alikes, supports the most common use cases for password-based authentication:
 
 1. [Registration](#registration);
 2. [Signing in](#signing-in);
