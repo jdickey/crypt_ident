@@ -218,7 +218,7 @@ module CryptIdent
   #
   # @since 0.1.0
   # @authenticated Must not be Authenticated as a different User.
-  # @param [User] user Entity representing a User to be Authenticated.
+  # @param [User] user_in Entity representing a User to be Authenticated.
   # @param [String] password Claimed Clear-Text Password for the specified User.
   # @param [User, nil] current_user Entity representing the currently
   #               Authenticated User Entity; either `nil` or the Guest User if
@@ -255,10 +255,10 @@ module CryptIdent
   #   - Guest User
   #   - User
   #
-  # ----
-  #
-  def sign_in(user, password, current_user: nil)
-    SignIn.new.call(user: user, password: password, current_user: current_user)
+  # FIXME: :reek:TooManyStatements
+  def sign_in(user_in, password, current_user: nil)
+    params = { user: user_in, password: password, current_user: current_user }
+    SignIn.new.call(params) { |result| yield result }
   end
 
   # Sign out a previously Authenticated User.
