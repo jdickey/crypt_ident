@@ -18,7 +18,14 @@ describe 'CryptIdent#change_password' do
       let(:actual) do
         change_password(user, attribs[:password], new_password, repo: repo)
       end
-      let(:user) { sign_up(attribs, repo: repo, current_user: nil) }
+      let(:user) do
+        saved_user = :unassigned
+        sign_up(attribs, repo: repo, current_user: nil) do |result|
+          result.success { |config:, user:| saved_user = user }
+          result.failure { |code:, config:| skip }
+        end
+        saved_user
+      end
 
       describe 'returns an Entity with' do
         describe 'changed attribute values for' do
@@ -63,7 +70,14 @@ describe 'CryptIdent#change_password' do
       let(:actual) do
         change_password(user, attribs[:password], new_password)
       end
-      let(:user) { sign_up(attribs, current_user: nil) }
+      let(:user) do
+        saved_user = :unassigned
+        sign_up(attribs, current_user: nil) do |result|
+          result.success { |config:, user:| saved_user = user }
+          result.failure { |code:, config:| skip }
+        end
+        saved_user
+      end
 
       it 'correctly updates the Repository' do
         actual_password_hash = actual.password_hash
@@ -89,7 +103,14 @@ describe 'CryptIdent#change_password' do
     end # describe '"user" Entity was invalid in this context'
 
     describe 'Clear-Text Password could not be Authenticated' do
-      let(:user) { sign_up(attribs, repo: repo, current_user: nil) }
+      let(:user) do
+        saved_user = :unassigned
+        sign_up(attribs, repo: repo, current_user: nil) do |result|
+          result.success { |config:, user:| saved_user = user }
+          result.failure { |code:, config:| skip }
+        end
+        saved_user
+      end
 
       before { _ = user }
 

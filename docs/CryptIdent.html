@@ -400,7 +400,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#sign_up-instance_method" title="#sign_up (instance method)">#<strong>sign_up</strong>(attribs, current_user:, repo: nil, on_error: nil, &amp;_on_success)  &#x21d2; User, Symbol </a>
+      <a href="#sign_up-instance_method" title="#sign_up (instance method)">#<strong>sign_up</strong>(attribs, current_user:, repo: nil) {|result| ... } &#x21d2; User, Symbol </a>
     
 
     
@@ -414,7 +414,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Persist a new User to a Repository based on passed-in attributes, with a <code>:password_hash</code> attribute containing the encrypted value of the Clear-Text Password passed in as the <code>password</code> attribute.</p>
+    <span class="summary_desc"><div class='inline'><p>Persist a new User to a Repository based on passed-in attributes, where the resulting Entity (on success) contains a  <code>:password_hash</code> attribute containing the encrypted value of the Clear-Text Password passed in as the <code>password</code> value within <code>attribs</code>.</p>
 </div></span>
   
 </li>
@@ -784,8 +784,6 @@ then the default Repository specified in the default configuration.</p>
 Entity. If persistence fails, a <code>:repository_error</code> Symbol is returned to
 indicate the error.</p>
 
-<p>Reek complains that this is a :reek:UtilityFunction. No state needed.</p>
-
 
   </div>
 </div>
@@ -985,14 +983,14 @@ success, or a symbolic error identifier on failure.</p>
       <pre class="lines">
 
 
-400
-401
-402
-403
-404</pre>
+396
+397
+398
+399
+400</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 400</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 396</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='const'>ChangePassword</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='label'>config:</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_cryptid_config'>cryptid_config</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='id identifier rubyid_repo'>repo</span><span class='comma'>,</span>
@@ -1173,12 +1171,12 @@ Token is to be generated.</p>
       <pre class="lines">
 
 
-459
-460
-461</pre>
+455
+456
+457</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 459</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 455</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_generate_reset_token'>generate_reset_token</span><span class='lparen'>(</span><span class='id identifier rubyid_user_name'>user_name</span><span class='rparen'>)</span>
   <span class='comment'># To be implemented.
@@ -1406,12 +1404,12 @@ return value</p>
       <pre class="lines">
 
 
-529
-530
-531</pre>
+525
+526
+527</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 529</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 525</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_password'>reset_password</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='id identifier rubyid_confirmation'>confirmation</span><span class='rparen'>)</span>
   <span class='comment'># To be implemented.
@@ -1530,12 +1528,12 @@ signing out a User.</p>
       <pre class="lines">
 
 
-555
-556
-557</pre>
+551
+552
+553</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 555</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 551</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_restart_session_counter'>restart_session_counter</span>
   <span class='comment'># To be implemented.
@@ -1673,12 +1671,12 @@ specified by <code>config.guest_user</code>.</p>
       <pre class="lines">
 
 
-585
-586
-587</pre>
+581
+582
+583</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 585</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 581</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_session_expired?'>session_expired?</span>
   <span class='comment'># To be implemented.
@@ -1738,8 +1736,6 @@ Repository.</li>
 </ul>
 
 <hr>
-
-<p>Reek complains that this is a :reek:UtilityFunction. No state needed.</p>
 
 
   </div>
@@ -1918,12 +1914,12 @@ none.</p>
       <pre class="lines">
 
 
-259
 260
-261</pre>
+261
+262</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 259</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 260</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_in'>sign_in</span><span class='lparen'>(</span><span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='const'>SignIn</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='label'>user:</span> <span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='label'>password:</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span>
@@ -1963,10 +1959,6 @@ exceed your session-expiry limit.</li>
 idempotent; the only changes will be if you had reset session data in one
 call and deleted it in the other, or vice versa. Either <strong>should not</strong> have
 any impact on your application.</p>
-
-<hr>
-
-<p>Reek complains that this is a :reek:UtilityFunction. No state needed.</p>
 
 
   </div>
@@ -2128,12 +2120,12 @@ currently-active configuration values.</p>
       <pre class="lines">
 
 
-321
-322
-323</pre>
+319
+320
+321</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 321</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 319</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_out'>sign_out</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid__block'>_block</span><span class='rparen'>)</span>
   <span class='kw'>yield</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure_crypt_ident'><span class='object_link'><a href="#configure_crypt_ident-class_method" title="CryptIdent.configure_crypt_ident (method)">configure_crypt_ident</a></span></span>
@@ -2146,7 +2138,7 @@ currently-active configuration values.</p>
       <div class="method_details ">
   <h3 class="signature " id="sign_up-instance_method">
   
-    #<strong>sign_up</strong>(attribs, current_user:, repo: nil, on_error: nil, &amp;_on_success)  &#x21d2; <tt>User</tt>, <tt>Symbol</tt> 
+    #<strong>sign_up</strong>(attribs, current_user:, repo: nil) {|result| ... } &#x21d2; <tt>User</tt>, <tt>Symbol</tt> 
   
 
   
@@ -2154,33 +2146,35 @@ currently-active configuration values.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Persist a new User to a Repository based on passed-in attributes, with a
-<code>:password_hash</code> attribute containing the encrypted value of the Clear-Text
-Password passed in as the <code>password</code> attribute.</p>
+    <p>Persist a new User to a Repository based on passed-in attributes, where the
+resulting Entity (on success) contains a  <code>:password_hash</code> attribute
+containing the encrypted value of the Clear-Text Password passed in as the
+<code>password</code> value within <code>attribs</code>.</p>
 
-<p>On success, the block is yielded to with two parameters: <code>user</code>, an Entity
-representing the contents of the newly-added record in the Repository, and
-<code>cryptid_config</code>, which contains the data in the CryptIdent configuration,
-such as <code>success_key</code> and <code>error_key</code>. Any value returned from the block <em>is
-not</em> preserved. Rather, the method returns the same Entity passed into the
-block as <code>user</code>. The block <strong>should</strong> assign to the exposed <code>@user</code> instance
-variable, as well as any other side-effects (logging, etc) that are
-appropriate.</p>
+<p>The method <em>requires</em> a block, to which a <code>result</code> indicating success or
+failure is yielded. That block <strong>must</strong> in turn call <strong>both</strong>
+<code>result.success</code> and <code>result.failure</code> to handle success and failure results,
+respectively. On success, the block yielded to by <code>result.success</code> is called
+and passed <code>config:</code> and <code>user:</code> parameters, which are the Config object
+active while creating the new User, and the newly-created User Entity itself
+respectively.</p>
 
-<p>On failure, the block <em>is not</em> yielded to, and the method returns a Symbol
-designating the cause of the failure. This will be one of the following:</p>
+<p>If the call fails, the <code>result.success</code> block is yielded to, and passed
+<code>config:</code> and <code>code:</code> parameters. The <code>config:</code> parameter is the active
+configuration as described earlier for <code>result.success</code>. The <code>code:</code>
+parameter will contain one of the following symbols:</p>
 
 <ul>
-<li>If <code>#sign_up</code> was called with a <code>current_user</code> parameter that was not
-<code>nil</code> or the Guest User, it returns <code>:current_user_exists</code>;</li>
-<li>If the specified <code>name</code> attribute value matches a record that already
-exists in the Repository, the return value is <code>:user_already_created</code>;</li>
-<li>If a record containing the specified attributes could not be created in
-the Repository, this method returns <code>:user_creation_failed</code>.</li>
+<li><code>:current_user_exists</code> indicates that the method was called with a
+<code>current_user</code> parameter that was neither <code>nil</code> nor the Guest User.</li>
+<li><code>:user_already_created</code> indicates that the specified <code>name</code> attribute
+matches a record that already exists in the underlying Repository.</li>
+<li><code>:user_creation_failed</code> indicates that the Repository was unable to create
+the new User for some other reason, such as an internal error.</li>
 </ul>
 
-<p>Reek complains about :reek:NilCheck and :reek:FeatureEnvy (for <code>result</code>)
-Reek also complains about :reek:TooManyStatements, sensibly enough</p>
+<p><strong>NOTE</strong> that the incoming <code>params</code> are expected to have been whitelisted at
+the Controller Action Class level.</p>
 
 
   </div>
@@ -2191,15 +2185,22 @@ Reek also complains about :reek:TooManyStatements, sensibly enough</p>
     <p class="tag_title">Examples:</p>
     
       
+        <p class="example_title"><div class='inline'><p>in a Controller Action Class</p>
+</div></p>
+      
       <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid__params'>_params</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_call_params'>call_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span><span class='comma'>,</span>
-              <span class='label'>on_error:</span> <span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='symbol'>:report_errors</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_merge'>merge</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='period'>.</span><span class='id identifier rubyid_to_h'>to_h</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_call_params'>call_params</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_cryptident_config'>cryptident_config</span><span class='op'>|</span>
-    <span class='ivar'>@user</span> <span class='op'>=</span> <span class='id identifier rubyid_user'>user</span>
-    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_user'>user</span>
-    <span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_user'>user</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> successfully created. You may sign in now.</span><span class='tstring_end'>&quot;</span></span>
-    <span class='id identifier rubyid_flash'>flash</span><span class='lbracket'>[</span><span class='id identifier rubyid_cryptident_config'>cryptident_config</span><span class='period'>.</span><span class='id identifier rubyid_success_key'>success_key</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_message'>message</span>
-    <span class='id identifier rubyid_redirect_to'>redirect_to</span> <span class='id identifier rubyid_routes'>routes</span><span class='period'>.</span><span class='id identifier rubyid_root_path'>root_path</span>
+  <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
+    <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_success'>success</span> <span class='kw'>do</span> <span class='op'>|</span><span class='label'>config:</span><span class='comma'>,</span> <span class='label'>user:</span><span class='op'>|</span>
+      <span class='ivar'>@user</span> <span class='op'>=</span> <span class='id identifier rubyid_user'>user</span>
+      <span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_user'>user</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> successfully created. You may sign in now.</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_flash'>flash</span><span class='lbracket'>[</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_success_key'>success_key</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_message'>message</span>
+      <span class='id identifier rubyid_redirect_to'>redirect_to</span> <span class='id identifier rubyid_routes'>routes</span><span class='period'>.</span><span class='id identifier rubyid_root_path'>root_path</span>
+    <span class='kw'>end</span>
+
+    <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_failure'>failure</span> <span class='kw'>do</span> <span class='op'>|</span><span class='label'>code:</span><span class='comma'>,</span> <span class='label'>config:</span><span class='op'>|</span>
+      <span class='comment'># `#error_message_for` is a method on the same class, not shown
+</span>      <span class='id identifier rubyid_flash'>flash</span><span class='lbracket'>[</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_failure_key'>failure_key</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_error_message_for'>error_message_for</span><span class='lparen'>(</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_params'>params</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></code></pre>
     
@@ -2218,11 +2219,10 @@ Reek also complains about :reek:TooManyStatements, sensibly enough</p>
       
         &mdash;
         <div class='inline'><p>Hash-like object of attributes for new User Entity and
-record, confirming to
-<strong>Must</strong> include <code>name</code> and  any other attributes required by
-the underlying database schema, as well as a (clear-text)
-<code>password</code> attribute which will be replaced in the created
-Entity/record by a <code>password_hash</code> attribute.</p>
+record. <strong>Must</strong> include <code>name</code> and  any other attributes
+required by the underlying database schema, as well as a
+clear-text <code>password</code> attribute which will be replaced in the
+created Entity/record by a <code>password_hash</code> attribute.</p>
 </div>
       
     </li>
@@ -2232,14 +2232,14 @@ Entity/record by a <code>password_hash</code> attribute.</p>
         <span class='name'>current_user</span>
       
       
-        <span class='type'>(<tt>User</tt>)</span>
+        <span class='type'>(<tt>User</tt>, <tt>nil</tt>)</span>
       
       
       
         &mdash;
-        <div class='inline'><p>Entity representing the current Authenticated
-User, or the Guest User. A value of <code>nil</code> is treated as though
-the Guest User had been specified.</p>
+        <div class='inline'><p>Entity representing the current
+Authenticated User, or the Guest User. A value of <code>nil</code> is
+treated as though the Guest User had been specified.</p>
 </div>
       
     </li>
@@ -2249,52 +2249,47 @@ the Guest User had been specified.</p>
         <span class='name'>repo</span>
       
       
-        <span class='type'>(<tt>Hanami::Repository</tt>)</span>
+        <span class='type'>(<tt>Hanami::Repository</tt>, <tt>nil</tt>)</span>
       
       
       
         &mdash;
-        <div class='inline'><p>Repository to be used for accessing User
-data. A value of <code>nil</code> indicates that the default Repository
-specified in the Configuration should be used.</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>on_error</span>
-      
-      
-        <span class='type'>(<tt>Method</tt>, <tt>Proc</tt>, <tt>`nil`</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>The method or Proc to be called in
-case of an error, or <code>nil</code> if none is defined.</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>_on_success</span>
-      
-      
-        <span class='type'>(<tt>Block</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>Block containing code to be called on success;
-see earlier description.</p>
+        <div class='inline'><p>Repository to be used for accessing
+User data. A value of <code>nil</code> indicates that the default
+Repository specified in the Configuration should be used.</p>
 </div>
       
     </li>
   
 </ul>
 
+<p class="tag_title">Yield Parameters:</p>
+<ul class="yieldparam">
+  
+    <li>
+      
+        <span class='name'>result</span>
+      
+      
+        <span class='type'>(<tt>Dry::Matcher::Evaluator</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Indicates whether the attempt
+to create a new User succeeded or failed. Block <strong>must</strong>
+call <strong>both</strong> <code>result.success</code> and <code>result.failure</code> methods,
+where the block passed to <code>result.success</code> accepts parameters
+for <code>config:</code> (which is the active configuration for the call)
+and <code>user:</code> (which is the newly-created User Entity). The
+block passed to <code>result.failure</code> accepts parameters for
+<code>config:</code> (as before) and <code>code:</code>, which is a Symbol reporting
+the reason for the failure (as described above).</p>
+</div>
+      
+    </li>
+  
+</ul>
 <p class="tag_title">Returns:</p>
 <ul class="return">
   
@@ -2387,34 +2382,18 @@ Symbol identifying the reason for failure.</p>
       <pre class="lines">
 
 
-169
-170
-171
-172
-173
-174
-175
-176
-177
-178
 179
 180
-181</pre>
+181
+182
+183</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 169</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 179</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>on_error:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid__on_success'>_on_success</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='const'>SignUp</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_repo'>repo</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
-    <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_success'>success</span> <span class='kw'>do</span> <span class='op'>|</span><span class='label'>user:</span><span class='comma'>,</span> <span class='label'>config:</span><span class='op'>|</span>
-      <span class='kw'>yield</span> <span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_config'>config</span> <span class='kw'>if</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
-      <span class='id identifier rubyid_user'>user</span>
-    <span class='kw'>end</span>
-
-    <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_failure'>failure</span> <span class='kw'>do</span> <span class='op'>|</span><span class='label'>code:</span><span class='comma'>,</span> <span class='label'>config:</span><span class='op'>|</span>
-      <span class='id identifier rubyid_on_error'>on_error</span><span class='op'>&amp;.</span><span class='id identifier rubyid_call'>call</span> <span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_config'>config</span>
-      <span class='id identifier rubyid_code'>code</span>
-    <span class='kw'>end</span>
+    <span class='kw'>yield</span> <span class='id identifier rubyid_result'>result</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -2427,7 +2406,7 @@ Symbol identifying the reason for failure.</p>
 </div>
 
       <div id="footer">
-  Generated on Sun Nov 25 00:31:28 2018 by
+  Generated on Sun Nov 25 23:37:33 2018 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.16 (ruby-2.5.3).
 </div>

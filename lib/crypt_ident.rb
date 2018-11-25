@@ -99,58 +99,72 @@ module CryptIdent
 
   ############################################################################ #
 
-  # Persist a new User to a Repository based on passed-in attributes, with a
-  # `:password_hash` attribute containing the encrypted value of the Clear-Text
-  # Password passed in as the `password` attribute.
+  # Persist a new User to a Repository based on passed-in attributes, where the
+  # resulting Entity (on success) contains a  `:password_hash` attribute
+  # containing the encrypted value of the Clear-Text Password passed in as the
+  # `password` value within `attribs`.
   #
-  # On success, the block is yielded to with two parameters: `user`, an Entity
-  # representing the contents of the newly-added record in the Repository, and
-  # `cryptid_config`, which contains the data in the CryptIdent configuration,
-  # such as `success_key` and `error_key`. Any value returned from the block *is
-  # not* preserved. Rather, the method returns the same Entity passed into the
-  # block as `user`. The block **should** assign to the exposed `@user` instance
-  # variable, as well as any other side-effects (logging, etc) that are
-  # appropriate.
+  # The method *requires* a block, to which a `result` indicating success or
+  # failure is yielded. That block **must** in turn call **both**
+  # `result.success` and `result.failure` to handle success and failure results,
+  # respectively. On success, the block yielded to by `result.success` is called
+  # and passed `config:` and `user:` parameters, which are the Config object
+  # active while creating the new User, and the newly-created User Entity itself
+  # respectively.
   #
-  # On failure, the block *is not* yielded to, and the method returns a Symbol
-  # designating the cause of the failure. This will be one of the following:
+  # If the call fails, the `result.success` block is yielded to, and passed
+  # `config:` and `code:` parameters. The `config:` parameter is the active
+  # configuration as described earlier for `result.success`. The `code:`
+  # parameter will contain one of the following symbols:
   #
-  # * If `#sign_up` was called with a `current_user` parameter that was not
-  #   `nil` or the Guest User, it returns `:current_user_exists`;
-  # * If the specified `name` attribute value matches a record that already
-  #   exists in the Repository, the return value is `:user_already_created`;
-  # * If a record containing the specified attributes could not be created in
-  #   the Repository, this method returns `:user_creation_failed`.
+  # * `:current_user_exists` indicates that the method was called with a
+  # `current_user` parameter that was neither `nil` nor the Guest User.
+  # * `:user_already_created` indicates that the specified `name` attribute
+  # matches a record that already exists in the underlying Repository.
+  # * `:user_creation_failed` indicates that the Repository was unable to create
+  # the new User for some other reason, such as an internal error.
+  #
+  # **NOTE** that the incoming `params` are expected to have been whitelisted at
+  # the Controller Action Class level.
   #
   # @since 0.1.0
   # @authenticated Must not be Authenticated.
   # @param [Hash] attribs Hash-like object of attributes for new User Entity and
-  #               record, confirming to
-  #               **Must** include `name` and  any other attributes required by
-  #               the underlying database schema, as well as a (clear-text)
-  #               `password` attribute which will be replaced in the created
-  #               Entity/record by a `password_hash` attribute.
-  # @param [User] current_user Entity representing the current Authenticated
-  #               User, or the Guest User. A value of `nil` is treated as though
-  #               the Guest User had been specified.
-  # @param [Hanami::Repository] repo Repository to be used for accessing User
-  #               data. A value of `nil` indicates that the default Repository
-  #               specified in the Configuration should be used.
-  # @param [Method, Proc, `nil`] on_error The method or Proc to be called in
-  #               case of an error, or `nil` if none is defined.
-  # @param [Block] _on_success Block containing code to be called on success;
-  #               see earlier description.
+  #               record. **Must** include `name` and  any other attributes
+  #               required by the underlying database schema, as well as a
+  #               clear-text `password` attribute which will be replaced in the
+  #               created Entity/record by a `password_hash` attribute.
+  # @param [User, nil] current_user Entity representing the current
+  #               Authenticated User, or the Guest User. A value of `nil` is
+  #               treated as though the Guest User had been specified.
+  # @param [Hanami::Repository, nil] repo Repository to be used for accessing
+  #               User data. A value of `nil` indicates that the default
+  #               Repository specified in the Configuration should be used.
   # @return [User, Symbol] Entity representing created User on success, or a
   #               Symbol identifying the reason for failure.
-  # @example
+  # @yieldparam result [Dry::Matcher::Evaluator] Indicates whether the attempt
+  #               to create a new User succeeded or failed. Block **must**
+  #               call **both** `result.success` and `result.failure` methods,
+  #               where the block passed to `result.success` accepts parameters
+  #               for `config:` (which is the active configuration for the call)
+  #               and `user:` (which is the newly-created User Entity). The
+  #               block passed to `result.failure` accepts parameters for
+  #               `config:` (as before) and `code:`, which is a Symbol reporting
+  #               the reason for the failure (as described above).
+  # @example in a Controller Action Class
   #   def call(_params)
-  #     call_params = { current_user: session[:current_user],
-  #                 on_error: method(:report_errors) }.merge(params.to_h)
-  #     sign_up(call_params) do |user, cryptident_config|
-  #       @user = user
-  #       message = "#{user.name} successfully created. You may sign in now."
-  #       flash[cryptident_config.success_key] = message
-  #       redirect_to routes.root_path
+  #     sign_up(params, current_user: session[:current_user]) do |result|
+  #       result.success do |config:, user:|
+  #         @user = user
+  #         message = "#{user.name} successfully created. You may sign in now."
+  #         flash[config.success_key] = message
+  #         redirect_to routes.root_path
+  #       end
+  #
+  #       result.failure do |code:, config:|
+  #         # `#error_message_for` is a method on the same class, not shown
+  #         flash[config.failure_key] = error_message_for(code, params)
+  #       end
   #     end
   #   end
   # @session_data
@@ -162,20 +176,9 @@ module CryptIdent
   #   - Guest User
   #   - Repository
   #   - User
-  #
-  # Reek complains about :reek:NilCheck and :reek:FeatureEnvy (for `result`)
-  # Reek also complains about :reek:TooManyStatements, sensibly enough
-  def sign_up(attribs, current_user:, repo: nil, on_error: nil, &_on_success)
+  def sign_up(attribs, current_user:, repo: nil)
     SignUp.new(repo).call(attribs, current_user: current_user) do |result|
-      result.success do |user:, config:|
-        yield user, config if block_given?
-        user
-      end
-
-      result.failure do |code:, config:|
-        on_error&.call code, config
-        code
-      end
+      yield result
     end
   end
 
@@ -254,7 +257,6 @@ module CryptIdent
   #
   # ----
   #
-  # Reek complains that this is a :reek:UtilityFunction. No state needed.
   def sign_in(user, password, current_user: nil)
     SignIn.new.call(user: user, password: password, current_user: current_user)
   end
@@ -314,9 +316,6 @@ module CryptIdent
   #   - Interactor
   #   - Repository
   #
-  # ----
-  #
-  # Reek complains that this is a :reek:UtilityFunction. No state needed.
   def sign_out(&_block)
     yield CryptIdent.configure_crypt_ident
   end
@@ -394,8 +393,6 @@ module CryptIdent
   #   - Guest User
   #   - Registered User
   #   - Repository
-  #
-  # Reek complains that this is a :reek:UtilityFunction. No state needed.
   def change_password(user, current_password, new_password, repo: nil)
     ChangePassword.new(config: CryptIdent.cryptid_config, repo: repo,
                        user: user)
