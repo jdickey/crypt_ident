@@ -140,8 +140,7 @@ module CryptIdent
   # @param [Hanami::Repository, nil] repo Repository to be used for accessing
   #               User data. A value of `nil` indicates that the default
   #               Repository specified in the Configuration should be used.
-  # @return [User, Symbol] Entity representing created User on success, or a
-  #               Symbol identifying the reason for failure.
+  # @return (void) Use the `result` yield parameter to determine results.
   # @yieldparam result [Dry::Matcher::Evaluator] Indicates whether the attempt
   #               to create a new User succeeded or failed. Block **must**
   #               call **both** `result.success` and `result.failure` methods,
@@ -189,18 +188,27 @@ module CryptIdent
   # If the Current User is either `nil` or the Guest User, then Authentication
   # of the specified User Entity against the specified Password proceeds as
   # follows: The User Entity's `password_hash` attribute is used to attempt a
-  # match against the passed-in Clear-Text Password. If and only if a match is
-  # determined, the passed-in User Entity is returned, indicating success.
-  # Otherwise, the method returns `nil`.
+  # match against the passed-in Clear-Text Password.
   #
-  # If the Current User is the *same* User as that in the specified User Entity
-  # (as compared by their attributes being equal), then Authentication proceeds
-  # normally; if the incorrect Password is specified, the method will return
-  # `nil` (and its client code can determine what to do from there).
+  # The method *requires* a block, to which a `result` indicating success or
+  # failure is yielded. That block **must** in turn call **both**
+  # `result.success` and `result.failure` to handle success and failure results,
+  # respectively. On success, the block yielded to by `result.success` is called
+  # and passed a `user:` parameter, which is the Authenticated User (and is the
+  # same Entity as the `user` parameter passed in to `#sign_in`).
   #
-  # If the Current User is a User *other than* the Guest User or the User Entity
-  # passed in, the method returns `nil` without attempting to Authenticate the
-  # Clear-Text Password.
+  # On failure, the `result.failure` call will yield a `code:` parameter to its
+  # block, which indicates the cause of failure as follows:
+  #
+  # If the specified password *did not* match the passed-in `user` Entity, then
+  # the `code:` for failure will be `:invalid_password`.
+  #
+  # If the specified `user` was `nil` or the Guest User, then the `code:` for
+  # failure will be `:user_is_guest`.
+  #
+  # If the specified `current_user` is *neither* the Guest User *nor* the `user`
+  # passed in as a parameter to `#sign_in`, then the `code:` for failure will be
+  # `:illegal_current_user`.
   #
   # On *success,* the Controller-level client code **must** set:
   #
@@ -223,23 +231,34 @@ module CryptIdent
   # @param [User, nil] current_user Entity representing the currently
   #               Authenticated User Entity; either `nil` or the Guest User if
   #               none.
-  # @return [User, nil] See method descriptive text.
+  # @return (void) Use the `result` yield parameter to determine results.
   # @example As in a Controller Action Class (which you'd refactor somewhat):
   #   def call(params)
   #     user = UserRepository.new.find_by_email(params[:email])
   #     guest_user = CryptIdent::configure_crypt_ident.guest_user
   #     return update_session_data(guest_user, 0) unless user
   #
-  #     @user = sign_in(user, params[:password],
-  #                     current_user: session[:current_user])
-  #     if @user
-  #       update_session_data(@user, Time.now)
-  #     else
-  #       update_session_data(guest_user, 0)
+  #     current_user = session[:current_user]
+  #     config = CryptId.configure_crypt_ident
+  #     sign_in(user, params[:password], current_user: current_user) do |result|
+  #       result.success do |user:|
+  #         @user = user
+  #         update_session_data(user, Time.now)
+  #         flash[config.success_key] = "User #{user.name} signed in."
+  #         redirect_to routes.root_path
+  #       end
+  #
+  #       result.failure do |code:|
+  #         update_session_data(guest_user, 0)
+  #         flash[config.error_key] = error_message_for(code)
+  #       end
   #     end
-  #   end
   #
   #   private
+  #
+  #   def error_message_for(code)
+  #     # ...
+  #   end
   #
   #   def update_session_data(user, time)
   #     session[:current_user] = user
@@ -255,7 +274,6 @@ module CryptIdent
   #   - Guest User
   #   - User
   #
-  # FIXME: :reek:TooManyStatements
   def sign_in(user_in, password, current_user: nil)
     params = { user: user_in, password: password, current_user: current_user }
     SignIn.new.call(params) { |result| yield result }

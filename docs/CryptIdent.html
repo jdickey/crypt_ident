@@ -354,7 +354,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#sign_in-instance_method" title="#sign_in (instance method)">#<strong>sign_in</strong>(user_in, password, current_user: nil)  &#x21d2; User<sup>?</sup> </a>
+      <a href="#sign_in-instance_method" title="#sign_in (instance method)">#<strong>sign_in</strong>(user_in, password, current_user: nil)  </a>
     
 
     
@@ -400,7 +400,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#sign_up-instance_method" title="#sign_up (instance method)">#<strong>sign_up</strong>(attribs, current_user:, repo: nil) {|result| ... } &#x21d2; User, Symbol </a>
+      <a href="#sign_up-instance_method" title="#sign_up (instance method)">#<strong>sign_up</strong>(attribs, current_user:, repo: nil) {|result| ... } </a>
     
 
     
@@ -983,14 +983,14 @@ success, or a symbolic error identifier on failure.</p>
       <pre class="lines">
 
 
-402
-403
-404
-405
-406</pre>
+414
+415
+416
+417
+418</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 402</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 414</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='const'>ChangePassword</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='label'>config:</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_cryptid_config'>cryptid_config</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='id identifier rubyid_repo'>repo</span><span class='comma'>,</span>
@@ -1171,12 +1171,12 @@ Token is to be generated.</p>
       <pre class="lines">
 
 
-461
-462
-463</pre>
+473
+474
+475</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 461</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 473</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_generate_reset_token'>generate_reset_token</span><span class='lparen'>(</span><span class='id identifier rubyid_user_name'>user_name</span><span class='rparen'>)</span>
   <span class='comment'># To be implemented.
@@ -1404,12 +1404,12 @@ return value</p>
       <pre class="lines">
 
 
-531
-532
-533</pre>
+543
+544
+545</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 531</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 543</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_password'>reset_password</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='id identifier rubyid_confirmation'>confirmation</span><span class='rparen'>)</span>
   <span class='comment'># To be implemented.
@@ -1528,12 +1528,12 @@ signing out a User.</p>
       <pre class="lines">
 
 
-557
-558
-559</pre>
+569
+570
+571</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 557</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 569</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_restart_session_counter'>restart_session_counter</span>
   <span class='comment'># To be implemented.
@@ -1671,12 +1671,12 @@ specified by <code>config.guest_user</code>.</p>
       <pre class="lines">
 
 
-587
-588
-589</pre>
+599
+600
+601</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 587</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 599</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_session_expired?'>session_expired?</span>
   <span class='comment'># To be implemented.
@@ -1689,7 +1689,7 @@ specified by <code>config.guest_user</code>.</p>
       <div class="method_details ">
   <h3 class="signature " id="sign_in-instance_method">
   
-    #<strong>sign_in</strong>(user_in, password, current_user: nil)  &#x21d2; <tt>User</tt><sup>?</sup> 
+    #<strong>sign_in</strong>(user_in, password, current_user: nil)  
   
 
   
@@ -1697,25 +1697,34 @@ specified by <code>config.guest_user</code>.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Attempt to Authenticate a User, passing in an Entity for that User (which
+    <p class="note returns_void">This method returns an undefined value.</p><p>Attempt to Authenticate a User, passing in an Entity for that User (which
 <strong>must</strong> contain a <code>password_hash</code> attribute), and a Clear-Text Password.
 It also passes in the Current User.</p>
 
 <p>If the Current User is either <code>nil</code> or the Guest User, then Authentication
 of the specified User Entity against the specified Password proceeds as
 follows: The User Entity&#39;s <code>password_hash</code> attribute is used to attempt a
-match against the passed-in Clear-Text Password. If and only if a match is
-determined, the passed-in User Entity is returned, indicating success.
-Otherwise, the method returns <code>nil</code>.</p>
+match against the passed-in Clear-Text Password.</p>
 
-<p>If the Current User is the <em>same</em> User as that in the specified User Entity
-(as compared by their attributes being equal), then Authentication proceeds
-normally; if the incorrect Password is specified, the method will return
-<code>nil</code> (and its client code can determine what to do from there).</p>
+<p>The method <em>requires</em> a block, to which a <code>result</code> indicating success or
+failure is yielded. That block <strong>must</strong> in turn call <strong>both</strong>
+<code>result.success</code> and <code>result.failure</code> to handle success and failure results,
+respectively. On success, the block yielded to by <code>result.success</code> is called
+and passed a <code>user:</code> parameter, which is the Authenticated User (and is the
+same Entity as the <code>user</code> parameter passed in to <code>#sign_in</code>).</p>
 
-<p>If the Current User is a User <em>other than</em> the Guest User or the User Entity
-passed in, the method returns <code>nil</code> without attempting to Authenticate the
-Clear-Text Password.</p>
+<p>On failure, the <code>result.failure</code> call will yield a <code>code:</code> parameter to its
+block, which indicates the cause of failure as follows:</p>
+
+<p>If the specified password <em>did not</em> match the passed-in <code>user</code> Entity, then
+the <code>code:</code> for failure will be <code>:invalid_password</code>.</p>
+
+<p>If the specified <code>user</code> was <code>nil</code> or the Guest User, then the <code>code:</code> for
+failure will be <code>:user_is_guest</code>.</p>
+
+<p>If the specified <code>current_user</code> is <em>neither</em> the Guest User <em>nor</em> the <code>user</code>
+passed in as a parameter to <code>#sign_in</code>, then the <code>code:</code> for failure will be
+<code>:illegal_current_user</code>.</p>
 
 <p>On <em>success,</em> the Controller-level client code <strong>must</strong> set:</p>
 
@@ -1735,8 +1744,6 @@ Repository.</li>
 <li><code>session[:current_user]</code> to <code>nil</code> or the Guest User.</li>
 </ul>
 
-<p>FIXME: :reek:TooManyStatements</p>
-
 
   </div>
 </div>
@@ -1749,26 +1756,37 @@ Repository.</li>
         <p class="example_title"><div class='inline'><p>As in a Controller Action Class (which you&#39;d refactor somewhat):</p>
 </div></p>
       
-      <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_user'>user</span> <span class='op'>=</span> <span class='const'>UserRepository</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_find_by_email'>find_by_email</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:email</span><span class='rbracket'>]</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_guest_user'>guest_user</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='op'>::</span><span class='id identifier rubyid_configure_crypt_ident'><span class='object_link'><a href="#configure_crypt_ident-class_method" title="CryptIdent.configure_crypt_ident (method)">configure_crypt_ident</a></span></span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span>
-  <span class='kw'>return</span> <span class='id identifier rubyid_update_session_data'>update_session_data</span><span class='lparen'>(</span><span class='id identifier rubyid_guest_user'>guest_user</span><span class='comma'>,</span> <span class='int'>0</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_user'>user</span>
+      <pre class="example code"><code>def call(params)
+  user = UserRepository.new.find_by_email(params[:email])
+  guest_user = CryptIdent::configure_crypt_ident.guest_user
+  return update_session_data(guest_user, 0) unless user
 
-  <span class='ivar'>@user</span> <span class='op'>=</span> <span class='id identifier rubyid_sign_in'>sign_in</span><span class='lparen'>(</span><span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:password</span><span class='rbracket'>]</span><span class='comma'>,</span>
-                  <span class='label'>current_user:</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span><span class='rparen'>)</span>
-  <span class='kw'>if</span> <span class='ivar'>@user</span>
-    <span class='id identifier rubyid_update_session_data'>update_session_data</span><span class='lparen'>(</span><span class='ivar'>@user</span><span class='comma'>,</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span><span class='rparen'>)</span>
-  <span class='kw'>else</span>
-    <span class='id identifier rubyid_update_session_data'>update_session_data</span><span class='lparen'>(</span><span class='id identifier rubyid_guest_user'>guest_user</span><span class='comma'>,</span> <span class='int'>0</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-<span class='kw'>end</span>
+  current_user = session[:current_user]
+  config = CryptId.configure_crypt_ident
+  sign_in(user, params[:password], current_user: current_user) do |result|
+    result.success do |user:|
+      @user = user
+      update_session_data(user, Time.now)
+      flash[config.success_key] = &quot;User #{user.name} signed in.&quot;
+      redirect_to routes.root_path
+    end
 
-<span class='id identifier rubyid_private'>private</span>
+    result.failure do |code:|
+      update_session_data(guest_user, 0)
+      flash[config.error_key] = error_message_for(code)
+    end
+  end
 
-<span class='kw'>def</span> <span class='id identifier rubyid_update_session_data'>update_session_data</span><span class='lparen'>(</span><span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_time'>time</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_user'>user</span>
-  <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:start_time</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='const'>Hanami</span><span class='op'>::</span><span class='const'>Utils</span><span class='op'>::</span><span class='const'>Kernel</span><span class='period'>.</span><span class='const'>Time</span><span class='lparen'>(</span><span class='id identifier rubyid_time'>time</span><span class='rparen'>)</span>
-<span class='kw'>end</span></code></pre>
+private
+
+def error_message_for(code)
+  # ...
+end
+
+def update_session_data(user, time)
+  session[:current_user] = user
+  session[:start_time] == Hanami::Utils::Kernel.Time(time)
+end</code></pre>
     
   </div>
 <p class="tag_title">Parameters:</p>
@@ -1823,23 +1841,6 @@ none.</p>
   
 </ul>
 
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>User</tt>, <tt>nil</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>See method descriptive text.</p>
-</div>
-      
-    </li>
-  
-</ul>
 <p class="tag_title">Since:</p>
 <ul class="since">
   
@@ -1914,29 +1915,17 @@ none.</p>
       <pre class="lines">
 
 
-259
-260
-261
-262
-263
-264
-265
-266
-267
-268</pre>
+277
+278
+279
+280</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 259</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 277</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_in'>sign_in</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_params'>params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>user:</span> <span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='label'>password:</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
-  <span class='const'>SignIn</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
-    <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_success'>success</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='label'>user:</span><span class='op'>|</span> <span class='kw'>return</span> <span class='id identifier rubyid_user'>user</span> <span class='rbrace'>}</span>
-    <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_failure'>failure</span> <span class='kw'>do</span> <span class='op'>|</span><span class='label'>code:</span><span class='op'>|</span>
-      <span class='id identifier rubyid__'>_</span> <span class='op'>=</span> <span class='id identifier rubyid_code'>code</span>
-      <span class='kw'>return</span> <span class='kw'>nil</span>
-    <span class='kw'>end</span>
-  <span class='kw'>end</span>
+  <span class='const'>SignIn</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span> <span class='kw'>yield</span> <span class='id identifier rubyid_result'>result</span> <span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2134,12 +2123,12 @@ currently-active configuration values.</p>
       <pre class="lines">
 
 
-325
-326
-327</pre>
+337
+338
+339</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 325</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 337</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_out'>sign_out</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid__block'>_block</span><span class='rparen'>)</span>
   <span class='kw'>yield</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure_crypt_ident'><span class='object_link'><a href="#configure_crypt_ident-class_method" title="CryptIdent.configure_crypt_ident (method)">configure_crypt_ident</a></span></span>
@@ -2152,7 +2141,7 @@ currently-active configuration values.</p>
       <div class="method_details ">
   <h3 class="signature " id="sign_up-instance_method">
   
-    #<strong>sign_up</strong>(attribs, current_user:, repo: nil) {|result| ... } &#x21d2; <tt>User</tt>, <tt>Symbol</tt> 
+    #<strong>sign_up</strong>(attribs, current_user:, repo: nil) {|result| ... } 
   
 
   
@@ -2160,7 +2149,7 @@ currently-active configuration values.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Persist a new User to a Repository based on passed-in attributes, where the
+    <p class="note returns_void">This method returns an undefined value.</p><p>Persist a new User to a Repository based on passed-in attributes, where the
 resulting Entity (on success) contains a  <code>:password_hash</code> attribute
 containing the encrypted value of the Clear-Text Password passed in as the
 <code>password</code> value within <code>attribs</code>.</p>
@@ -2304,24 +2293,6 @@ the reason for the failure (as described above).</p>
     </li>
   
 </ul>
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>User</tt>, <tt>Symbol</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>Entity representing created User on success, or a
-Symbol identifying the reason for failure.</p>
-</div>
-      
-    </li>
-  
-</ul>
 <p class="tag_title">Since:</p>
 <ul class="since">
   
@@ -2396,14 +2367,14 @@ Symbol identifying the reason for failure.</p>
       <pre class="lines">
 
 
+178
 179
 180
 181
-182
-183</pre>
+182</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 179</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 178</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='const'>SignUp</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_repo'>repo</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
@@ -2420,7 +2391,7 @@ Symbol identifying the reason for failure.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Nov 26 01:03:40 2018 by
+  Generated on Mon Nov 26 01:58:38 2018 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.16 (ruby-2.5.3).
 </div>
