@@ -22,22 +22,34 @@ describe 'CryptIdent#sign_in' do
   describe 'when no Authenticated User is Signed In' do
     describe 'when the correct password is supplied' do
       it 'returns the same User Entity used for Authentication' do
-        actual = sign_in(user, params[:password], current_user: nil)
+        actual = :unassigned
+        sign_in(user, params[:password], current_user: nil) do |result|
+          result.success { |user:| actual = user }
+          result.failure { next }
+        end
         expect(actual).must_equal user
       end
     end # describe 'when the correct password is supplied'
 
     describe 'when an incorrect password is supplied' do
-      it 'returns nil' do
-        actual = sign_in(user, 'B@d Passwrod', current_user: guest_user)
-        expect(actual).must_be :nil?
+      it 'returns a :code of :invalid_password' do
+        actual = :unassigned
+        sign_in(user, 'B@d Passwrod', current_user: guest_user) do |result|
+          result.success { next }
+          result.failure { |code:| actual = code }
+        end
+        expect(actual).must_equal :invalid_password
       end
     end # describe 'when an incorrect password is supplied'
 
     describe 'when Authentication of the Guest User is attempted' do
-      it 'returns nil' do
-        actual = sign_in(guest_user, 'anything', current_user: nil)
-        expect(actual).must_be :nil?
+      it 'returns a :code of :user_is_guest' do
+        actual = :unassigned
+        sign_in(guest_user, 'anything', current_user: nil) do |result|
+          result.success { next }
+          result.failure { |code:| actual = code }
+        end
+        expect(actual).must_equal :user_is_guest
       end
     end # describe 'when Authentication of the Guest User is attempted'
   end # describe 'when no Authenticated User is Signed In'
@@ -54,8 +66,12 @@ describe 'CryptIdent#sign_in' do
     end
 
     it 'fails even with a correct password for a different User' do
-      actual = sign_in(user, params[:password], current_user: other_user)
-      expect(actual).must_be :nil?
+      actual = :unassigned
+      sign_in(user, params[:password], current_user: other_user) do |result|
+        result.success { next }
+        result.failure { |code:| actual = code }
+      end
+      expect(actual).must_equal :illegal_current_user
     end
   end # describe 'when an Authenticated User is Signed In'
 end

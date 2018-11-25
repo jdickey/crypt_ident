@@ -258,13 +258,7 @@ module CryptIdent
   # FIXME: :reek:TooManyStatements
   def sign_in(user_in, password, current_user: nil)
     params = { user: user_in, password: password, current_user: current_user }
-    SignIn.new.call(params) do |result|
-      result.success { |user:| return user }
-      result.failure do |code:|
-        _ = code
-        return nil
-      end
-    end
+    SignIn.new.call(params) { |result| yield result }
   end
 
   # Sign out a previously Authenticated User.

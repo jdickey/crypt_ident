@@ -56,8 +56,12 @@ describe 'CryptIdent#sign_up' do
 
           result.failure { fail 'Oops' }
         end
-        user_with_password = sign_in(saved_user, valid_input_params[:password])
-        expect(user_with_password).wont_be :nil?
+        user_with_password = :unassigned
+        sign_in(saved_user, valid_input_params[:password]) do |result|
+          result.success { |user:| user_with_password = user }
+          result.failure { next }
+        end
+        expect(user_with_password).must_equal saved_user
       end
     end # describe 'when a Password is specified'
 
