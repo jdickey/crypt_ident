@@ -27,9 +27,13 @@ describe 'CryptIdent#sign_out' do
     end
 
     it 'and session-data items are reset' do
-      sign_out do
-        session[:current_user] = guest_user
-        session[:start_time] = long_ago
+      sign_out(current_user: session[:current_user]) do |result|
+        result.success do
+          session[:current_user] = guest_user
+          session[:start_time] = long_ago
+        end
+
+        result.failure { next }
       end
       # TODO: Consider calling `#session_expired?` once implemented.
       expect(session[:current_user]).must_equal guest_user
@@ -37,9 +41,13 @@ describe 'CryptIdent#sign_out' do
     end
 
     it 'and session-data items are deleted' do
-      sign_out do
-        session[:current_user] = nil
-        session[:start_time] = nil
+      sign_out(current_user: session[:current_user]) do |result|
+        result.success do
+          session[:current_user] = nil
+          session[:start_time] = nil
+        end
+
+        result.failure { next }
       end
       # NOTE: [Setting session data to `nil`](https://github.com/hanami/controller/blob/234f31c/lib/hanami/action/session.rb#L56-L57)
       # deletes it, in normal Rack/Hanami/etc usage. To simulate that with a
@@ -51,9 +59,13 @@ describe 'CryptIdent#sign_out' do
 
   describe 'when no Authenticated User is Signed In' do
     it 'and session-data items are reset' do
-      sign_out do
-        session[:current_user] = guest_user
-        session[:start_time] = long_ago
+      sign_out(current_user: nil) do |result|
+        result.success do
+          session[:current_user] = guest_user
+          session[:start_time] = long_ago
+        end
+
+        result.failure { next }
       end
       # TODO: Consider calling `#session_expired?` once implemented.
       expect(session[:current_user]).must_equal guest_user
@@ -61,9 +73,13 @@ describe 'CryptIdent#sign_out' do
     end
 
     it 'and session-data items are deleted' do
-      sign_out do
-        session[:current_user] = nil
-        session[:start_time] = nil
+      sign_out(current_user: guest_user) do |result|
+        result.success do
+          session[:current_user] = nil
+          session[:start_time] = nil
+        end
+
+        result.failure { next }
       end
       # NOTE: See NOTE above.
       session.compact!

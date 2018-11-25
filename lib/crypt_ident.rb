@@ -7,6 +7,7 @@ require 'crypt_ident/version'
 require_relative './crypt_ident/config'
 require_relative './crypt_ident/change_password'
 require_relative './crypt_ident/sign_in'
+require_relative './crypt_ident/sign_out'
 require_relative './crypt_ident/sign_up'
 
 # Include and interact with `CryptIdent` to add authentication to a
@@ -232,6 +233,15 @@ module CryptIdent
   #               Authenticated User Entity; either `nil` or the Guest User if
   #               none.
   # @return (void) Use the `result` yield parameter to determine results.
+  # @yieldparam result [Dry::Matcher::Evaluator] Indicates whether the attempt
+  #               to Authenticate a User succeeded or failed. Block **must**
+  #               call **both** `result.success` and `result.failure` methods,
+  #               where the block passed to `result.success` accepts a parameter
+  #               for `user:` (which is the newly-created User Entity). The
+  #               block passed to `result.failure` accepts a parameter for
+  #               `code:`, which is a Symbol reporting the reason for the
+  #               failure (as described above).
+  # @yieldreturn [void]
   # @example As in a Controller Action Class (which you'd refactor somewhat):
   #   def call(params)
   #     user = UserRepository.new.find_by_email(params[:email])
@@ -281,44 +291,49 @@ module CryptIdent
 
   # Sign out a previously Authenticated User.
   #
-  # The block is _required_ for this method; in it, you should either delete or
-  # reset the `session[:current_user]` and `session[:start_time]` variables.
-  #
-  # If resetting the values, we **recommend** they be set to
-  #
-  # * `CryptIdent.configure_crypt_ident.guest_user` for
-  #   `session[:current_user]` and
-  # * `Hanami::Utils::Kernel.Time(0)` for `session[:start_time]`, which will set
-  #   the timestamp to midnight on 1 January 1970 -- a value which should *far*
-  #   exceed your session-expiry limit.
-  #
-  # Calling this method when no Current User has been Authenticated is virtually
-  # idempotent; the only changes will be if you had reset session data in one
-  # call and deleted it in the other, or vice versa. Either **should not** have
-  # any impact on your application.
+  # The method *requires* a block, to which a `result` indicating success or
+  # failure is yielded. (Presently, any call to `#sign_out` results in success.)
+  # That block **must** in turn call **both** `result.success` and
+  # `result.failure` (even though no failure is implemented) to handle success
+  # and failure results, respectively. On success, the block yielded to by
+  # `result.success` is called and passed a `config:` parameter, which is simply
+  # the value returned from `CryptIdent.configure_crypt_ident` with no modifier
+  # block). It may safely be ignored.
   #
   # @since 0.1.0
   # @authenticated Should be Authenticated.
-  # @param [Block] _block Required block which will always be called; see
-  #                earlier description.
+  # @param [User] current_user Entity representing the currently Authenticated
+  #               Authenticated User Entity. This **should** not be either `nil`
+  #               or the Guest User.
   # @return (void)
-  # @yieldparam [Config] config Immutable CryptIdent::Config instance with
-  #                      currently-active configuration values.
+  # @yieldparam result [Dry::Matcher::Evaluator] Normally, used to report
+  #               whether a method succeeded or failed. The block **must**
+  #               call **both** `result.success` and `result.failure` methods.
+  #               In practice, parameters to both may presently be safely
+  #               ignored; `config` is passed to `success` as a convenience.
   # @yieldreturn [void]
   #
   # @example Controller Action Class method example resetting values
   #   def call(_params)
-  #     sign_out do
-  #       session[:current_user] = CryptIdent.configure_crypt_ident.guest_user
-  #       session[:start_time] = Hanami::Utils::Kernel.Time(0)
+  #     sign_out(session[:current_user]) do |result|
+  #       result.success do |config|
+  #         session[:current_user] = config.guest_user
+  #         session[:start_time] = Hanami::Utils::Kernel.Time(0)
+  #       end
+  #
+  #       result.failure { next }
   #     end
   #   end
   #
   # @example Controller Action Class method example deleting values
   #   def call(_params)
-  #     sign_out do
-  #       session[:current_user] = nil
-  #       session[:start_time] = nil
+  #     sign_out(session[:current_user]) do |result|
+  #       result.success do |config|
+  #         session[:current_user] = nil
+  #         session[:start_time] = nil
+  #       end
+  #
+  #       result.failure { next }
   #     end
   #   end
   #
@@ -334,8 +349,8 @@ module CryptIdent
   #   - Interactor
   #   - Repository
   #
-  def sign_out(&_block)
-    yield CryptIdent.configure_crypt_ident
+  def sign_out(current_user:)
+    SignOut.new.call(current_user: current_user) { |result| yield result }
   end
 
   # Change an Authenticated User's password.
