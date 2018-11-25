@@ -10,7 +10,14 @@ describe 'CryptIdent#sign_in' do
     { name: 'J Random User', password: 'Suitably Entropic Password!' }
   end
   let(:repo) { UserRepository.new }
-  let(:user) { sign_up(params, repo: repo, current_user: nil) }
+  let(:user) do
+    saved_user = :unassigned
+    sign_up(params, repo: repo, current_user: nil) do |result|
+      result.success { |config:, user:| saved_user = user }
+      result.failure { |code:, config:| skip }
+    end
+    saved_user
+  end
 
   describe 'when no Authenticated User is Signed In' do
     describe 'when the correct password is supplied' do
@@ -37,7 +44,13 @@ describe 'CryptIdent#sign_in' do
 
   describe 'when an Authenticated User is Signed In' do
     let(:other_user) do
-      sign_up({ name: 'Another User', password: 'anything' }, current_user: nil)
+      saved_user = :unassigned
+      auth_params = { name: 'Another User', password: 'anything' }
+      sign_up(auth_params, current_user: nil) do |result|
+        result.success { |config:, user:| saved_user = user }
+        result.failure { next }
+      end
+      saved_user
     end
 
     it 'fails even with a correct password for a different User' do

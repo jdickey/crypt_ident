@@ -1,4 +1,4 @@
-#!env ruby
+#!/usr/bin/env ruby
 #
 # This file exists to build the list of Gems to be installed in images built
 # using the Dockerfiles (see `build-dockerfiles.rb`). Note that the list of Gems
@@ -45,6 +45,8 @@ end
 
 list = [
   'bcrypt:3.1.12',
+  'dry-matcher:0.7.0',
+  'dry-monads:1.1.0',
   'flay:2.12.0',
   'flog:4.6.2',
   'github-markup:3.0.1',

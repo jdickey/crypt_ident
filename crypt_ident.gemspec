@@ -42,9 +42,10 @@ Gem::Specification.new do |spec|
   # way. PRs welcome.
   #
   spec.add_runtime_dependency 'bcrypt'
-  # hanami-model 1.2.0 and 1.3.0 depend on *18* other Gems. Just as a reminder.
   spec.add_runtime_dependency 'hanami-model'
   spec.add_runtime_dependency 'hanami-controller'
+  spec.add_runtime_dependency 'dry-matcher'
+  spec.add_runtime_dependency 'dry-monads'
 
   spec.add_development_dependency "bundler" # , '>= 1.16.6'
   spec.add_development_dependency "rake" # , '>= 12.3.1'

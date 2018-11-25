@@ -19,7 +19,8 @@ require 'hanami/action'
 require 'hanami/action/session'
 require 'hanami/model'
 
-reporter_name = ENV['REPORTER'] || 'SpecReporter'
+# reporter_name = ENV['REPORTER'] || 'SpecReporter'
+reporter_name = ENV['REPORTER'] || 'DefaultReporter'
 reporter_name = 'minitest/reporters/' + reporter_name
 reporter_name = Hanami::Utils::String.classify(reporter_name)
 Reporter = Hanami::Utils::Class.load(reporter_name)

@@ -3,6 +3,8 @@ PATH
   specs:
     crypt_ident (0.1.0)
       bcrypt
+      dry-matcher
+      dry-monads
       hanami-controller
       hanami-model
 
@@ -40,6 +42,11 @@ GEM
       dry-container (~> 0.2, >= 0.2.6)
       dry-core (~> 0.2)
       dry-equalizer (~> 0.2)
+    dry-matcher (0.7.0)
+    dry-monads (1.1.0)
+      concurrent-ruby (~> 1.0)
+      dry-core (~> 0.4, >= 0.4.4)
+      dry-equalizer
     dry-struct (0.3.1)
       dry-configurable (~> 0.1)
       dry-core (~> 0.3)
