@@ -1,43 +1,50 @@
 # frozen_string_literal: true
 
-require 'securerandom'
+require 'dry/monads/result'
+require 'dry/matcher/result_matcher'
 
-# Sign-in (Authentication) logic for CryptIdent
+# Reworked sign-in (Authentication) logic for CryptIdent
 #
 # @author Jeff Dickey
 # @version 0.1.0
 module CryptIdent
-  # Sign-in logic for `CryptIdent`, extracted from original `#sign_in` method.
+  # Reworked sign-in logic for `CryptIdent`, per Issue #9.
   #
   # This class *is not* part of the published API.
   # @private
   class SignIn
+    include Dry::Monads::Result::Mixin
+    include Dry::Matcher.for(:call, with: Dry::Matcher::ResultMatcher)
+
+    # As a reminder, calling `Failure` *does not* interrupt control flow *or*
+    # prevent a future `Success` call from overriding the result. This is one
+    # case where raising *and catching* an exception is Useful
     def call(user:, password:, current_user: nil)
       set_ivars(user, password, current_user)
-      return nil if guard_condition_failed?
-
-      match = password_comparator == password
-      match ? user : nil
+      validate_user_and_current_user
+      verify_matching_password
+      Success(user: user)
+    rescue LogicError => error
+      Failure(code: error.message.to_sym)
     end
 
     private
 
     attr_reader :current_user, :password, :user
 
-    def current_user_same?
-      current_user.name == user.name
-    end
-
-    def guard_condition_failed?
-      user.guest_user? || illegal_current_user?
-    end
+    LogicError = Class.new(RuntimeError)
+    private_constant :LogicError
 
     def illegal_current_user?
-      !current_user.guest_user? && !current_user_same?
+      !current_user.guest_user? && !same_user?
     end
 
     def password_comparator
       BCrypt::Password.new(user.password_hash)
+    end
+
+    def same_user?
+      current_user.name == user.name
     end
 
     # Reek complains about a :reek:ControlParameter for `current`. Never mind.
@@ -46,5 +53,15 @@ module CryptIdent
       @password = password
       @current_user = current || CryptIdent.configure_crypt_ident.guest_user
     end
-  end # class CryptIdent::SignIn
+
+    def validate_user_and_current_user
+      raise LogicError, 'user_is_guest' if user.guest_user?
+      raise LogicError, 'illegal_current_user' if illegal_current_user?
+    end
+
+    def verify_matching_password
+      match = password_comparator == password
+      raise LogicError, 'invalid_password' unless match
+    end
+  end
 end
