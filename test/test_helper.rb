@@ -136,16 +136,16 @@ class UserRepository
   end
 end
 
-class Login
-  include Hanami::Action
-  include Hanami::Action::Session
-  include CryptIdent
+# class Login
+#   include Hanami::Action
+#   include Hanami::Action::Session
+#   include CryptIdent
 
-  def call(params)
-    @user = params.env[:user]
-    # begin of TB's test #login
-    session[:current_user] = @user
-    session[:session_start_time] = Time.now
-    flash[:success] = 'You were successfully logged in.'
-  end
-end # class Login
+#   def call(params)
+#     @user = params.env[:user]
+#     # begin of TB's test #login
+#     session[:current_user] = @user
+#     session[:session_start_time] = Time.now
+#     flash[:success] = 'You were successfully logged in.'
+#   end
+# end # class Login

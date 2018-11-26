@@ -362,58 +362,75 @@ module CryptIdent
   # specified (i.e., if the parameter has its default value of `nil`), then the
   # `UserRepository` specified in the Configuration is used.
   #
-  # If the passed-in `user` is the Guest User (or `nil`), the method returns
-  # `:invalid_user` and no further action is taken.
+  # The method *requires* a block, to which a `result` indicating success or
+  # failure is yielded. That block **must** in turn call **both**
+  # `result.success` and `result.failure` to handle success and failure results,
+  # respectively. On success, the block yielded to by `result.success` is called
+  # and passed a `user:` parameter, which is identical to the `user` parameter
+  # passed in to `#change_password` *except* that the `:password_hash` attribute
+  # has been updated to reflect the changed password. The updated value for the
+  # encrypted password will also have been saved to the Repository.
   #
-  # If the specified current Clear-Text Password cannot Authenticate against the
-  # encrypted value within the `user` Entity, then the method returns
-  # `:bad_password` and no further action is taken.
+  # On failure, the `result.failure` call will yield a `code:` parameter to its
+  # block, which indicates the cause of failure as follows:
   #
-  # If these checks pass, then a new Entity, identical to the passed-in `user`
-  # *except* having a new value for its `password_hash`, is persisted to the
-  # Repository specified either by the `repo` parameter or, if that is `nil`,
-  # then the default Repository specified in the default configuration.
+  # If the specified password *did not* match the passed-in `user` Entity, then
+  # the `code:` for failure will be `:bad_password`.
   #
-  # If that Entity is successfully persisted, then this method will return that
-  # Entity. If persistence fails, a `:repository_error` Symbol is returned to
-  # indicate the error.
+  # If the specified `user` was `nil`, the Guest User, or any object other than
+  # a proper User Entity, then the `code:` for failure will be `:invalid_user`.
+  #
+  # Note that no check for the Current User is done here; this method trusts the
+  # Controller Action Class that (possibly indirectly) invokes it to guard that
+  # contingency properly.
   #
   # @since 0.1.0
-  # @authenticated Must Authenticate.
-  # @param [User] user The User Entity from which to get the valid Encrypted
+  # @authenticated Must be Authenticated.
+  # @param [User] user_in The User Entity from which to get the valid Encrypted
   #                 Password and other non-Password attributes
   # @param [String] current_password The current Clear-Text Password for the
-  #                 specified Current User
+  #                 specified User
   # @param [String] new_password The new Clear-Text Password to encrypt and add
-  #                 to the returned Entity
+  #                 to the returned Entity, and persist to the Repository
   # @param [Object, nil] repo The Repository to which the updated User Entity is
   #                 to be persisted. If the default value of `nil`, then the
   #                 UserRepository specified in the default configuration is
   #                 used.
-  # @return [User, Symbol] A User Entity with a new Encrypted Password value on
-  #                 success, or a symbolic error identifier on failure.
+  # @return (void) Use the `result` yield parameter to determine results.
+  # @yieldparam result [Dry::Matcher::Evaluator] Indicates whether the attempt
+  #               to create a new User succeeded or failed. Block **must**
+  #               call **both** `result.success` and `result.failure` methods,
+  #               where the block passed to `result.success` accepts parameters
+  #               for `config:` (which is the active configuration for the call)
+  #               and `user:` (which is the newly-created User Entity). The
+  #               block passed to `result.failure` accepts parameters for
+  #               `config:` (as before) and `code:`, which is a Symbol reporting
+  #               the reason for the failure (as described above).
+  # @yieldreturn (void) Use the `result.success` and `result.failure`
+  #               method-call blocks to retrieve data from the method.
   #
-  # @example for a Controller Action Class
+  # @example for a Controller Action Class (refactor in real use; demo only)
   #   def call(params)
-  #     user = session[:current_user]
-  #     result = change_password(user, params[:password], params[:new_password])
-  #     @user = result if result_ok?(result)
+  #     user_in = session[:current_user]
+  #     error_code = :unassigned
+  #     config = CryptIdent::configure_crypt_ident
+  #     change_password(user_in, params[:password],
+  #                     params[:new_password]) do |result|
+  #       result.success do |user:|
+  #         @user = user
+  #         flash[config.success_key] = "User #{user.name} password changed."
+  #         redirect_to routes.root_path
+  #       end
+  #       result.failure do |code:|
+  #         flash[config.error_key] = error_message_for(code)
+  #       end
+  #     end
   #   end
   #
   #   private
   #
-  #   BAD_PASSWORD_MESSAGE = 'Invalid current password supplied.'
-  #   INVALID_USER_MESSAGE = 'Not an Authenticated User.'
-  #   private_constant :BAD_PASSWORD_MESSAGE, :INVALID_USER_MESSAGE
-  #
-  #   def result_ok?(result)
-  #     key = CryptIdent.configure_crypt_ident.error_key
-  #     case result
-  #     when :bad_password then flash[key] = BAD_PASSWORD_MESSAGE
-  #     when :invalid_user then flash[key] = INVALID_USER_MESSAGE
-  #     else return true
-  #     end
-  #     false
+  #   def error_message_for(code)
+  #     # ...
   #   end
   #
   # @session_data
@@ -426,10 +443,11 @@ module CryptIdent
   #   - Guest User
   #   - Registered User
   #   - Repository
-  def change_password(user, current_password, new_password, repo: nil)
-    ChangePassword.new(config: CryptIdent.cryptid_config, repo: repo,
-                       user: user)
-                  .call(current_password, new_password)
+  def change_password(user_in, current_password, new_password, repo: nil)
+    new_params = { config: CryptIdent.configure_crypt_ident, repo: repo,
+                   user: user_in }
+    call_params = [current_password, new_password]
+    ChangePassword.new(new_params).call(*call_params) { |result| yield result }
   end
 
   ############################################################################ #
