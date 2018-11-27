@@ -26,7 +26,7 @@ end
 
 FlayTask.new do |t|
   t.verbose = true
-  t.dirs = %w(apps db lib)
+  t.dirs = %w(lib)
 end
 
 FlogTask.new do |t|

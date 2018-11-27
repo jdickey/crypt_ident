@@ -66,4 +66,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'yard-classmethods' #, '1.0.0'
   spec.add_development_dependency 'github-markup' #, '3.0.1'
   spec.add_development_dependency 'redcarpet' #, '3.4.0'
+
+  spec.add_development_dependency 'guard' #, '2.15.0'
+  spec.add_development_dependency 'guard-minitest' #, '2.4.6'
+  spec.add_development_dependency 'guard-rake' #, '1.0.0'
+  spec.add_development_dependency 'guard-rubocop' #, '1.3.0'
+  spec.add_development_dependency 'guard-shell' #, '0.7.1'
 end

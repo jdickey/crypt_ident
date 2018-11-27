@@ -1,5 +1,15 @@
 
 AllCops:
+  # The Excludes section was necessitated by `guard-rubocop`, which invokes
+  # RuboCop in a way sufficiently different than `bundle exec rubocop` that all
+  # these exclusions aren't implicitly ignored. Oh, well.
+  Exclude:
+  - '*file'
+  - '*.gemspec'
+  - 'bin/**/*'
+  - 'scripts/**/*'
+  - 'test/**/*'
+  - 'tmp/**/*'
   TargetRubyVersion: 2.5
 
 Metrics/BlockLength:
