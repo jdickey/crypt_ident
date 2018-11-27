@@ -50,6 +50,8 @@ list = [
   'flay:2.12.0',
   'flog:4.6.2',
   'github-markup:3.0.1',
+  'guard:2.15.0',
+  'guard-minitest:2.4.6',
   'hanami-controller:1.3.0',
   'hanami-model:1.3.0',
   'inch:0.8.0',
