@@ -45,7 +45,7 @@ describe 'CryptIdent.configure_crypt_ident' do
       end
 
       it ':token_bytes' do
-        expect(actual.token_bytes).must_equal 16
+        expect(actual.token_bytes).must_equal 24
         expect(actual.to_h[:token_bytes]).must_equal actual.token_bytes
       end
     end # describe 'returns object with default attributes, including'

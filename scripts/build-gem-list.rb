@@ -63,6 +63,9 @@ list = [
   'minitest-reporters:1.3.5',
   'minitest-tagz:1.6.0',
   'minitest:5.11.3',
+  # XXX: A useful Gem, but not needed for what we were considering using it for
+  # immediately.
+  # 'monotime:0.6.1',
   'pry-byebug:3.6.0',
   'pry-doc:0.13.5',
   'rake:12.3.1',
@@ -74,4 +77,13 @@ list = [
   'yard:0.9.16'
 ]
 
+# pp [:file, __FILE__]
+# gemspec = Gem::Specification.load(File.expand_path('../../crypt_ident.gemspec',
+#       __FILE__))
+# pp [:gemspec, gemspec.dependencies.map(&:to_s)]
+# list2 = gemspec.dependencies.map do |dep|
+#   [dep.name, dep.to_spec.version.to_s].join(':')
+# end
+
+# require 'pry-byebug'; binding.pry
 puts gem_strings(list).join(' ')
