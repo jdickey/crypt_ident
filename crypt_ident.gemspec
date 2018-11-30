@@ -57,6 +57,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'minitest-matchers' #, '1.4.1'
   spec.add_development_dependency 'minitest-reporters' #, '1.3.5'
   spec.add_development_dependency 'minitest-tagz' #, '1.6.0'
+  # XXX: Great idea; useful; but we've found a way to work around what we were
+  # looking to use this Gem to help with.
+  # spec.add_development_dependency 'monotime' #, '0.6.1'
   spec.add_development_dependency 'pry-byebug' #, '3.6.0'
   spec.add_development_dependency 'pry-doc' #, '0.13.5'
   spec.add_development_dependency 'reek' #, '5.2.0'
