@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
-require 'bcrypt'
-
 require 'crypt_ident/version'
 
 require_relative './crypt_ident/config'
 require_relative './crypt_ident/change_password'
+# require_relative './crypt_ident/generate_reset_token'
 require_relative './crypt_ident/sign_in'
 require_relative './crypt_ident/sign_out'
 require_relative './crypt_ident/sign_up'
@@ -19,7 +18,6 @@ require_relative './crypt_ident/sign_up'
 #
 # @author Jeff Dickey
 # @version 0.1.0
-# FIXME: Disable :reek:UnusedParameters; we have not yet added code.
 module CryptIdent
   include Hanami::Utils::ClassAttribute
   class_attribute :cryptid_config
@@ -50,7 +48,7 @@ module CryptIdent
   #     config.reset_expiry = (24 * 60 * 60)
   #     config.session_expiry = 900
   #     config.success_key = :success
-  #     config.token_bytes = 16
+  #     config.token_bytes = 24
   #   end
   # @session_data Irrelevant; normally called during framework setup.
   # @ubiq_lang None; only related to demonstrated configuration settings.
@@ -503,9 +501,12 @@ module CryptIdent
   #   - Password Reset Token
   #   - Registered User
   #
-  def generate_reset_token(user_name)
-    # To be implemented.
+  # :nocov:
+  def generate_reset_token(user_name, repo: nil, current_user: nil)
+    # To be implemented
+    _ = [user_name, repo, current_user] # FIXME: Shut *up*, Reek
   end
+  # :nocov:
 
   # Reset the password for the User associated with a Password Reset Token.
   #
@@ -573,9 +574,12 @@ module CryptIdent
   #   - Password Reset Token
   #   - Registered User
   #
+  # :nocov:
   def reset_password(token, new_password, confirmation)
     # To be implemented.
+    _ = [token, new_password, confirmation] # FIXME: Shut *up*, Reek
   end
+  # :nocov:
 
   ############################################################################ #
 
@@ -599,9 +603,11 @@ module CryptIdent
   #   - Authentication
   #   - Session Expiration
   #
+  # :nocov:
   def restart_session_counter
     # To be implemented.
   end
+  # :nocov:
 
   # Determine whether the Session has Expired due to User inactivity.
   #

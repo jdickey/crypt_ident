@@ -15,7 +15,8 @@ module CryptIdent
   class Config < Hanami::Entity
     # Flash index to use for error messages.
     ERROR_KEY = :error
-    # Hashing cost for BCrypt.
+    # Hashing cost for BCrypt. Note that each 1-unit increase *doubles* the
+    # processing time needed to encode/decode a password.
     # @see https://github.com/codahale/bcrypt-ruby#cost-factors
     HASHING_COST = 8
     # Password-reset expiry in seconds; defaults to 24 hours.
@@ -25,9 +26,10 @@ module CryptIdent
     # Flash index to use for success-notification messages.
     SUCCESS_KEY = :success
     # Length, in bytes, of the number to be generated for the token.
-    # Default is 16.
+    # Default is 24. (Must be a multiple of 12 to avoid padding when encoding
+    # using `Base64.strict_encode64`.)
     # @see https://ruby-doc.org/stdlib/libdoc/securerandom/rdoc/Random/Formatter.html#method-i-urlsafe_base64
-    TOKEN_BYTES = 16
+    TOKEN_BYTES = 24
 
     attributes do
       attribute :error_key, Types::Symbol.default(ERROR_KEY)

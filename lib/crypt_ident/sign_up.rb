@@ -2,6 +2,8 @@
 
 require 'securerandom'
 
+require 'bcrypt'
+
 require 'dry/monads/result'
 require 'dry/matcher/result_matcher'
 
