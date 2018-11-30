@@ -142,7 +142,8 @@ Reek thinks this class has :reek:TooManyConstants and that @attributes is a
         <dt id="HASHING_COST-constant" class="">HASHING_COST =
           <div class="docstring">
   <div class="discussion">
-    <p>Hashing cost for BCrypt.</p>
+    <p>Hashing cost for BCrypt. Note that each 1-unit increase <em>doubles</em> the
+processing time needed to encode/decode a password.</p>
 
 
   </div>
@@ -210,7 +211,8 @@ Reek thinks this class has :reek:TooManyConstants and that @attributes is a
           <div class="docstring">
   <div class="discussion">
     <p>Length, in bytes, of the number to be generated for the token.
-Default is 16.</p>
+Default is 24. (Must be a multiple of 12 to avoid padding when encoding
+using <code>Base64.strict_encode64</code>.)</p>
 
 
   </div>
@@ -227,7 +229,7 @@ Default is 16.</p>
 
 </div>
         </dt>
-        <dd><pre class="code"><span class='int'>16</span></pre></dd>
+        <dd><pre class="code"><span class='int'>24</span></pre></dd>
       
     </dl>
   
@@ -244,7 +246,7 @@ Default is 16.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Nov 27 00:18:01 2018 by
+  Generated on Sat Dec  1 01:16:30 2018 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.16 (ruby-2.5.3).
 </div>

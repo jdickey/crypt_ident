@@ -4,7 +4,7 @@ require 'crypt_ident/version'
 
 require_relative './crypt_ident/config'
 require_relative './crypt_ident/change_password'
-# require_relative './crypt_ident/generate_reset_token'
+require_relative './crypt_ident/generate_reset_token'
 require_relative './crypt_ident/sign_in'
 require_relative './crypt_ident/sign_out'
 require_relative './crypt_ident/sign_up'
@@ -448,9 +448,7 @@ module CryptIdent
     ChangePassword.new(new_params).call(*call_params) { |result| yield result }
   end
 
-  ############################################################################ #
-
-  # Request a Password Reset Token
+  # Generate a Password Reset Token
   #
   # Password Reset Tokens are useful for verifying that the person requesting a
   # Password Reset for an existing User is sufficiently likely to be the person
@@ -462,37 +460,83 @@ module CryptIdent
   # the Password Reset. `CryptIdent` *does not* automate generation or sending
   # of the email message. What it *does* provide is a method to generate a new
   # Password Reset Token to be embedded into an HTML anchor link within an email
-  # that you construct.
+  # that you construct, and then another method (`#reset_password`) to actually
+  # change the password given a valid, correct token.
   #
   # It also implements an expiry system, such that if the confirmation of the
   # Password Reset request is not completed within a configurable time, that the
   # token is no longer valid (and so cannot be later reused by unauthorised
   # persons).
   #
+  # This method *requires* a block, to which a `result` indicating success or
+  # failure is yielded. That block **must** in turn call **both**
+  # `result.success` and `result.failure` to handle success and failure results,
+  # respectively. On success, the block yielded to by `result.success` is called
+  # and passed a `user:` parameter, which is identical to the `user` parameter
+  # passed in to `#generate_reset_token` *except* that the `:token` and
+  # `:password_reset_sent_at` attributes have been updated to reflect the token
+  # request. An updated record matching that `:user` Entity will also have been
+  # saved to the Repository.
+  #
+  # On failure, the `result.failure` call will yield three parameters: `:code`,
+  # `:current_user`, and `:name`, and will be set as follows:
+  #
+  # If the `:code` value is `:user_logged_in`, that indicates that the
+  # `current_user` parameter to this method represented an actual User, rather
+  # than the Guest User or the default value of `nil`. In this event, the
+  # `:current_user` value passed in to the `result.failure` call will be the
+  # same User Entity passed into the method, and the `:name` value will be
+  # `:unassigned`.
+  #
+  # If the `:code` value is `:user_not_found`, the named User was not found in
+  # the Repository. The `:current_user` parameter will be the Guest User Entity,
+  # and the `:name` parameter to the `result.failure` block will be the
+  # `user_name` value passed into the method.
+  # @yieldparam result [Dry::Matcher::Evaluator] Indicates whether the attempt
+  #               to generate a new Reset Token succeeded or failed. The lock
+  #               **must** call **both** `result.success` and `result.failure`
+  #               methods, where the block passed to `result.success` accepts a
+  #               parameter for `user:`, which is a User Entity with the
+  #               specified `name` value as well as non-`nil` values for its
+  #               `:token` and `:password_reset_sent_at` attributes. The block
+  #               passed to `result.failure` accepts parameters for `code:`,
+  #               `current_user:`, and `name` as described above.
+  # @yieldreturn (void) Use the `result.success` and `result.failure`
+  #               method-call blocks to retrieve data from the method.
+  #
   # @since 0.1.0
   # @authenticated Must not be Authenticated.
   # @param [String] user_name The name of the User for whom a Password Reset
   #                 Token is to be generated.
-  # @return [Symbol, true] True on success or error identifier on failure.
-  # @example
+  # @param [Object, nil] repo The Repository to which the Entity for the named
+  #                 User is persisted after "updating" it with Token and
+  #                 Password Reset Set At attributes. If the default value of
+  #                 `nil`, then the UserRepository specified in the default
+  #                 configuration is used.
+  # @param [User] current_user Entity representing the currently Authenticated
+  #                 Authenticated User Entity. This **should** not be either
+  #                 `nil` or the Guest User.
+  # @return (void)
+  # @example Demonstrating a (refactorable) Controller Action Class #call method
+  #
   #   def call(params)
-  #     send_reset_email if valid_request?
+  #     config = CryptIdent.configure_crypt_ident
+  #     other_params = { current_user: session[:current_user] }
+  #     generate_reset_token(params[:name], other_params) do |result|
+  #       result.success do |user:|
+  #         @user = user
+  #         flash[config.success_key] = 'Request for #{user.name} sent'
+  #       end
+  #       result.failure do |code:, current_user:, name:| do
+  #         respond_to_error(code, current_user, name)
+  #       end
+  #     end
   #   end
   #
   #   private
   #
-  #   def send_result_email
-  #     # will use @user_name and @token to generate and send email
-  #   end
-  #
-  #   def valid_request?(params)
-  #     logged_in_error = 'Cannot request password reset while logged in!'
-  #     not_found_error = 'Cannot find specified user in repository'
-  #     @user_name = params[:name] || 'Unknown User'
-  #     @token = case generate_reset_token(user_name)
-  #     when :user_logged_in then error!(logged_in_error)
-  #     when :user_not_found then error!(not_found_error)
-  #     end
+  #   def respond_to_error(code, current_user, name)
+  #     # ...
   #   end
   # @session_data
   #   `:current_user` **must not** be other than `nil` or the Guest User.
@@ -500,13 +544,12 @@ module CryptIdent
   #   - Authentication
   #   - Password Reset Token
   #   - Registered User
-  #
-  # :nocov:
   def generate_reset_token(user_name, repo: nil, current_user: nil)
-    # To be implemented
-    _ = [user_name, repo, current_user] # FIXME: Shut *up*, Reek
+    other_params = { repo: repo, current_user: current_user }
+    GenerateResetToken.new.call(user_name, other_params) do |result|
+      yield result
+    end
   end
-  # :nocov:
 
   # Reset the password for the User associated with a Password Reset Token.
   #
@@ -603,11 +646,9 @@ module CryptIdent
   #   - Authentication
   #   - Session Expiration
   #
-  # :nocov:
   def restart_session_counter
     # To be implemented.
   end
-  # :nocov:
 
   # Determine whether the Session has Expired due to User inactivity.
   #
