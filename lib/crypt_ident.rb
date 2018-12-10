@@ -5,6 +5,7 @@ require 'crypt_ident/version'
 require_relative './crypt_ident/config'
 require_relative './crypt_ident/change_password'
 require_relative './crypt_ident/generate_reset_token'
+require_relative './crypt_ident/reset_password'
 require_relative './crypt_ident/sign_in'
 require_relative './crypt_ident/sign_out'
 require_relative './crypt_ident/sign_up'
@@ -644,12 +645,12 @@ module CryptIdent
   #   - Password Reset Token
   #   - Registered User
   #
-  # :nocov:
   def reset_password(token, new_password, repo: nil, current_user: nil)
-    # To be implemented.
-    _ = [token, new_password, repo, current_user] # FIXME: Shut *up*, Reek
+    other_params = { repo: repo, current_user: current_user }
+    ResetPassword.new.call(token, new_password, other_params) do |result|
+      yield result
+    end
   end
-  # :nocov:
 
   ############################################################################ #
 

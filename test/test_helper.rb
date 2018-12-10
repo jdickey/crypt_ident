@@ -44,7 +44,6 @@ require 'crypt_ident'
 
 require 'hanami/utils/class_attribute'
 
-
 class User < Hanami::Entity
   attributes do
     attribute :id, Types::Int
@@ -59,28 +58,23 @@ class User < Hanami::Entity
   def guest_user?
     @attributes[:id] && @attributes[:id] < 1
   end
+
+  def token_predates?(expiry)
+    prsa = @attributes[:password_reset_sent_at]
+    # Calling this on a non-reset Entity is treated as "expired"
+    return true if prsa.nil?
+
+    validity_begin = Time.now - expiry
+    prsa < validity_begin
+  end
 end
 
-class UserRepository
+class Repository
   include Hanami::Utils::ClassAttribute
 
-  attr_reader :args, :params
-
-  @entity_name = 'User'
-  @relation = :user
   class_attribute :entity_name, :relation
 
-  def self.guest_user
-    Hanami::Utils::Class.load(entity_name).new id: -1, name: 'Guest User'
-  end
-
-  def guest_user
-    self.class.guest_user
-  end
-
-  def initialize(*args, **params)
-    @args = args
-    @params = params
+  def initialize(*_args, **_params)
     @next_id = 1
     @records = {}
   end
@@ -120,7 +114,11 @@ class UserRepository
   end
 
   def find_by_name(name)
-    @records.values.select { |other| other.name == name }
+    select(:name, name)
+  end
+
+  def find_by_token(token)
+    select(:token, token)
   end
 
   def first
@@ -134,18 +132,33 @@ class UserRepository
   def clear
     @records = {}
   end
+
+  private
+
+  def select(key, value)
+    @records.values.select { |other| other.to_h[key] == value }
+  end
 end
 
-# class Login
-#   include Hanami::Action
-#   include Hanami::Action::Session
-#   include CryptIdent
+class UserRepository < Repository
+  include Hanami::Utils::ClassAttribute
 
-#   def call(params)
-#     @user = params.env[:user]
-#     # begin of TB's test #login
-#     session[:current_user] = @user
-#     session[:session_start_time] = Time.now
-#     flash[:success] = 'You were successfully logged in.'
-#   end
-# end # class Login
+  @entity_name = 'User'
+  @relation = :user
+
+  def self.guest_user
+    Hanami::Utils::Class.load(entity_name).new id: -1, name: 'Guest User'
+  end
+
+  def guest_user
+    self.class.guest_user
+  end
+
+  def find_by_name(name)
+    select(:name, name)
+  end
+
+  def find_by_token(token)
+    select(:token, token)
+  end
+end
