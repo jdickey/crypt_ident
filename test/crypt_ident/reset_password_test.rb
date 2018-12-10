@@ -15,7 +15,7 @@ describe 'CryptIdent#reset_password' do
   end
 
   after do
-    repo.clear if repo
+    repo&.clear
     CryptIdent.configure_crypt_ident.repository.clear
   end
 
@@ -175,7 +175,7 @@ describe 'CryptIdent#reset_password' do
     let(:created_user) do
       ret = :unassigned
       def_repo = CryptIdent.configure_crypt_ident.repository
-      def_repo.clear # XXX: WTAF?!?
+      def_repo.clear # XXX: WTAF?!? Should be empty
       sign_up(user_params, current_user: nil) do |result|
         result.success { |config:, user:| ret = user }
         result.failure { |code:, config:| pp [:line_187, code]; fail "Oops" }

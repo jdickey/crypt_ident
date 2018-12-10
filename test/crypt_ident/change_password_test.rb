@@ -126,6 +126,7 @@ describe 'CryptIdent#change_password' do
       end
 
       it 'does not affect the Repository' do
+        _ = user
         before_call = repo.all
         result_from_failure.call(user, 'bad password', 'anything')
         expect(before_call).must_equal repo.all
