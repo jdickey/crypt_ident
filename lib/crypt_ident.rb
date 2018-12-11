@@ -101,8 +101,8 @@ module CryptIdent
 
   # Persist a new User to a Repository based on passed-in attributes, where the
   # resulting Entity (on success) contains a  `:password_hash` attribute
-  # containing the encrypted value of the Clear-Text Password passed in as the
-  # `password` value within `attribs`.
+  # containing the encrypted value of a **random** Clear-Text Password; any
+  # `password` value within `attribs` is ignored.
   #
   # The method *requires* a block, to which a `result` indicating success or
   # failure is yielded. That block **must** in turn call **both**
@@ -131,9 +131,8 @@ module CryptIdent
   # @authenticated Must not be Authenticated.
   # @param [Hash] attribs Hash-like object of attributes for new User Entity and
   #               record. **Must** include `name` and  any other attributes
-  #               required by the underlying database schema, as well as a
-  #               clear-text `password` attribute which will be replaced in the
-  #               created Entity/record by a `password_hash` attribute.
+  #               required by the underlying database schema. Any `password`
+  #               attribute will be ignored.
   # @param [User, nil] current_user Entity representing the current
   #               Authenticated User, or the Guest User. A value of `nil` is
   #               treated as though the Guest User had been specified.
@@ -475,9 +474,9 @@ module CryptIdent
   # respectively. On success, the block yielded to by `result.success` is called
   # and passed a `user:` parameter, which is identical to the `user` parameter
   # passed in to `#generate_reset_token` *except* that the `:token` and
-  # `:password_reset_sent_at` attributes have been updated to reflect the token
-  # request. An updated record matching that `:user` Entity will also have been
-  # saved to the Repository.
+  # `:password_reset_expires_at` attributes have been updated to reflect the
+  # token request. An updated record matching that `:user` Entity will also have
+  # been saved to the Repository.
   #
   # On failure, the `result.failure` call will yield three parameters: `:code`,
   # `:current_user`, and `:name`, and will be set as follows:
@@ -499,9 +498,9 @@ module CryptIdent
   #               methods, where the block passed to `result.success` accepts a
   #               parameter for `user:`, which is a User Entity with the
   #               specified `name` value as well as non-`nil` values for its
-  #               `:token` and `:password_reset_sent_at` attributes. The block
-  #               passed to `result.failure` accepts parameters for `code:`,
-  #               `current_user:`, and `name` as described above.
+  #               `:token` and `:password_reset_expires_at` attributes. The
+  #               block passed to `result.failure` accepts parameters for
+  #               `code:`, `current_user:`, and `name` as described above.
   # @yieldreturn (void) Use the `result.success` and `result.failure`
   #               method-call blocks to retrieve data from the method.
   #
@@ -601,9 +600,9 @@ module CryptIdent
   #               methods, where the block passed to `result.success` accepts a
   #               parameter for `user:`, which is a User Entity with the
   #               specified `name` value as well as non-`nil` values for its
-  #               `:token` and `:password_reset_sent_at` attributes. The block
-  #               passed to `result.failure` accepts parameters for `code:`,
-  #               `current_user:`, and `name` as described above.
+  #               `:token` and `:password_reset_expires_at` attributes. The
+  #               block passed to `result.failure` accepts parameters for
+  #               `code:`, `current_user:`, and `name` as described above.
   # @yieldreturn (void) Use the `result.success` and `result.failure`
   #               method-call blocks to retrieve data from the method.
   #

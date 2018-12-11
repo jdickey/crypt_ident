@@ -49,7 +49,7 @@ class User < Hanami::Entity
     attribute :id, Types::Int
     attribute :name, Types::String
     attribute :password_hash, Types::String
-    attribute :password_reset_sent_at, Types::Time
+    attribute :password_reset_expires_at, Types::Time
     attribute :token, Types::String
     attribute :created_at, Types::Time.default { Time.now }
     attribute :updated_at, Types::Time.default { Time.now }
@@ -59,13 +59,10 @@ class User < Hanami::Entity
     @attributes[:id] && @attributes[:id] < 1
   end
 
-  def token_predates?(expiry)
-    prsa = @attributes[:password_reset_sent_at]
-    # Calling this on a non-reset Entity is treated as "expired"
-    return true if prsa.nil?
-
-    validity_begin = Time.now - expiry
-    prsa < validity_begin
+  def expired?
+    prea = @attributes[:password_reset_expires_at]
+    # Calling this on a non-reset Entity is treated as expiring at the epoch
+    Time.now > Hanami::Utils::Kernel.Time(prea.to_i)
   end
 end
 

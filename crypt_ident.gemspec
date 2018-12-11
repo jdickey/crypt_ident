@@ -53,6 +53,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'flay' #, '2.12.0'
   spec.add_development_dependency 'flog' #, '4.6.2'
   spec.add_development_dependency 'inch' #, '0.8.0'
+  # spec.add_development_dependency 'minitest-fail-fast' #, '0.1.0'
   spec.add_development_dependency 'minitest-hooks' #, '1.5.0'
   spec.add_development_dependency 'minitest-matchers' #, '1.4.1'
   spec.add_development_dependency 'minitest-reporters' #, '1.3.5'

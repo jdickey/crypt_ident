@@ -57,7 +57,7 @@ The database table for that Repository **must** have the following fields, in an
 | `name` | string | The name of an individual User to be Authenticated |
 | `email` | string | The Email Address for that User, to be used for Password Recovery, for example. |
 | `password_hash` | text | The *encrypted* Password associated with that User. |
-| `password_reset_sent_at` | timestamp without time zone | Defaults to `nil`; set this to the current time (`Time.now`) when responding to a Password Reset request (e.g., by email). The `token` (below) will expire at this time offset by the `reset_expiry` configuration value (see _Configuration_, below). |
+| `password_reset_expires_at` | timestamp without time zone | Defaults to `nil`; set this to the Expiry Time (`Time.now + config.reset_expiry`) when responding to a Password Reset request (e.g., by email). The `token` (below) will expire at this time (see _Configuration_, below). |
 | `token` | text | Defaults to `nil`. A Password Reset Token; a URL-safe secure random number (see [standard-library documentation](https://ruby-doc.org/stdlib-2.5.1/libdoc/securerandom/rdoc/Random/Formatter.html#method-i-urlsafe_base64)) used to uniquely identify a Password Reset request. |
 
 <sub style="font-size: 0.75rem;">[Back to Top](#CryptIdent)</sub>
@@ -308,7 +308,7 @@ end
 
 #### Successfully Generating a Token
 
-Given a `user_name` parameter that specifies an existing User Name, and a `current_user:` parameter that is either `nil` or the Guest User, the method calls the **required** block with a `result` whose `result.success` matcher is yielded a `user:` parameter with a User Entity as its value. That User will be an Entity whose `name` matches the specified `user_name` parameter, with (new) values for the `token` and `password_reset_sent_at` attributes. The `token` attribute uniquely identifies the Password Reset request, and the `password_reset_sent_at` attribute is the current (server-local) time when the updated User Entity was persisted to the Repository.
+Given a `user_name` parameter that specifies an existing User Name, and a `current_user:` parameter that is either `nil` or the Guest User, the method calls the **required** block with a `result` whose `result.success` matcher is yielded a `user:` parameter with a User Entity as its value. That User will be an Entity whose `name` matches the specified `user_name` parameter, with (new) values for the `token` and `password_reset_expires_at` attributes. The `token` attribute uniquely identifies the Password Reset request, and the `password_reset_expires_at` attribute is based on both the current (server-local) time when the updated User Entity was persisted to the Repository, and the `:reset_expiry` attribute of the configuration.
 
 #### Error Conditions
 
@@ -341,7 +341,7 @@ Calling `#reset_password` is different than calling `#change_password` in one vi
 
 #### Successfully Resetting a Password
 
-To successfully perform a Password Reset, supply a valid, non-expired Token along with a new Clear-Text Password to the `#reset_password` method. Once the Token is found in the Repository specified by the `repo:` parameter (or in the configuration-default Repository if the default value of `nil` is used for `repo:`), and is verified not to have Expired, then the Repository will be updated with a record for that User where the `password_hash` field has been updated to reflect the new Clear-Text Password, and the `token` and `password_reset_sent_at` fields will be set to `nil`. 
+To successfully perform a Password Reset, supply a valid, non-expired Token along with a new Clear-Text Password to the `#reset_password` method. Once the Token is found in the Repository specified by the `repo:` parameter (or in the configuration-default Repository if the default value of `nil` is used for `repo:`), and is verified not to have Expired, then the Repository will be updated with a record for that User where the `password_hash` field has been updated to reflect the new Clear-Text Password, and the `token` and `password_reset_expires_at` fields will be set to `nil`. 
 
 If all the preceding is successful and the updated User is successfully persisted, the method calls the **required** block with a `result` whose `result.success` matcher is yielded a `user:` parameter with the updated User as its value. From that point, the User is able to Sign In using the User Name and updated Clear-Text Password.
 

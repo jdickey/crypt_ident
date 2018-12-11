@@ -58,8 +58,13 @@ module CryptIdent
     end
 
     def update_repo(user)
-      attribs = { token: new_token, password_reset_sent_at: Time.now }
-      repo.update(user.id, attribs)
+      repo.update(user.id, updated_attribs)
+    end
+
+    def updated_attribs
+      # FIXME: Using config-default reset expiry
+      prea = Time.now + CryptIdent.configure_crypt_ident.reset_expiry
+      { token: new_token, password_reset_expires_at: prea }
     end
 
     def updated_user

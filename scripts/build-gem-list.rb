@@ -58,6 +58,7 @@ list = [
   'hanami-controller:1.3.0',
   'hanami-model:1.3.0',
   'inch:0.8.0',
+  # 'minitest-fail-fast:0.1.0',
   'minitest-hooks:1.5.0',
   'minitest-matchers:1.4.1',
   'minitest-reporters:1.3.5',

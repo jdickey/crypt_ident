@@ -64,11 +64,12 @@ describe 'CryptIdent#generate_reset_token' do
           expect(token).wont_equal :unassigned
         end
 
-        it 'a valid :password_reset_sent_at attribute' do
-          expect(actual.password_reset_sent_at).must_be :nil?
+        it 'a valid :password_reset_expires_at attribute' do
+          expect(actual.password_reset_expires_at).must_be :nil?
           actual = result_from_success.call
-          elapsed = Time.now - actual.password_reset_sent_at
-          expect(elapsed).must_be :<, 5 # seconds
+          remaining = actual.password_reset_expires_at - Time.now
+          reset_expiry = CryptIdent.configure_crypt_ident.reset_expiry
+          expect(reset_expiry - remaining).must_be :<, 5 # seconds
         end
       end # describe 'it passes a User Entity to the result.success block with'
 
@@ -96,10 +97,10 @@ describe 'CryptIdent#generate_reset_token' do
         # the `Time` class, this produces *a string with date, hours, minutes,
         # and seconds.* No sub-second resolution is taken into account. Laziness
         # arguably more than bordering on incompetence.
-        it ':password_reset_sent_at' do
-          first = @first.password_reset_sent_at
-          second = @second.password_reset_sent_at
-          persisted = @persisted.password_reset_sent_at
+        it ':password_reset_expires_at' do
+          first = @first.password_reset_expires_at
+          second = @second.password_reset_expires_at
+          persisted = @persisted.password_reset_expires_at
           first = [first.tv_sec, first.tv_usec]
           second = [second.tv_sec, second.tv_usec]
           persisted = [persisted.tv_sec, persisted.tv_usec]
@@ -206,11 +207,13 @@ describe 'CryptIdent#generate_reset_token' do
           expect(token).wont_equal :unassigned
         end
 
-        it 'a valid :password_reset_sent_at attribute' do
-          expect(actual.password_reset_sent_at).must_be :nil?
+        it 'a valid :password_reset_expires_at attribute' do
+          expect(actual.password_reset_expires_at).must_be :nil?
           actual = result_from_success.call
-          elapsed = Time.now - actual.password_reset_sent_at
-          expect(elapsed).must_be :<, 5 # seconds
+          remaining = actual.password_reset_expires_at - Time.now
+          # FIXME: Relies on default config?
+          reset_expiry = CryptIdent.configure_crypt_ident.reset_expiry
+          expect(reset_expiry - remaining).must_be :<, 5 # seconds
         end
       end # describe 'it passes a User Entity to the result.success block with'
 
@@ -240,10 +243,10 @@ describe 'CryptIdent#generate_reset_token' do
         # the `Time` class, this produces *a string with date, hours, minutes,
         # and seconds.* No sub-second resolution is taken into account. Laziness
         # arguably more than bordering on incompetence.
-        it ':password_reset_sent_at' do
-          first = @first.password_reset_sent_at
-          second = @second.password_reset_sent_at
-          persisted = @persisted.password_reset_sent_at
+        it ':password_reset_expires_at' do
+          first = @first.password_reset_expires_at
+          second = @second.password_reset_expires_at
+          persisted = @persisted.password_reset_expires_at
           first = [first.tv_sec, first.tv_usec]
           second = [second.tv_sec, second.tv_usec]
           persisted = [persisted.tv_sec, persisted.tv_usec]

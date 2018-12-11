@@ -27,13 +27,13 @@ describe 'CryptIdent#reset_password' do
         result.success { |config:, user:| ret = user }
         result.failure { |code:, config:| pp [:line_15, code]; fail "Oops" }
       end
-      update_params = { token: token, password_reset_sent_at: token_time }
+      update_params = { token: token, password_reset_expires_at: expires_at }
       repo.update(ret.id, update_params)
     end
     let(:repo) { UserRepository.new }
 
     describe 'when supplied a valid token, a new password, no Current User' do
-      let(:token_time) { Time.now }
+      let(:expires_at) { Time.now + 3600 }
 
       describe 'it passes a User Entity to the result.success block with' do
         it 'an updated :password_hash attribute' do
@@ -47,14 +47,14 @@ describe 'CryptIdent#reset_password' do
           expect(the_user.password_hash).wont_equal old_password_hash
         end
 
-        it 'a cleared :password_reset_sent_at attribute' do
+        it 'a cleared :password_reset_expires_at attribute' do
           the_user = :unassigned
           reset_password(created_user.token, new_password,
                          other_params) do |result|
             result.success { |user:| the_user = user }
             result.failure { fail 'Oops' }
           end
-          expect(the_user.password_reset_sent_at).must_be :nil?
+          expect(the_user.password_reset_expires_at).must_be :nil?
         end
 
         it 'a cleared :token attribute' do
@@ -81,7 +81,7 @@ describe 'CryptIdent#reset_password' do
     end # describe 'when supplied valid token, a new password, no Current User'
 
     describe 'when supplied an expired token, new password, no Current User' do
-      let(:token_time) { Time.now - 3600 * 24 * 365 } # A year should do it
+      let(:expires_at) { Time.now - 3600 } # Expired an hour ago
 
       describe 'it passes values to the result.failure block with' do
         it 'a code: value of :expired_token' do
@@ -180,13 +180,13 @@ describe 'CryptIdent#reset_password' do
         result.success { |config:, user:| ret = user }
         result.failure { |code:, config:| pp [:line_187, code]; fail "Oops" }
       end
-      update_params = { token: token, password_reset_sent_at: token_time }
+      update_params = { token: token, password_reset_expires_at: expires_at }
       def_repo.update(ret.id, update_params)
     end
     let(:repo) { nil }
 
     describe 'when supplied a valid token, a new password, no Current User' do
-      let(:token_time) { Time.now }
+      let(:expires_at) { Time.now + 3600 }
 
       describe 'it passes a User Entity to the result.success block with' do
         it 'an updated :password_hash attribute' do

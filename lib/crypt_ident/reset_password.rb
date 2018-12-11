@@ -47,10 +47,6 @@ module CryptIdent
       BCrypt::Password.create(password)
     end
 
-    def expired?(user)
-      user.token_predates?(@config.reset_expiry)
-    end
-
     # Reek sees a :reek:ControlParameter for `current_user`. Too bad.
     def init_ivars(new_password, repo, current_user)
       @config = CryptIdent.configure_crypt_ident do |config|
@@ -61,7 +57,7 @@ module CryptIdent
     end
 
     def new_attribs(password)
-      { password_hash: encrypted(password), password_reset_sent_at: nil,
+      { password_hash: encrypted(password), password_reset_expires_at: nil,
         token: nil }
     end
 
@@ -87,7 +83,7 @@ module CryptIdent
 
     def validate_match_and_token(match, token)
       raise_logic_error(:token_not_found, token) unless match
-      raise_logic_error(:expired_token, token) if expired?(match)
+      raise_logic_error(:expired_token, token) if match.expired?
       match
     end
 

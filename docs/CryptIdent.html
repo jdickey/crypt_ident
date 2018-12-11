@@ -419,7 +419,7 @@ data, which is quite theoretically possible in an Interactor but practically
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Persist a new User to a Repository based on passed-in attributes, where the resulting Entity (on success) contains a  <code>:password_hash</code> attribute containing the encrypted value of the Clear-Text Password passed in as the <code>password</code> value within <code>attribs</code>.</p>
+    <span class="summary_desc"><div class='inline'><p>Persist a new User to a Repository based on passed-in attributes, where the resulting Entity (on success) contains a  <code>:password_hash</code> attribute containing the encrypted value of a <strong>random</strong> Clear-Text Password; any <code>password</code> value within <code>attribs</code> is ignored.</p>
 </div></span>
   
 </li>
@@ -1022,15 +1022,15 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
+444
 445
 446
 447
 448
-449
-450</pre>
+449</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 445</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 444</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_new_params'>new_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>config:</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure_crypt_ident'><span class='object_link'><a href="#configure_crypt_ident-class_method" title="CryptIdent.configure_crypt_ident (method)">configure_crypt_ident</a></span></span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='id identifier rubyid_repo'>repo</span><span class='comma'>,</span>
@@ -1080,9 +1080,9 @@ failure is yielded. That block <strong>must</strong> in turn call <strong>both</
 respectively. On success, the block yielded to by <code>result.success</code> is called
 and passed a <code>user:</code> parameter, which is identical to the <code>user</code> parameter
 passed in to <code>#generate_reset_token</code> <em>except</em> that the <code>:token</code> and
-<code>:password_reset_sent_at</code> attributes have been updated to reflect the token
-request. An updated record matching that <code>:user</code> Entity will also have been
-saved to the Repository.</p>
+<code>:password_reset_expires_at</code> attributes have been updated to reflect the
+token request. An updated record matching that <code>:user</code> Entity will also have
+been saved to the Repository.</p>
 
 <p>On failure, the <code>result.failure</code> call will yield three parameters: <code>:code</code>,
 <code>:current_user</code>, and <code>:name</code>, and will be set as follows:</p>
@@ -1209,9 +1209,9 @@ to generate a new Reset Token succeeded or failed. The lock
 methods, where the block passed to <code>result.success</code> accepts a
 parameter for <code>user:</code>, which is a User Entity with the
 specified <code>name</code> value as well as non-<code>nil</code> values for its
-<code>:token</code> and <code>:password_reset_sent_at</code> attributes. The block
-passed to <code>result.failure</code> accepts parameters for <code>code:</code>,
-<code>current_user:</code>, and <code>name</code> as described above.</p>
+<code>:token</code> and <code>:password_reset_expires_at</code> attributes. The
+block passed to <code>result.failure</code> accepts parameters for
+<code>code:</code>, <code>current_user:</code>, and <code>name</code> as described above.</p>
 </div>
       
     </li>
@@ -1306,15 +1306,15 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
+547
 548
 549
 550
 551
-552
-553</pre>
+552</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 548</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 547</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_generate_reset_token'>generate_reset_token</span><span class='lparen'>(</span><span class='id identifier rubyid_user_name'>user_name</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_other_params'>other_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>repo:</span> <span class='id identifier rubyid_repo'>repo</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -1469,9 +1469,9 @@ to generate a new Reset Token succeeded or failed. The lock
 methods, where the block passed to <code>result.success</code> accepts a
 parameter for <code>user:</code>, which is a User Entity with the
 specified <code>name</code> value as well as non-<code>nil</code> values for its
-<code>:token</code> and <code>:password_reset_sent_at</code> attributes. The block
-passed to <code>result.failure</code> accepts parameters for <code>code:</code>,
-<code>current_user:</code>, and <code>name</code> as described above.</p>
+<code>:token</code> and <code>:password_reset_expires_at</code> attributes. The
+block passed to <code>result.failure</code> accepts parameters for
+<code>code:</code>, <code>current_user:</code>, and <code>name</code> as described above.</p>
 </div>
       
     </li>
@@ -1568,15 +1568,15 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
+647
 648
 649
 650
 651
-652
-653</pre>
+652</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 648</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 647</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_password'>reset_password</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_other_params'>other_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>repo:</span> <span class='id identifier rubyid_repo'>repo</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -1698,12 +1698,12 @@ signing out a User.</p>
       <pre class="lines">
 
 
+676
 677
-678
-679</pre>
+678</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 677</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 676</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_restart_session_counter'>restart_session_counter</span>
   <span class='comment'># To be implemented.
@@ -1841,12 +1841,12 @@ specified by <code>config.guest_user</code>.</p>
       <pre class="lines">
 
 
+706
 707
-708
-709</pre>
+708</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 707</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 706</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_session_expired?'>session_expired?</span>
   <span class='comment'># To be implemented.
@@ -2124,13 +2124,13 @@ failure (as described above).</p>
       <pre class="lines">
 
 
+285
 286
 287
-288
-289</pre>
+288</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 286</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 285</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_in'>sign_in</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_params'>params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>user:</span> <span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='label'>password:</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -2335,12 +2335,12 @@ ignored; <code>config</code> is passed to <code>success</code> as a convenience.
       <pre class="lines">
 
 
+350
 351
-352
-353</pre>
+352</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 351</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 350</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_out'>sign_out</span><span class='lparen'>(</span><span class='label'>current_user:</span><span class='rparen'>)</span>
   <span class='const'>SignOut</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span> <span class='kw'>yield</span> <span class='id identifier rubyid_result'>result</span> <span class='rbrace'>}</span>
@@ -2363,8 +2363,8 @@ ignored; <code>config</code> is passed to <code>success</code> as a convenience.
   <div class="discussion">
     <p class="note returns_void">This method returns an undefined value.</p><p>Persist a new User to a Repository based on passed-in attributes, where the
 resulting Entity (on success) contains a  <code>:password_hash</code> attribute
-containing the encrypted value of the Clear-Text Password passed in as the
-<code>password</code> value within <code>attribs</code>.</p>
+containing the encrypted value of a <strong>random</strong> Clear-Text Password; any
+<code>password</code> value within <code>attribs</code> is ignored.</p>
 
 <p>The method <em>requires</em> a block, to which a <code>result</code> indicating success or
 failure is yielded. That block <strong>must</strong> in turn call <strong>both</strong>
@@ -2435,9 +2435,8 @@ the Controller Action Class level.</p>
         &mdash;
         <div class='inline'><p>Hash-like object of attributes for new User Entity and
 record. <strong>Must</strong> include <code>name</code> and  any other attributes
-required by the underlying database schema, as well as a
-clear-text <code>password</code> attribute which will be replaced in the
-created Entity/record by a <code>password_hash</code> attribute.</p>
+required by the underlying database schema. Any <code>password</code>
+attribute will be ignored.</p>
 </div>
       
     </li>
@@ -2579,14 +2578,14 @@ the reason for the failure (as described above).</p>
       <pre class="lines">
 
 
+177
 178
 179
 180
-181
-182</pre>
+181</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 178</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 177</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='const'>SignUp</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_repo'>repo</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
@@ -2603,7 +2602,7 @@ the reason for the failure (as described above).</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Dec 10 16:05:46 2018 by
+  Generated on Wed Dec 12 00:21:39 2018 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.16 (ruby-2.5.3).
 </div>

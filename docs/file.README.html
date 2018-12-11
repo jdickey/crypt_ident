@@ -138,9 +138,9 @@
 <td>The <em>encrypted</em> Password associated with that User.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>password_reset_sent_at</code></td>
+<td style="text-align: left"><code>password_reset_expires_at</code></td>
 <td>timestamp without time zone</td>
-<td>Defaults to <code>nil</code>; set this to the current time (<code>Time.now</code>) when responding to a Password Reset request (e.g., by email). The <code>token</code> (below) will expire at this time offset by the <code>reset_expiry</code> configuration value (see <em>Configuration</em>, below).</td>
+<td>Defaults to <code>nil</code>; set this to the Expiry Time (<code>Time.now + config.reset_expiry</code>) when responding to a Password Reset request (e.g., by email). The <code>token</code> (below) will expire at this time (see <em>Configuration</em>, below).</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>token</code></td>
@@ -433,7 +433,7 @@
 
 <h4>Successfully Generating a Token</h4>
 
-<p>Given a <code>user_name</code> parameter that specifies an existing User Name, and a <code>current_user:</code> parameter that is either <code>nil</code> or the Guest User, the method calls the <strong>required</strong> block with a <code>result</code> whose <code>result.success</code> matcher is yielded a <code>user:</code> parameter with a User Entity as its value. That User will be an Entity whose <code>name</code> matches the specified <code>user_name</code> parameter, with (new) values for the <code>token</code> and <code>password_reset_sent_at</code> attributes. The <code>token</code> attribute uniquely identifies the Password Reset request, and the <code>password_reset_sent_at</code> attribute is the current (server-local) time when the updated User Entity was persisted to the Repository.</p>
+<p>Given a <code>user_name</code> parameter that specifies an existing User Name, and a <code>current_user:</code> parameter that is either <code>nil</code> or the Guest User, the method calls the <strong>required</strong> block with a <code>result</code> whose <code>result.success</code> matcher is yielded a <code>user:</code> parameter with a User Entity as its value. That User will be an Entity whose <code>name</code> matches the specified <code>user_name</code> parameter, with (new) values for the <code>token</code> and <code>password_reset_expires_at</code> attributes. The <code>token</code> attribute uniquely identifies the Password Reset request, and the <code>password_reset_expires_at</code> attribute is based on both the current (server-local) time when the updated User Entity was persisted to the Repository, and the <code>:reset_expiry</code> attribute of the configuration.</p>
 
 <h4>Error Conditions</h4>
 
@@ -465,7 +465,7 @@
 
 <h4>Successfully Resetting a Password</h4>
 
-<p>To successfully perform a Password Reset, supply a valid, non-expired Token along with a new Clear-Text Password to the <code>#reset_password</code> method. Once the Token is found in the Repository specified by the <code>repo:</code> parameter (or in the configuration-default Repository if the default value of <code>nil</code> is used for <code>repo:</code>), and is verified not to have Expired, then the Repository will be updated with a record for that User where the <code>password_hash</code> field has been updated to reflect the new Clear-Text Password, and the <code>token</code> and <code>password_reset_sent_at</code> fields will be set to <code>nil</code>. </p>
+<p>To successfully perform a Password Reset, supply a valid, non-expired Token along with a new Clear-Text Password to the <code>#reset_password</code> method. Once the Token is found in the Repository specified by the <code>repo:</code> parameter (or in the configuration-default Repository if the default value of <code>nil</code> is used for <code>repo:</code>), and is verified not to have Expired, then the Repository will be updated with a record for that User where the <code>password_hash</code> field has been updated to reflect the new Clear-Text Password, and the <code>token</code> and <code>password_reset_expires_at</code> fields will be set to <code>nil</code>. </p>
 
 <p>If all the preceding is successful and the updated User is successfully persisted, the method calls the <strong>required</strong> block with a <code>result</code> whose <code>result.success</code> matcher is yielded a <code>user:</code> parameter with the updated User as its value. From that point, the User is able to Sign In using the User Name and updated Clear-Text Password.</p>
 
@@ -575,7 +575,7 @@
 </div></div>
 
       <div id="footer">
-  Generated on Mon Dec 10 16:05:46 2018 by
+  Generated on Wed Dec 12 00:21:39 2018 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.16 (ruby-2.5.3).
 </div>
