@@ -7,12 +7,19 @@ require 'securerandom'
 include CryptIdent
 
 describe 'CryptIdent#reset_password' do
+  let(:created_user) do
+    password_hash = BCrypt::Password.create(password)
+    user = User.new name: user_name, password_hash: password_hash,
+                    token: token, password_reset_expires_at: expires_at
+    our_repo = repo || CryptIdent.configure_crypt_ident.repository
+    our_repo.clear # XXX: WTAF?!?
+    our_repo.create(user)
+  end
   let(:new_password) { 'New Sufficiently Entropic Passphrase' }
   let(:other_params) { { repo: repo, current_user: nil } }
+  let(:password) { 'A Password' }
   let(:token) { SecureRandom.alphanumeric(24) }
-  let(:user_params) do
-    { name: 'J Random Someone', password: 'A Password' }
-  end
+  let(:user_name) { 'J Random Someone' }
 
   after do
     repo&.clear
@@ -20,16 +27,6 @@ describe 'CryptIdent#reset_password' do
   end
 
   describe 'using an explicitly-supplied Repository' do
-    let(:created_user) do
-      ret = :unassigned
-      repo.clear # XXX: WTAF?!?
-      sign_up(user_params, repo: repo, current_user: nil) do |result|
-        result.success { |config:, user:| ret = user }
-        result.failure { |code:, config:| pp [:line_15, code]; fail "Oops" }
-      end
-      update_params = { token: token, password_reset_expires_at: expires_at }
-      repo.update(ret.id, update_params)
-    end
     let(:repo) { UserRepository.new }
 
     describe 'when supplied a valid token, a new password, no Current User' do
@@ -172,17 +169,6 @@ describe 'CryptIdent#reset_password' do
   end # describe 'using an explicitly-supplied Repository'
 
   describe 'using the config-default Repository' do
-    let(:created_user) do
-      ret = :unassigned
-      def_repo = CryptIdent.configure_crypt_ident.repository
-      def_repo.clear # XXX: WTAF?!? Should be empty
-      sign_up(user_params, current_user: nil) do |result|
-        result.success { |config:, user:| ret = user }
-        result.failure { |code:, config:| pp [:line_187, code]; fail "Oops" }
-      end
-      update_params = { token: token, password_reset_expires_at: expires_at }
-      def_repo.update(ret.id, update_params)
-    end
     let(:repo) { nil }
 
     describe 'when supplied a valid token, a new password, no Current User' do

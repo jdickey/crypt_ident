@@ -5,19 +5,16 @@ require 'test_helper'
 include CryptIdent
 
 describe 'CryptIdent#change_password' do
-  let(:attribs) do
-    { name: 'J Random User', password: 'Old Clear-Text Password' }
-  end
-  let(:call_params) { [target_user, attribs[:password], new_password] }
+  let(:call_params) { [target_user, original_password, new_password] }
   let(:new_password) { 'New Clear-Text Password' }
+  let(:original_password) { 'Old Clear-Text Password' }
   let(:target_user) do
-    saved_user = :unassigned
-    sign_up(attribs, repo: repo, current_user: nil) do |result|
-      result.success { |config:, user:| saved_user = user }
-      result.failure { |code:, config:| next }
-    end
-    saved_user
+    password_hash = BCrypt::Password.create(original_password)
+    user = User.new name: user_name, password_hash: password_hash
+    our_repo = repo || CryptIdent.configure_crypt_ident.repository
+    our_repo.create(user)
   end
+  let(:user_name) { 'J Random User' }
 
   describe 'Successfully change password using' do
     let(:result_from_success) do
@@ -72,9 +69,8 @@ describe 'CryptIdent#change_password' do
           old_hashed_pass = target_user.password_hash
           actual = result_from_success.call
           new_hashed_pass = repo.find(actual.id).password_hash
-          old_password = attribs[:password]
-          expect(old_hashed_pass == old_password).must_equal true
-          expect(new_hashed_pass == old_password).wont_equal true
+          expect(old_hashed_pass == original_password).must_equal true
+          expect(new_hashed_pass == original_password).wont_equal true
           expect(new_hashed_pass == new_password).must_equal true
         end
       end # describe 'persists an Entity with'

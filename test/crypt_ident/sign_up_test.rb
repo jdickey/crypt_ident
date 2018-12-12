@@ -13,19 +13,16 @@ describe 'CryptIdent#sign_up' do
   end
   let(:params) { { repo: repo, current_user: nil } }
   let(:repo) { UserRepository.new }
-  let(:valid_input_params) do
-    { name: 'J Random User', password: 'Suitably Entropic Password!' }
-  end
+  let(:user_name) { 'J Random User' }
+  let(:valid_input_params) { { name: user_name } }
 
   before { CryptIdent.reset_crypt_ident_config }
 
-  describe 'with no Authenticated Current User and valid attributes' do
+  describe 'with no Authenticated Current User and a valid User Name' do
     it 'adds the new User Entity to the Repository' do
       actual_user = :unassigned
-      sign_up(valid_input_params, repo: repo, current_user: nil) do |result|
-        result.success do |config:, user:|
-          actual_user = user
-        end
+      actual_user = sign_up(valid_input_params, params) do |result|
+        result.success { |config:, user:| user }
 
         # *Must* define both `result.success` and `result.failure` blocks
         result.failure { fail 'Oops' }
@@ -39,77 +36,38 @@ describe 'CryptIdent#sign_up' do
         result.success do |config:, user:|
           { conf: config, user: user }
         end
-
         result.failure { fail 'Oops' }
       end
       expect(saved[:conf]).must_equal CryptIdent.configure_crypt_ident
       expect(saved[:user]).must_equal repo.last
     end
 
-    describe 'when a Password is specified' do
-      it 'the User can Authenticate correctly' do
-        saved_user = :unassigned
-        sign_up(valid_input_params, params) do |result|
-          result.success do |config:, user:|
-            saved_user = user
-          end
-
-          result.failure { fail 'Oops' }
-        end
-        user_with_password = :unassigned
-        sign_in(saved_user, valid_input_params[:password]) do |result|
-          result.success { |user:| user_with_password = user }
-          result.failure { next }
-        end
-        expect(user_with_password).must_equal saved_user
+    it 'encrypts a random Password value, ignoring any specified value' do
+      input_params = { password: 'password' }.merge(valid_input_params)
+      saved_user = sign_up(input_params, params) do |result|
+        result.success { |config:, user:| user }
+        result.failure { fail 'Oops' }
       end
-    end # describe 'when a Password is specified'
+      expect(saved_user.password_hash == 'password').must_equal false
+    end
 
-    describe 'Encrypts a random Password value when input is' do
-      let(:input_params) { valid_input_params }
-      let(:save_user_on_success) do
-        -> (result) do
-          result.success do |config:, user:|
-            saved_user = user
-          end
-
-          result.failure { fail 'Oops' }
-        end
+    it 'adds a :token value to the persisted Entity' do
+      saved_user = sign_up(valid_input_params, params) do |result|
+        result.success { |config:, user:| user }
+        result.failure { fail 'Oops' }
       end
+      expect(saved_user.token.to_s).wont_be :empty?
+    end
 
-      it 'not supplied, aka nil' do
-        input_params.delete :password
-        saved_user = :unassigned
-        sign_up(input_params, params) do |result|
-          result.success do |config:, user:|
-            saved_user = user
-          end
-
-          result.failure { fail 'Oops' }
-        end
-        expect(saved_user.password_hash == nil).wont_equal true
+    it 'adds a :password_reset_expires_at timestamp to the persisted Entity' do
+      saved_user = sign_up(valid_input_params, params) do |result|
+        result.success { |config:, user:| user }
+        result.failure { fail 'Oops' }
       end
-
-      it 'an empty string' do
-        input_params[:password] = ''
-        saved_user = :unassigned
-        sign_up(input_params, params) do |result|
-          saved_user = save_user_on_success.call(result)
-        end
-        expect(saved_user.password_hash == '').wont_equal true
-      end
-
-      it 'entirely made up of whitespace' do
-        password = "\t\n\r   \r  \t \n"
-        input_params[:password] = password
-        saved_user = :unassigned
-        sign_up(input_params, params) do |result|
-          saved_user = save_user_on_success.call(result)
-        end
-        expect(saved_user.password_hash == password).wont_equal true
-      end
-    end # describe 'Encrypts a random Password value when input is'
-  end # describe 'with no Authenticated Current User and valid attributes'
+      actual = saved_user.password_reset_expires_at
+      expect(actual).must_be :>, saved_user.updated_at
+    end
+  end # describe 'with no Authenticated Current User and a valid User Name'
 
   describe 'with an existing User having the same :name attribute' do
     before { _ = existing }

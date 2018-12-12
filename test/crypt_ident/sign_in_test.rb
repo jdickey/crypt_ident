@@ -6,24 +6,22 @@ include CryptIdent
 
 describe 'CryptIdent#sign_in' do
   let(:guest_user) { CryptIdent.configure_crypt_ident.guest_user }
-  let(:params) do
-    { name: 'J Random User', password: 'Suitably Entropic Password!' }
-  end
+  let(:password) { 'Suitably Entropic Password' }
   let(:repo) { UserRepository.new }
   let(:user) do
-    saved_user = :unassigned
-    sign_up(params, repo: repo, current_user: nil) do |result|
-      result.success { |config:, user:| saved_user = user }
-      result.failure { |code:, config:| skip }
-    end
-    saved_user
+    password_hash = BCrypt::Password.create(password)
+    user = User.new name: user_name, password_hash: password_hash
+    our_repo = repo || CryptIdent.configure_crypt_ident.repository
+    our_repo.clear # XXX: WTAF?!?
+    our_repo.create(user)
   end
+  let(:user_name) { 'J Random User' }
 
   describe 'when no Authenticated User is Signed In' do
     describe 'when the correct password is supplied' do
       it 'returns the same User Entity used for Authentication' do
         actual = :unassigned
-        sign_in(user, params[:password], current_user: nil) do |result|
+        sign_in(user, password, current_user: nil) do |result|
           result.success { |user:| actual = user }
           result.failure { next }
         end
@@ -67,7 +65,7 @@ describe 'CryptIdent#sign_in' do
 
     it 'fails even with a correct password for a different User' do
       actual = :unassigned
-      sign_in(user, params[:password], current_user: other_user) do |result|
+      sign_in(user, password, current_user: other_user) do |result|
         result.success { next }
         result.failure { |code:| actual = code }
       end

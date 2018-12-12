@@ -35,8 +35,7 @@ module CryptIdent
     attr_reader :ci_config
 
     def all_attribs(attribs)
-      password_hash = hashed_password(attribs[:password])
-      { password_hash: password_hash }.merge(attribs)
+      new_attribs.merge(attribs)
     end
 
     def config_with_repo(repo)
@@ -46,8 +45,8 @@ module CryptIdent
     end
 
     # XXX: This has a Flog score of 9.8. Truly simplifying PRs welcome.
-    def create_result(all_attribs)
-      user = ci_config.repository.create(all_attribs)
+    def create_result(attribs_in)
+      user = ci_config.repository.create(attribs_in)
       Success(user: user, config: ci_config)
     rescue Hanami::Model::UniqueConstraintViolationError
       failure_for(:user_already_created)
@@ -65,8 +64,23 @@ module CryptIdent
 
     def hashed_password(password_in)
       password = password_in.to_s.strip
-      password = SecureRandom.urlsafe_base64(64) if password.empty?
+      password = SecureRandom.alphanumeric(64) if password.empty?
       ::BCrypt::Password.create(password)
+    end
+
+    def new_attribs
+      prea = Time.now + ci_config.reset_expiry
+      {
+        password_hash: hashed_password(nil),
+        password_reset_expires_at: prea,
+        token: new_token
+      }
+    end
+
+    def new_token
+      token_length = ci_config.token_bytes
+      clear_text_token = SecureRandom.alphanumeric(token_length)
+      Base64.strict_encode64(clear_text_token)
     end
   end
 end
