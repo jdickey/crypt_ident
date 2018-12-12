@@ -12,13 +12,13 @@ describe 'CryptIdent#sign_out' do
   describe 'when an Authenticated User is Signed In' do
     let(:repo) { UserRepository.new }
     let(:user) do
-      saved_user = :unassigned
-      params = { name: 'Some User', password: 'anything' }
-      sign_up(params, repo: repo, current_user: nil) do |result|
-        result.success { |config:, user:| saved_user = user }
-        result.failure { |code:, config:| skip }
-      end
-      saved_user
+      user_name = 'Some User'
+      password = 'Anything'
+      password_hash = BCrypt::Password.create(password)
+      user = User.new name: user_name, password_hash: password_hash
+      our_repo = repo || CryptIdent.configure_crypt_ident.repository
+      our_repo.clear # XXX: WTAF?!?
+      our_repo.create(user)
     end
 
     before do
