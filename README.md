@@ -10,7 +10,7 @@ This is initially tied to Hanami 1.3.0+; specifically, it assumes that user enti
 3. [Signing out](#signing-out);
 4. [Password change](#password-change);
 5. [Password reset](#password-reset); and
-6. [Session expiration](#session-expiration).
+6. [Session expiration management](#session-management-overview).
 
 It *does not* implement features such as
 
@@ -73,7 +73,7 @@ The currently-configurable details for `CryptIdent` are as follows:
 | `hashing_cost` | 8 | This is the [hashing cost](https://github.com/codahale/bcrypt-ruby#cost-factors) used to *encrypt a password* and is applied at the hashed-password-creation step; it **does not** modify the default cost for the encryption engine. **Note that** any change to this value **will** invalidate and make useless all existing Encrypted Password stored values. |
 | `:repository` | `UserRepository.new` | Modify this if your user records are in a different (or namespaced) class. |
 | `:reset_expiry` | 86400 | Number of seconds from the time a password-reset request token is stored before it becomes invalid. |
-| `:session_expiry` | 900 | Number of seconds *from either* the time that a User is successfully Authenticated *or* the `restart_session_counter` method is called *before* a call to `session_expired?` will return `true`. |
+| `:session_expiry` | 900 | Number of seconds *from either* the time that a User is successfully Authenticated *or* the `update_session_expiry` method is called *before* a call to `session_expired?` will return `true`. |
 | `:success_key` | `:success` | Modify this setting if you want to use a different key for flash messages reporting successful actions. |
 | `:token_bytes` | 16 | Number of bytes of random data to generate when building a password-reset token. See `token` in the [_Database/Repository Setup_](#databaserepository-setup) section, above.
 
@@ -365,13 +365,13 @@ If the passed-in `current_user:` parameter *is not* either the default `nil` or 
 
 <sub style="font-size: 0.75rem;">[Back to Top](#CryptIdent)</sub>
 
-### Session Expiration -- TODO: FIXME
+### Session Management Overview
 
 Session management is a necessary part of implementing authentication (and authorisation) within an app. However,  it's not something that an authentication *library* can fully implement without making the client application excessively inflexible and brittle.
 
 `CryptIdent` has two convenience methods which *help in* implementing session-expiration logic; these make use of the `session_expiry` [configuration value](#configuration).
 
-* `CryptIdent#restart_session_counter` resets the session-expiry time to the current time *plus* the number of seconds specified by the `session_expiry` configuration value.
+* `CryptIdent#update_session_expiry` returns a `Hash` whose `:expires_at` value the current time *plus* the number of seconds specified by the `session_expiry` configuration value. This can be used to update the corresponding `session` data which defines the session-expiry time;
 * `CryptIdent#session_expired?` returns `true` if the current time is not less than the session-expiry time; it returns `false` otherwise.
 
 Example code which uses these methods is illustrated below, as a shared-code module that may be included in your controllers' action classes:
@@ -392,10 +392,15 @@ module Web
     private
 
     def validate_session
-      return restart_session_counter unless session_expired?
+      updates = update_session_expiry(session)
+      if !session_expired?(session)
+        session[:expires_at] = updates[:expires_at]
+        return
+      end
 
       @redirect_url ||= routes.root_path
       session[:current_user] = config.guest_user
+      session[:expires_at] = updates[:expires_at]
       error_message = 'Your session has expired. You have been signed out.'
       flash[config.error_key] = error_message
       redirect_to @redirect_url
@@ -411,6 +416,59 @@ This code should be fairly self-explanatory. Including the module adds the priva
 3. Control is redirected to the path or URL specified by `@redirect_url`, defaulting to the root path (`/`).
 
 This code will be instantly familiar to anyone coming from another framework like Rails, where the conventional way to ensure authentication before a controller action is executed is to add a `:before` hook. Adding this module to the controller action class is also justifiable Hanami, since it depends on and interacts with session data. (Just don't let any actual domain logic [taint](http://hanamirb.org/guides/1.2/actions/control-flow/#proc) your controller callbacks; that's begging for difficult-to-debug problems going forward.
+
+<sub style="font-size: 0.75rem;">[Back to Top](#CryptIdent)</sub>
+
+### Session Expired
+
+Method involved:
+
+```ruby
+module CryptIdent
+  def session_expired?(session_data={})
+    # ...
+  end 
+end
+```
+
+This is one of two methods in `CryptIdent` (the other being [`#update_session_expiry `](#update-session-expiry), below) which *does not* follow the `result`/success/failure [monad workflow](#interfaces). Like that method:
+
+* there is no success/failure division in the workflow;
+* calling this method only makes sense if there is an Authenticated User;
+* it is intended for use in session-management code as described in the [Overview](#session-management-overview) above.
+
+All this method does is check an instance variable, `@_ci_session_expiry_at`, added to the including class when the module is `include`d in the client-code class or module, returning `true` if it is *less than* the value of `Time.now` and `false` otherwise.
+
+<sub style="font-size: 0.75rem;">[Back to Top](#CryptIdent)</sub>
+
+### Update Session Expiry
+
+#### Overview
+
+Method involved:
+
+```ruby
+module CryptIdent
+  def update_session_expiry(session_data={})
+    # ...
+  end 
+end
+```
+
+This is one of two methods in `CryptIdent` (the other being [`#session_expired?`](#session-expired), above) which *does not* follow the `result`/success/failure [monad workflow](#interfaces). This is because there is no success/failure division in the workflow. Calling the method only makes sense if there is an Authenticated User, but *all this method does* is return a `Hash` as defined below.
+
+It is intended for use in session-management code as described in the [Overview](#session-management-overview) above.
+
+#### Parameter
+
+The parameter, `session_data`, is a Hash-like object which **should** have existing entries for `:current_user` (defaulting to the Guest User if not found) and for `:expires_at` (defaulting to the [epoch](https://en.wikipedia.org/wiki/Unix_time) if not found).
+
+#### Return
+
+The return value is a `Hash` which:
+
+1. `:current_user` value is the same as the passed-in parameter's `:current_user` value *if* that is a Registered User, or the Guest User if it isn't; and
+2. `:expires_at` value is a `Time` instance based on the current time when called, added to the [configured](#configuration) `session_expiry` value.
 
 <sub style="font-size: 0.75rem;">[Back to Top](#CryptIdent)</sub>
 

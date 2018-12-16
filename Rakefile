@@ -31,13 +31,13 @@ end
 
 FlogTask.new do |t|
   t.verbose = true
-  t.threshold = 300 # default is 200
+  t.threshold = 400 # default is 200
   t.methods_only = true
   t.dirs = %w(lib) # Look, Ma; no tests! Run the tool manually every so often for those.
 end
 
 Inch::Rake::Suggest.new do |suggest|
-  suggest.args = '--pedantic'
+  # suggest.args = '--pedantic'
 end
 
 Reek::Rake::Task.new do |t|

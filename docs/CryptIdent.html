@@ -71,11 +71,6 @@
   
   
   
-  <dl>
-      <dt>Includes:</dt>
-      <dd>Hanami::Utils::ClassAttribute</dd>
-  </dl>
-  
   
 
   
@@ -84,7 +79,7 @@
   <dl>
     <dt>Defined in:</dt>
     <dd>lib/crypt_ident.rb<span class="defines">,<br />
-  lib/crypt_ident/config.rb,<br /> lib/crypt_ident/sign_in.rb,<br /> lib/crypt_ident/sign_up.rb,<br /> lib/crypt_ident/version.rb,<br /> lib/crypt_ident/sign_out.rb,<br /> lib/crypt_ident/reset_password.rb,<br /> lib/crypt_ident/change_password.rb,<br /> lib/crypt_ident/generate_reset_token.rb</span>
+  lib/crypt_ident/config.rb,<br /> lib/crypt_ident/sign_in.rb,<br /> lib/crypt_ident/sign_up.rb,<br /> lib/crypt_ident/version.rb,<br /> lib/crypt_ident/sign_out.rb,<br /> lib/crypt_ident/reset_password.rb,<br /> lib/crypt_ident/change_password.rb,<br /> lib/crypt_ident/session_expired.rb,<br /> lib/crypt_ident/generate_reset_token.rb,<br /> lib/crypt_ident/update_session_expiry.rb</span>
 </dd>
   </dl>
   
@@ -174,6 +169,39 @@ data, which is quite theoretically possible in an Interactor but practically
 
 
 
+
+  <h2>Instance Attribute Summary <small><a href="#" class="summary_toggle">collapse</a></small></h2>
+  <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#cryptid_config-instance_method" title="#cryptid_config (instance method)">#<strong>cryptid_config</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Memoised configuration object.</p>
+</div></span>
+  
+</li>
+
+    
+  </ul>
 
 
 
@@ -313,30 +341,7 @@ data, which is quite theoretically possible in an Interactor but practically
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#restart_session_counter-instance_method" title="#restart_session_counter (instance method)">#<strong>restart_session_counter</strong>  </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'><p>Restart the Session Expiration timestamp mechanism, to avoid prematurely signing out a User.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#session_expired%3F-instance_method" title="#session_expired? (instance method)">#<strong>session_expired?</strong>  &#x21d2; Boolean </a>
+      <a href="#session_expired%3F-instance_method" title="#session_expired? (instance method)">#<strong>session_expired?</strong>(session_data = {})  &#x21d2; Boolean </a>
     
 
     
@@ -425,11 +430,80 @@ data, which is quite theoretically possible in an Interactor but practically
 </li>
 
       
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#update_session_expiry-instance_method" title="#update_session_expiry (instance method)">#<strong>update_session_expiry</strong>(session_data = {})  &#x21d2; Hash </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Generate a Hash containing an updated Session Expiration timestamp, which can then be used for session management.</p>
+</div></span>
+  
+</li>
+
+      
     </ul>
   
 
 
+  <div id="instance_attr_details" class="attr_details">
+    <h2>Instance Attribute Details</h2>
+    
+      
+      <span id=""></span>
+      <div class="method_details first">
+  <h3 class="signature first" id="cryptid_config-instance_method">
   
+    #<strong>cryptid_config</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Memoised configuration object.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+29
+30
+31</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 29</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_cryptid_config'>cryptid_config</span>
+  <span class='ivar'>@cryptid_config</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
 
   <div id="class_method_details" class="method_details_list">
     <h2>Class Method Details</h2>
@@ -594,14 +668,14 @@ Hanami app is <code>web</code>.</p>
       <pre class="lines">
 
 
-58
-59
-60
-61
-62</pre>
+70
+71
+72
+73
+74</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 58</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 70</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_configure_crypt_ident'>configure_crypt_ident</span>
   <span class='id identifier rubyid_config'>config</span> <span class='op'>=</span> <span class='id identifier rubyid__starting_config'>_starting_config</span>
@@ -645,10 +719,10 @@ from a <code>before</code> block for a test suite.</p>
   <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_hashing_cost'>hashing_cost</span> <span class='op'>=</span> <span class='int'>20</span> <span class='comment'># default 8
 </span><span class='kw'>end</span>
 <span class='comment'># ...
-</span><span class='id identifier rubyid_foo'>foo</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure_crypt_ident'><span class='object_link'><a href="#configure_crypt_ident-class_method" title="CryptIdent.configure_crypt_ident (method)">configure_crypt_ident</a></span></span><span class='period'>.</span><span class='id identifier rubyid_hashing_cost'>hashing_cost</span> <span class='comment'># 20
+</span><span class='id identifier rubyid_foo'>foo</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_cryptid_config'><span class='object_link'><a href="#cryptid_config-instance_method" title="CryptIdent#cryptid_config (method)">cryptid_config</a></span></span><span class='period'>.</span><span class='id identifier rubyid_hashing_cost'>hashing_cost</span> <span class='comment'># 20
 </span><span class='comment'># ...
 </span><span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_reset_crypt_ident_config'>reset_crypt_ident_config</span>
-<span class='id identifier rubyid_foo'>foo</span> <span class='op'>==</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure_crypt_ident'><span class='object_link'><a href="#configure_crypt_ident-class_method" title="CryptIdent.configure_crypt_ident (method)">configure_crypt_ident</a></span></span><span class='period'>.</span><span class='id identifier rubyid_hashing_cost'>hashing_cost</span> <span class='comment'># default, 8</span></code></pre>
+<span class='id identifier rubyid_foo'>foo</span> <span class='op'>==</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_cryptid_config'><span class='object_link'><a href="#cryptid_config-instance_method" title="CryptIdent#cryptid_config (method)">cryptid_config</a></span></span><span class='period'>.</span><span class='id identifier rubyid_hashing_cost'>hashing_cost</span> <span class='comment'># default, 8</span></code></pre>
     
   </div>
 
@@ -732,15 +806,15 @@ from a <code>before</code> block for a test suite.</p>
       <pre class="lines">
 
 
-96
-97
-98</pre>
+108
+109
+110</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 96</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 108</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_reset_crypt_ident_config'>reset_crypt_ident_config</span>
-  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_cryptid_config'>cryptid_config</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="CryptIdent/Config.html" title="CryptIdent::Config (class)">Config</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='ivar'>@cryptid_config</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="CryptIdent/Config.html" title="CryptIdent::Config (class)">Config</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -788,8 +862,8 @@ block, which indicates the cause of failure as follows:</p>
 <p>If the specified password <em>did not</em> match the passed-in <code>user</code> Entity, then
 the <code>code:</code> for failure will be <code>:bad_password</code>.</p>
 
-<p>If the specified <code>user</code> was <code>nil</code>, the Guest User, or any object other than
-a proper User Entity, then the <code>code:</code> for failure will be <code>:invalid_user</code>.</p>
+<p>If the specified <code>user</code> was <em>other than</em> a User Entity representing a
+Registered User, then the <code>code:</code> for failure will be <code>:invalid_user</code>.</p>
 
 <p>Note that no check for the Current User is done here; this method trusts the
 Controller Action Class that (possibly indirectly) invokes it to guard that
@@ -810,7 +884,7 @@ contingency properly.</p>
       <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_user_in'>user_in</span> <span class='op'>=</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_error_code'>error_code</span> <span class='op'>=</span> <span class='symbol'>:unassigned</span>
-  <span class='id identifier rubyid_config'>config</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='op'>::</span><span class='id identifier rubyid_configure_crypt_ident'><span class='object_link'><a href="#configure_crypt_ident-class_method" title="CryptIdent.configure_crypt_ident (method)">configure_crypt_ident</a></span></span>
+  <span class='id identifier rubyid_config'>config</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_cryptid_config'><span class='object_link'><a href="#cryptid_config-instance_method" title="CryptIdent#cryptid_config (method)">cryptid_config</a></span></span>
   <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:password</span><span class='rbracket'>]</span><span class='comma'>,</span>
                   <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:new_password</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
     <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_success'>success</span> <span class='kw'>do</span> <span class='op'>|</span><span class='label'>user:</span><span class='op'>|</span>
@@ -1022,15 +1096,15 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
-444
-445
-446
-447
-448
-449</pre>
+459
+460
+461
+462
+463
+464</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 444</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 459</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_new_params'>new_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>config:</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure_crypt_ident'><span class='object_link'><a href="#configure_crypt_ident-class_method" title="CryptIdent.configure_crypt_ident (method)">configure_crypt_ident</a></span></span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='id identifier rubyid_repo'>repo</span><span class='comma'>,</span>
@@ -1088,11 +1162,10 @@ been saved to the Repository.</p>
 <code>:current_user</code>, and <code>:name</code>, and will be set as follows:</p>
 
 <p>If the <code>:code</code> value is <code>:user_logged_in</code>, that indicates that the
-<code>current_user</code> parameter to this method represented an actual User, rather
-than the Guest User or the default value of <code>nil</code>. In this event, the
-<code>:current_user</code> value passed in to the <code>result.failure</code> call will be the
-same User Entity passed into the method, and the <code>:name</code> value will be
-<code>:unassigned</code>.</p>
+<code>current_user</code> parameter to this method represented a Registered User. In
+this event, the <code>:current_user</code> value passed in to the <code>result.failure</code> call
+will be the same User Entity passed into the method, and the <code>:name</code> value
+will be <code>:unassigned</code>.</p>
 
 <p>If the <code>:code</code> value is <code>:user_not_found</code>, the named User was not found in
 the Repository. The <code>:current_user</code> parameter will be the Guest User Entity,
@@ -1113,7 +1186,7 @@ and the <code>:name</code> parameter to the <code>result.failure</code> block wi
       
       <pre class="example code"><code>
 def call(params)
-  config = CryptIdent.configure_crypt_ident
+  config = CryptIdent.cryptid_config
   other_params = { current_user: session[:current_user] }
   generate_reset_token(params[:name], other_params) do |result|
     result.success do |user:|
@@ -1176,14 +1249,14 @@ configuration is used.</p>
         <span class='name'>current_user</span>
       
       
-        <span class='type'>(<tt>User</tt>, <tt>`nil`</tt>)</span>
+        <span class='type'>(<tt>User</tt>)</span>
       
       
       
         &mdash;
         <div class='inline'><p>Entity representing the currently
-Authenticated User Entity. This <strong>should</strong> not be either
-<code>nil</code> or the Guest User.</p>
+Authenticated User Entity. This <strong>must</strong> be a Registered
+User.</p>
 </div>
       
     </li>
@@ -1274,7 +1347,7 @@ method-call blocks to retrieve data from the method.</p>
       
       
         
-        <div class='inline'><p><code>:current_user</code> <strong>must not</strong> be other than <code>nil</code> or the Guest User.</p>
+        <div class='inline'><p><code>:current_user</code> <strong>must not</strong> be a Registered User.</p>
 </div>
       
     </li>
@@ -1306,15 +1379,15 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
-547
-548
-549
-550
-551
-552</pre>
+561
+562
+563
+564
+565
+566</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 547</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 561</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_generate_reset_token'>generate_reset_token</span><span class='lparen'>(</span><span class='id identifier rubyid_user_name'>user_name</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_other_params'>other_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>repo:</span> <span class='id identifier rubyid_repo'>repo</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -1374,9 +1447,8 @@ the Repository <em>and</em> that Token is determined to have Expired, then the
 record in the Repository, then the <code>code:</code> parameter will have the value
 <code>:token_not_found</code>.</p>
 
-<p>If the passed-in <code>current_user:</code> parameter is <em>other than</em> the default <code>nil</code>
-or the Guest User, then the <code>code:</code> parameter will have the value
-<code>:invalid_current_user</code>.</p>
+<p>If the passed-in <code>current_user:</code> parameter is a Registered User, then the
+<code>code:</code> parameter will have the value <code>:invalid_current_user</code>.</p>
 
 <p>In no event are session values, including the Current User, changed. After a
 successful Password Reset, the User must Authenticate as usual.</p>
@@ -1396,7 +1468,7 @@ successful Password Reset, the User must Authenticate as usual.</p>
     result.success do |user:|
       @user = user
       message = &quot;Password for #{user.name} successfully reset.&quot;
-      config = CryptIdent.configure_crypt_ident
+      config = CryptIdent.cryptid_config
       flash[config.success_key] = message
       redirect_to routes.root_path
     end
@@ -1534,7 +1606,7 @@ method-call blocks to retrieve data from the method.</p>
       
       
         
-        <div class='inline'><p><code>:current_user</code> <strong>must not</strong> be other than <code>nil</code> or the Guest User.</p>
+        <div class='inline'><p><code>:current_user</code> <strong>must not</strong> be a Registered User.</p>
 </div>
       
     </li>
@@ -1568,15 +1640,15 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
-647
-648
-649
-650
-651
-652</pre>
+660
+661
+662
+663
+664
+665</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 647</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 660</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_password'>reset_password</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_other_params'>other_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>repo:</span> <span class='id identifier rubyid_repo'>repo</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -1590,133 +1662,9 @@ method-call blocks to retrieve data from the method.</p>
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="restart_session_counter-instance_method">
-  
-    #<strong>restart_session_counter</strong>  
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-  <div class="note todo">
-    <strong>TODO:</strong>
-    <div class='inline'><p>FIXME: API and docs <em>not yet finalised!</em></p>
-</div>
-  </div>
-
-<p class="note returns_void">This method returns an undefined value.</p><p>Restart the Session Expiration timestamp mechanism, to avoid prematurely
-signing out a User.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-  <div class="examples">
-    <p class="tag_title">Examples:</p>
-    
-      
-      <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_validate_session'>validate_session</span>
-  <span class='kw'>return</span> <span class='id identifier rubyid_restart_session_counter'>restart_session_counter</span> <span class='kw'>unless</span> <span class='id identifier rubyid_session_expired?'>session_expired?</span>
-
-  <span class='comment'># ... sign out and redirect appropriately ...
-</span><span class='kw'>end</span></code></pre>
-    
-  </div>
-
-<p class="tag_title">Since:</p>
-<ul class="since">
-  
-    <li>
-      
-      
-      
-      
-        
-        <div class='inline'><p>0.1.0</p>
-</div>
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Required Authentication Status:</p>
-<ul class="authenticated">
-  
-    <li>
-      
-      
-      
-      
-        
-        <div class='inline'><p>Must be Authenticated.</p>
-</div>
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Session Data Interacted With:</p>
-<ul class="session_data">
-  
-    <li>
-      
-      
-      
-      
-        
-        <div class='inline'><p><code>:current_user</code> <strong>must</strong> be an Entity for a Registered User on entry
-<code>:start_time</code>   set to <code>Time.now</code> on exit</p>
-</div>
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Ubiquitous Language Terms:</p>
-<ul class="ubiq_lang">
-  
-    <li>
-      
-      
-      
-      
-        
-        <div class='inline'><ul>
-<li>Authentication</li>
-<li>Session Expiration</li>
-</ul>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-676
-677
-678</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 676</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_restart_session_counter'>restart_session_counter</span>
-  <span class='comment'># To be implemented.
-</span><span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
   <h3 class="signature " id="session_expired?-instance_method">
   
-    #<strong>session_expired?</strong>  &#x21d2; <tt>Boolean</tt> 
+    #<strong>session_expired?</strong>(session_data = {})  &#x21d2; <tt>Boolean</tt> 
   
 
   
@@ -1724,21 +1672,21 @@ signing out a User.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-  <div class="note todo">
-    <strong>TODO:</strong>
-    <div class='inline'><p>FIXME: API and docs <em>not yet finalised!</em></p>
-</div>
-  </div>
+    <p>Determine whether the Session has Expired due to User inactivity.</p>
 
-<p>Determine whether the Session has Expired due to User inactivity.</p>
+<p>This is one of two methods in <code>CryptIdent</code> (the other being
+<a href="#update_session_expiry"><code>#update_session_expiry?</code></a>) which <em>does not</em> follow
+the <code>result</code>/success/failure <a href="#interfaces">monad workflow</a>. This is because
+there is no success/failure division in the workflow. Calling the method
+determines if the Current User session has Expired. If the passed-in
+<code>:current_user</code> is a Registered User, then this will return <code>true</code> if the
+current time is <em>later than</em> the passed-in <code>:expires_at</code> value; for the
+Guest User, it should always return <code>false</code>. (Guest User sessions never
+expire; after all, what would you change the session state to?).</p>
 
-<p>This is determined by comparing the current time as reported by <code>Time.now</code>
-to the timestamp resulting from adding <code>session[:start_time]</code> and
-<code>config.session_expiry</code>.</p>
-
-<p>Will return <code>false</code> if <code>session[:current_user]</code> is <code>nil</code> or has the value
-specified by <code>config.guest_user</code>.</p>
+<p>The client code is responsible for applying these values to its own actual
+session data, as described by the sample session-management code shown in
+the README.</p>
 
 
   </div>
@@ -1749,13 +1697,45 @@ specified by <code>config.guest_user</code>.</p>
     <p class="tag_title">Examples:</p>
     
       
+        <p class="example_title"><div class='inline'><p>As used in module included by Controller Action Class (see README)</p>
+</div></p>
+      
       <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_validate_session'>validate_session</span>
-  <span class='kw'>return</span> <span class='id identifier rubyid_restart_session_counter'>restart_session_counter</span> <span class='kw'>unless</span> <span class='id identifier rubyid_session_expired?'>session_expired?</span>
+  <span class='id identifier rubyid_updates'>updates</span> <span class='op'>=</span> <span class='id identifier rubyid_update_session_expiry'>update_session_expiry</span><span class='lparen'>(</span><span class='id identifier rubyid_session'>session</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_session_expired?'>session_expired?</span><span class='lparen'>(</span><span class='id identifier rubyid_session'>session</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:expires_at</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:expires_at</span><span class='rbracket'>]</span>
+    <span class='kw'>return</span>
+  <span class='kw'>end</span>
 
   <span class='comment'># ... sign out and redirect appropriately ...
 </span><span class='kw'>end</span></code></pre>
     
   </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>session_data</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>{}</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>The Rack session data of interest to the method.
+If the <code>:current_user</code> entry is defined, it <strong>must</strong> be either
+a User Entity or <code>nil</code>, signifying the Guest User. If the
+<code>:expires_at</code> entry is defined, its value in the returned Hash
+<em>will</em> be different.</p>
+</div>
+      
+    </li>
+  
+</ul>
 
 <p class="tag_title">Returns:</p>
 <ul class="return">
@@ -1810,7 +1790,7 @@ specified by <code>config.guest_user</code>.</p>
       
         
         <div class='inline'><p><code>:current_user</code> <strong>must</strong> be an Entity for a Registered User on entry
-<code>:start_time</code>   read during determination of expiry status</p>
+<code>:expires_at</code>   read during determination of expiry status</p>
 </div>
       
     </li>
@@ -1827,6 +1807,9 @@ specified by <code>config.guest_user</code>.</p>
         
         <div class='inline'><ul>
 <li>Authentication</li>
+<li>Current User</li>
+<li>Guest User</li>
+<li>Registered User</li>
 <li>Session Expiration</li>
 </ul>
 </div>
@@ -1841,16 +1824,16 @@ specified by <code>config.guest_user</code>.</p>
       <pre class="lines">
 
 
-706
-707
-708</pre>
+712
+713
+714</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 706</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 712</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_session_expired?'>session_expired?</span>
-  <span class='comment'># To be implemented.
-</span><span class='kw'>end</span></pre>
+<span class='kw'>def</span> <span class='id identifier rubyid_session_expired?'>session_expired?</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+  <span class='const'>SessionExpired</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -1871,10 +1854,10 @@ specified by <code>config.guest_user</code>.</p>
 <strong>must</strong> contain a <code>password_hash</code> attribute), and a Clear-Text Password.
 It also passes in the Current User.</p>
 
-<p>If the Current User is either <code>nil</code> or the Guest User, then Authentication
-of the specified User Entity against the specified Password proceeds as
-follows: The User Entity&#39;s <code>password_hash</code> attribute is used to attempt a
-match against the passed-in Clear-Text Password.</p>
+<p>If the Current User is not a Registered User, then Authentication of the
+specified User Entity against the specified Password is accomplished by
+comparing the User Entity&#39;s <code>password_hash</code> attribute to the passed-in
+Clear-Text Password.</p>
 
 <p>The method <em>requires</em> a block, to which a <code>result</code> indicating success or
 failure is yielded. That block <strong>must</strong> in turn call <strong>both</strong>
@@ -1889,7 +1872,7 @@ block, which indicates the cause of failure as follows:</p>
 <p>If the specified password <em>did not</em> match the passed-in <code>user</code> Entity, then
 the <code>code:</code> for failure will be <code>:invalid_password</code>.</p>
 
-<p>If the specified <code>user</code> was <code>nil</code> or the Guest User, then the <code>code:</code> for
+<p>If the specified <code>user</code> was not a Registered User, then the <code>code:</code> for
 failure will be <code>:user_is_guest</code>.</p>
 
 <p>If the specified <code>current_user</code> is <em>neither</em> the Guest User <em>nor</em> the <code>user</code>
@@ -1899,7 +1882,9 @@ passed in as a parameter to <code>#sign_in</code>, then the <code>code:</code> f
 <p>On <em>success,</em> the Controller-level client code <strong>must</strong> set:</p>
 
 <ul>
-<li><code>session[:start_time]</code> to the current time as returned by <code>Time.now</code>;</li>
+<li><code>session[:expires_at]</code> to the expiration time for the session. This is
+ordinarily computed by adding the current time as returned by <code>Time.now</code>
+to the <code>:session_expiry</code> value in the current configuration.</li>
 <li><code>session[:current_user]</code> to tne returned <em>Entity</em> for the successfully
 Authenticated User. This is to eliminate possible repeated reads of the
 Repository.</li>
@@ -1908,10 +1893,10 @@ Repository.</li>
 <p>On <em>failure,</em> the Controller-level client code <strong>should</strong> set:</p>
 
 <ul>
-<li><code>session[:start_time]</code> to some sufficiently-past time to <em>always</em> trigger
+<li><code>session[:expires_at]</code> to some sufficiently-past time to <em>always</em> trigger
 <code>#session_expired?</code>; <code>Hanami::Utils::Kernel.Time(0)</code> does this quite well
 (returning midnight GMT on 1 January 1970, converted to local time).</li>
-<li><code>session[:current_user]</code> to <code>nil</code> or the Guest User.</li>
+<li><code>session[:current_user]</code> to either <code>nil</code> or the Guest User.</li>
 </ul>
 
 
@@ -1928,21 +1913,21 @@ Repository.</li>
       
       <pre class="example code"><code>def call(params)
   user = UserRepository.new.find_by_email(params[:email])
-  guest_user = CryptIdent::configure_crypt_ident.guest_user
+  guest_user = CryptIdent::cryptid_config.guest_user
   return update_session_data(guest_user, 0) unless user
 
   current_user = session[:current_user]
-  config = CryptId.configure_crypt_ident
+  config = CryptId.cryptid_config
   sign_in(user, params[:password], current_user: current_user) do |result|
     result.success do |user:|
       @user = user
-      update_session_data(user, Time.now)
+      update_session_data(user, config, Time.now)
       flash[config.success_key] = &quot;User #{user.name} signed in.&quot;
       redirect_to routes.root_path
     end
 
     result.failure do |code:|
-      update_session_data(guest_user, 0)
+      update_session_data(guest_user, config, 0)
       flash[config.error_key] = error_message_for(code)
     end
   end
@@ -1953,9 +1938,10 @@ def error_message_for(code)
   # ...
 end
 
-def update_session_data(user, time)
+def update_session_data(user, config, time)
   session[:current_user] = user
-  session[:start_time] == Hanami::Utils::Kernel.Time(time)
+  expiry = Time.now + config.session_expiry
+  session[:expires_at] == Hanami::Utils::Kernel.Time(expiry)
 end</code></pre>
     
   </div>
@@ -2089,7 +2075,7 @@ failure (as described above).</p>
       
       
         
-        <div class='inline'><p><code>:current_user</code> <strong>must not</strong> be other than <code>nil</code> or the Guest User.</p>
+        <div class='inline'><p><code>:current_user</code> <strong>must not</strong> be a Registered User</p>
 </div>
       
     </li>
@@ -2110,7 +2096,7 @@ failure (as described above).</p>
 <li>Clear-Text Password</li>
 <li>Entity</li>
 <li>Guest User</li>
-<li>User</li>
+<li>Registered User</li>
 </ul>
 </div>
       
@@ -2124,13 +2110,13 @@ failure (as described above).</p>
       <pre class="lines">
 
 
-285
-286
-287
-288</pre>
+300
+301
+302
+303</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 285</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 300</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_in'>sign_in</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_params'>params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>user:</span> <span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='label'>password:</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -2160,8 +2146,8 @@ That block <strong>must</strong> in turn call <strong>both</strong> <code>result
 <code>result.failure</code> (even though no failure is implemented) to handle success
 and failure results, respectively. On success, the block yielded to by
 <code>result.success</code> is called and passed a <code>config:</code> parameter, which is simply
-the value returned from <code>CryptIdent.configure_crypt_ident</code> with no modifier
-block). It may safely be ignored.</p>
+the value returned from <code>CryptIdent.cryptid_config</code> with no modifier block),
+It may safely be ignored.</p>
 
 
   </div>
@@ -2179,7 +2165,7 @@ block). It may safely be ignored.</p>
   <span class='id identifier rubyid_sign_out'>sign_out</span><span class='lparen'>(</span><span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
     <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_success'>success</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span>
       <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:start_time</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'>Hanami</span><span class='op'>::</span><span class='const'>Utils</span><span class='op'>::</span><span class='const'>Kernel</span><span class='period'>.</span><span class='const'>Time</span><span class='lparen'>(</span><span class='int'>0</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:expires_at</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'>Hanami</span><span class='op'>::</span><span class='const'>Utils</span><span class='op'>::</span><span class='const'>Kernel</span><span class='period'>.</span><span class='const'>Time</span><span class='lparen'>(</span><span class='int'>0</span><span class='rparen'>)</span>
     <span class='kw'>end</span>
 
     <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_failure'>failure</span> <span class='lbrace'>{</span> <span class='kw'>next</span> <span class='rbrace'>}</span>
@@ -2194,7 +2180,7 @@ block). It may safely be ignored.</p>
   <span class='id identifier rubyid_sign_out'>sign_out</span><span class='lparen'>(</span><span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
     <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_success'>success</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span>
       <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:start_time</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
+      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:expires_at</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
     <span class='kw'>end</span>
 
     <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_failure'>failure</span> <span class='lbrace'>{</span> <span class='kw'>next</span> <span class='rbrace'>}</span>
@@ -2216,8 +2202,8 @@ block). It may safely be ignored.</p>
       
         &mdash;
         <div class='inline'><p>Entity representing the currently
-Authenticated User Entity. This <strong>should</strong> not be either <code>nil</code>
-or the Guest User.</p>
+Authenticated User Entity. This <strong>should</strong> be a Registered
+User.</p>
 </div>
       
     </li>
@@ -2335,12 +2321,12 @@ ignored; <code>config</code> is passed to <code>success</code> as a convenience.
       <pre class="lines">
 
 
-350
-351
-352</pre>
+365
+366
+367</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 350</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 365</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_out'>sign_out</span><span class='lparen'>(</span><span class='label'>current_user:</span><span class='rparen'>)</span>
   <span class='const'>SignOut</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span> <span class='kw'>yield</span> <span class='id identifier rubyid_result'>result</span> <span class='rbrace'>}</span>
@@ -2381,7 +2367,7 @@ parameter will contain one of the following symbols:</p>
 
 <ul>
 <li><code>:current_user_exists</code> indicates that the method was called with a
-<code>current_user</code> parameter that was neither <code>nil</code> nor the Guest User.</li>
+Registered User as the <code>current_user</code> parameter.</li>
 <li><code>:user_already_created</code> indicates that the specified <code>name</code> attribute
 matches a record that already exists in the underlying Repository.</li>
 <li><code>:user_creation_failed</code> indicates that the Repository was unable to create
@@ -2543,7 +2529,7 @@ the reason for the failure (as described above).</p>
       
       
         
-        <div class='inline'><p><code>:current_user</code> <strong>must not</strong> be other than <code>nil</code> or the Guest User.</p>
+        <div class='inline'><p><code>:current_user</code> <strong>must not</strong> be a Registered User.</p>
 </div>
       
     </li>
@@ -2563,7 +2549,206 @@ the reason for the failure (as described above).</p>
 <li>Clear-Text Password</li>
 <li>Entity</li>
 <li>Guest User</li>
+<li>Registered User</li>
 <li>Repository</li>
+</ul>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+189
+190
+191
+192
+193</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 189</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='const'>SignUp</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_repo'>repo</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
+    <span class='kw'>yield</span> <span class='id identifier rubyid_result'>result</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="update_session_expiry-instance_method">
+  
+    #<strong>update_session_expiry</strong>(session_data = {})  &#x21d2; <tt>Hash</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Generate a Hash containing an updated Session Expiration timestamp, which
+can then be used for session management.</p>
+
+<p>This is one of two methods in <code>CryptIdent</code> (the other being
+<a href="#session-expired"><code>#session_expired?</code></a>) which <em>does not</em> follow the
+<code>result</code>/success/failure <a href="#interfaces">monad workflow</a>. This is because
+there is no success/failure division in the workflow. Calling the method
+only makes sense if there is a Registered User as the Current User, but <em>all
+this method does</em> is build a Hash with <code>:current_user</code> and <code>:expires_at</code>
+entries. The returned <code>:current_user</code> is the passed-in <code>:current_user</code> if a
+Registered User, or the Guest User if not. The returned <code>:updated_at</code> value,
+for a Registered User, is the configured Session Expiry added to the current
+time, and for the Guest User, a time far enough in the future that any call
+to <code>#session_expired?</code> will be highly unlikely to ever return <code>true</code>.</p>
+
+<p>The client code is responsible for applying these values to its own actual
+session data, as described by the sample session-management code shown in
+the README.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <p class="tag_title">Examples:</p>
+    
+      
+        <p class="example_title"><div class='inline'><p>As used in module included by Controller Action Class (see README)</p>
+</div></p>
+      
+      <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_validate_session'>validate_session</span>
+  <span class='id identifier rubyid_updates'>updates</span> <span class='op'>=</span> <span class='id identifier rubyid_update_session_expiry'>update_session_expiry</span><span class='lparen'>(</span><span class='id identifier rubyid_session'>session</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_session_expired?'>session_expired?</span><span class='lparen'>(</span><span class='id identifier rubyid_session'>session</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:expires_at</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:expires_at</span><span class='rbracket'>]</span>
+    <span class='kw'>return</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># ... sign out and redirect appropriately ...
+</span><span class='kw'>end</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>session_data</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>{}</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>The Rack session data of interest to the method.
+If the <code>:current_user</code> entry is defined, it <strong>must</strong> be either
+a User Entity or <code>nil</code>, signifying the Guest User. If the
+<code>:expires_at</code> entry is defined, its value in the returned Hash
+<em>will</em> be different.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>A <code>Hash</code> with entries to be used to update session data.
+<code>expires_at</code> will have a value of the current time plus the
+configuration-specified <code>session_expiry</code> offset <em>if</em> the
+supplied <code>:current_user</code> value is a Registered User;
+otherwise it will have a value far enough in advance of the
+current time (e.g., by 100 years) that the
+<code>#session_expired?</code> method is highly unlikely to ever return
+<code>true</code>. The <code>:current_user</code> value will be the passed-in
+<code>session_data[:current_user]</code> value if that represents a
+Registered User, or the Guest User otherwise.</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Since:</p>
+<ul class="since">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>0.1.0</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Required Authentication Status:</p>
+<ul class="authenticated">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p>Must be Authenticated.</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Session Data Interacted With:</p>
+<ul class="session_data">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><p><code>:current_user</code> <strong>must</strong> be a User Entity or <code>nil</code> for the Guest User
+<code>:expires_at</code>   set to the session-expiration time on exit, which will be
+                arbitrarily far in the future for the Guest User.</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Ubiquitous Language Terms:</p>
+<ul class="ubiq_lang">
+  
+    <li>
+      
+      
+      
+      
+        
+        <div class='inline'><ul>
+<li>Authentication</li>
+<li>Guest User</li>
+<li>Registered User</li>
+<li>Session Expiration</li>
 <li>User</li>
 </ul>
 </div>
@@ -2578,19 +2763,15 @@ the reason for the failure (as described above).</p>
       <pre class="lines">
 
 
-177
-178
-179
-180
-181</pre>
+774
+775
+776</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 177</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 774</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='const'>SignUp</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_repo'>repo</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
-    <span class='kw'>yield</span> <span class='id identifier rubyid_result'>result</span>
-  <span class='kw'>end</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_update_session_expiry'>update_session_expiry</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+  <span class='const'>UpdateSessionExpiry</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2602,7 +2783,7 @@ the reason for the failure (as described above).</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Dec 13 00:32:49 2018 by
+  Generated on Sun Dec 16 15:42:48 2018 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.16 (ruby-2.5.3).
 </div>

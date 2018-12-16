@@ -11,7 +11,9 @@ describe 'CryptIdent#change_password' do
   let(:target_user) do
     password_hash = BCrypt::Password.create(original_password)
     user = User.new name: user_name, password_hash: password_hash
-    our_repo = repo || CryptIdent.configure_crypt_ident.repository
+    our_repo = CryptIdent.configure_crypt_ident do |config|
+      config.repository = repo if repo
+    end.repository
     our_repo.create(user)
   end
   let(:user_name) { 'J Random User' }

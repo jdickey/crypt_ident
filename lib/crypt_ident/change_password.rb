@@ -10,7 +10,8 @@ require 'dry/matcher/result_matcher'
 # @author Jeff Dickey
 # @version 0.1.0
 module CryptIdent
-  # Reworked password-change logic for `CryptIdent`, per Issue #9.
+  # Include and interact with `CryptIdent` to add authentication to a
+  # Hanami controller action.
   #
   # This class *is not* part of the published API.
   # @private

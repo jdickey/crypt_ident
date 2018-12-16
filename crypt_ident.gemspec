@@ -48,7 +48,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'dry-monads'
 
   spec.add_development_dependency "bundler" # , '>= 1.16.6'
-  spec.add_development_dependency "rake" # , '>= 12.3.1'
+  spec.add_development_dependency "rake" # , '>= 12.3.2'
   spec.add_development_dependency "minitest" # , '5.11.3'
   spec.add_development_dependency 'flay' #, '2.12.0'
   spec.add_development_dependency 'flog' #, '4.6.2'
@@ -64,11 +64,11 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pry-byebug' #, '3.6.0'
   spec.add_development_dependency 'pry-doc' #, '0.13.5'
   spec.add_development_dependency 'reek' #, '5.2.0'
-  spec.add_development_dependency 'rubocop' # , '0.60.0'
+  spec.add_development_dependency 'rubocop' # , '0.61.1'
   spec.add_development_dependency 'simplecov' #, '0.16.1'
   spec.add_development_dependency 'yard' #, '0.9.16'
   spec.add_development_dependency 'yard-classmethods' #, '1.0.0'
-  spec.add_development_dependency 'github-markup' #, '3.0.1'
+  spec.add_development_dependency 'github-markup' #, '3.0.2'
   spec.add_development_dependency 'redcarpet' #, '3.4.0'
 
   spec.add_development_dependency 'guard' #, '2.15.0'
