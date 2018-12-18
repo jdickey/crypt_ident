@@ -11,8 +11,7 @@ describe 'CryptIdent#reset_password' do
     password_hash = BCrypt::Password.create(password)
     user = User.new name: user_name, password_hash: password_hash,
                     token: token, password_reset_expires_at: expires_at
-    our_repo = repo || CryptIdent.configure_crypt_ident.repository
-    our_repo.clear # XXX: WTAF?!?
+    our_repo = repo || CryptIdent.cryptid_config.repository
     our_repo.create(user)
   end
   let(:new_password) { 'New Sufficiently Entropic Passphrase' }
@@ -21,9 +20,9 @@ describe 'CryptIdent#reset_password' do
   let(:token) { SecureRandom.alphanumeric(24) }
   let(:user_name) { 'J Random Someone' }
 
-  after do
-    repo&.clear
-    CryptIdent.configure_crypt_ident.repository.clear
+  before do
+    our_repo = repo || CryptIdent.cryptid_config.repository
+    our_repo.clear
   end
 
   describe 'using an explicitly-supplied Repository' do

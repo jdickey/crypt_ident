@@ -39,9 +39,9 @@ module CryptIdent
     end
 
     def config_with_repo(repo)
-      config_hash = CryptIdent.configure_crypt_ident.to_h
-      config_hash[:repository] = repo if repo
-      Config.new config_hash
+      CryptIdent.configure_crypt_ident do |config|
+        config.repository = repo if repo
+      end
     end
 
     # XXX: This has a Flog score of 9.8. Truly simplifying PRs welcome.

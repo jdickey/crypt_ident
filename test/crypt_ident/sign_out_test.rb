@@ -5,8 +5,8 @@ require 'test_helper'
 include CryptIdent
 
 describe 'CryptIdent#sign_out' do
-  let(:guest_user) { CryptIdent.configure_crypt_ident.guest_user }
-  let(:long_ago) { Hanami::Utils::Kernel.Time(0) }
+  let(:guest_user) { CryptIdent.cryptid_config.guest_user }
+  let(:far_future) { Time.now + 100 * 365 * 24 * 3600 } # 100 years should do...
   let(:session) { Hash[] }
 
   describe 'when an Authenticated User is Signed In' do
@@ -16,12 +16,13 @@ describe 'CryptIdent#sign_out' do
       password = 'Anything'
       password_hash = BCrypt::Password.create(password)
       user = User.new name: user_name, password_hash: password_hash
-      our_repo = repo || CryptIdent.configure_crypt_ident.repository
-      our_repo.clear # XXX: WTAF?!?
+      our_repo = repo || CryptIdent.cryptid_config.repository
       our_repo.create(user)
     end
 
     before do
+      our_repo = repo || CryptIdent.cryptid_config.repository
+      our_repo.clear
       session[:current_user] = user
       session[:start_time] = Time.now - 60 # 1 minute ago
     end
@@ -30,14 +31,17 @@ describe 'CryptIdent#sign_out' do
       sign_out(current_user: session[:current_user]) do |result|
         result.success do
           session[:current_user] = guest_user
-          session[:start_time] = long_ago
+          session[:start_time] = far_future
         end
 
         result.failure { next }
       end
-      # TODO: Consider calling `#session_expired?` once implemented.
+      # We had been considering calling `#session_expired?` here, as in
+      # `expect(session_expired(session)).must_equal true` *but...* that API
+      # has changed since when we first put the 'todo' note in, which suggests
+      # that it's an SRP-level Bad Idea. Removing the note; taking the cannoli.
       expect(session[:current_user]).must_equal guest_user
-      expect(session[:start_time]).must_equal long_ago
+      expect(session[:start_time]).must_equal far_future
     end
 
     it 'and session-data items are deleted' do
@@ -62,14 +66,13 @@ describe 'CryptIdent#sign_out' do
       sign_out(current_user: nil) do |result|
         result.success do
           session[:current_user] = guest_user
-          session[:start_time] = long_ago
+          session[:start_time] = far_future
         end
 
         result.failure { next }
       end
-      # TODO: Consider calling `#session_expired?` once implemented.
       expect(session[:current_user]).must_equal guest_user
-      expect(session[:start_time]).must_equal long_ago
+      expect(session[:start_time]).must_equal far_future
     end
 
     it 'and session-data items are deleted' do

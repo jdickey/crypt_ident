@@ -8,7 +8,7 @@ describe 'CryptIdent#generate_reset_token' do
   let(:created_user) do
     password_hash = BCrypt::Password.create(password)
     user = User.new name: user_name, password_hash: password_hash
-    our_repo = repo || CryptIdent.configure_crypt_ident.repository
+    our_repo = repo || CryptIdent.cryptid_config.repository
     our_repo.create(user)
   end
   let(:other_params) { { repo: repo, current_user: nil } }
@@ -26,12 +26,13 @@ describe 'CryptIdent#generate_reset_token' do
   let(:user_name) { 'J Random Someone' }
 
   before do
-    our_repo = repo || CryptIdent.configure_crypt_ident.repository
+    CryptIdent.reset_crypt_ident_config
+    our_repo = repo || CryptIdent.cryptid_config.repository
     our_repo.clear
   end
 
   describe 'using an explicitly-supplied Repository' do
-    let(:repo) { CryptIdent.configure_crypt_ident.repository }
+    let(:repo) { CryptIdent.cryptid_config.repository }
     let(:result_from_failure) do
       lambda do |user_name, current_user|
         the_code = the_current_user = the_name = :unassigned
@@ -67,7 +68,7 @@ describe 'CryptIdent#generate_reset_token' do
           expect(actual.password_reset_expires_at).must_be :nil?
           actual = result_from_success.call
           remaining = actual.password_reset_expires_at - Time.now
-          reset_expiry = CryptIdent.configure_crypt_ident.reset_expiry
+          reset_expiry = CryptIdent.cryptid_config.reset_expiry
           expect(reset_expiry - remaining).must_be :<, 5 # seconds
         end
       end # describe 'it passes a User Entity to the result.success block with'
@@ -181,8 +182,7 @@ describe 'CryptIdent#generate_reset_token' do
           expect(actual.password_reset_expires_at).must_be :nil?
           actual = result_from_success.call
           remaining = actual.password_reset_expires_at - Time.now
-          # FIXME: Relies on default config?
-          reset_expiry = CryptIdent.configure_crypt_ident.reset_expiry
+          reset_expiry = CryptIdent.cryptid_config.reset_expiry
           expect(reset_expiry - remaining).must_be :<, 5 # seconds
         end
       end # describe 'it passes a User Entity to the result.success block with'
@@ -190,7 +190,7 @@ describe 'CryptIdent#generate_reset_token' do
       it 'persists the updated Entity to the Repository' do
         _ = created_user
         entity = result_from_success.call
-        repo = CryptIdent.configure_crypt_ident.repository
+        repo = CryptIdent.cryptid_config.repository
         expect(repo.first).must_equal entity
         expect(repo.all.count).must_equal 1
       end
@@ -200,7 +200,7 @@ describe 'CryptIdent#generate_reset_token' do
           _ = created_user
           @first = result_from_success.call
           @second = result_from_success.call
-          @persisted = CryptIdent.configure_crypt_ident.repository
+          @persisted = CryptIdent.cryptid_config.repository
             .find(@first.id)
         end
 

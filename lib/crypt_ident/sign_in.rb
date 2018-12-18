@@ -53,7 +53,7 @@ module CryptIdent
     def set_ivars(user, password, current)
       @user = user
       @password = password
-      @current_user = current || CryptIdent.configure_crypt_ident.guest_user
+      @current_user = current || CryptIdent.cryptid_config.guest_user
     end
 
     def validate_user_and_current_user

@@ -52,7 +52,7 @@ module CryptIdent
     end
 
     def new_token
-      token_length = CryptIdent.configure_crypt_ident.token_bytes
+      token_length = CryptIdent.cryptid_config.token_bytes
       clear_text_token = SecureRandom.alphanumeric(token_length)
       Base64.strict_encode64(clear_text_token)
     end
@@ -62,8 +62,7 @@ module CryptIdent
     end
 
     def updated_attribs
-      # FIXME: Using config-default reset expiry
-      prea = Time.now + CryptIdent.configure_crypt_ident.reset_expiry
+      prea = Time.now + CryptIdent.cryptid_config.reset_expiry
       { token: new_token, password_reset_expires_at: prea }
     end
 
@@ -92,7 +91,7 @@ module CryptIdent
 
     # Reek sees a :reek:ControlParameter in `repo`. Ignoring.
     def repo_from(repo)
-      repo || CryptIdent.configure_crypt_ident.repository
+      repo || CryptIdent.cryptid_config.repository
     end
 
     def validate_current_user

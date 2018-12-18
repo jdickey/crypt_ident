@@ -21,7 +21,7 @@ module CryptIdent
     # with that of the (reworked) `#sign_up` and `#sign_in` methods.
     def call(current_user:)
       _ = current_user # presently ignored
-      Success(config: CryptIdent.configure_crypt_ident)
+      Success(config: CryptIdent.cryptid_config)
     end
   end
 end

@@ -29,7 +29,7 @@ describe 'CryptIdent#change_password' do
     end
 
     before do
-      dummy_repo = repo || CryptIdent.configure_crypt_ident.repository
+      dummy_repo = repo || CryptIdent.cryptid_config.repository
       dummy_repo.clear
       _ = target_user
     end
@@ -91,7 +91,7 @@ describe 'CryptIdent#change_password' do
   end # describe 'Successfully change password using'
 
   describe 'Fail to change password because the specified' do
-    let(:repo) { CryptIdent.configure_crypt_ident.repository }
+    let(:repo) { CryptIdent.cryptid_config.repository }
     let(:result_from_failure) do
       lambda do |user, current, new_password|
         change_password(user, current, new_password, repo: repo)  do |result|

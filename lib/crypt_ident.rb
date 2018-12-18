@@ -457,7 +457,7 @@ module CryptIdent
   #   - Registered User
   #   - Repository
   def change_password(user_in, current_password, new_password, repo: nil)
-    new_params = { config: CryptIdent.configure_crypt_ident, repo: repo,
+    new_params = { config: CryptIdent.cryptid_config, repo: repo,
                    user: user_in }
     call_params = [current_password, new_password]
     ChangePassword.new(new_params).call(*call_params) { |result| yield result }

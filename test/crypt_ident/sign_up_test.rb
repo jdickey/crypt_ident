@@ -38,7 +38,7 @@ describe 'CryptIdent#sign_up' do
         end
         result.failure { fail 'Oops' }
       end
-      expect(saved[:conf]).must_equal CryptIdent.configure_crypt_ident
+      expect(saved[:conf]).must_equal CryptIdent.cryptid_config
       expect(saved[:user]).must_equal repo.last
     end
 
