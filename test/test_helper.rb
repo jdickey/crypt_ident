@@ -14,10 +14,8 @@ tags ||= []
 tags << 'focus'
 Minitest::Tagz.choose_tags(*tags, run_all_if_no_match: true)
 
-require 'hanami/controller'
-require 'hanami/action'
-require 'hanami/action/session'
 require 'hanami/model'
+require 'hanami/utils/kernel'
 
 # reporter_name = ENV['REPORTER'] || 'SpecReporter'
 reporter_name = ENV['REPORTER'] || 'DefaultReporter'

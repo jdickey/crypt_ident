@@ -1,11 +1,10 @@
 PATH
   remote: .
   specs:
-    crypt_ident (0.1.0)
+    crypt_ident (0.1.1)
       bcrypt
       dry-matcher
       dry-monads
-      hanami-controller
       hanami-model
 
 GEM
@@ -97,9 +96,6 @@ GEM
     guard-shell (0.7.1)
       guard (>= 2.0.0)
       guard-compat (~> 1.0)
-    hanami-controller (1.3.0)
-      hanami-utils (~> 1.3)
-      rack (~> 2.0)
     hanami-model (1.3.0)
       concurrent-ruby (~> 1.0)
       dry-types (~> 0.11.0)
@@ -156,7 +152,6 @@ GEM
     pry-doc (0.13.5)
       pry (~> 0.11)
       yard (~> 0.9.11)
-    rack (2.0.6)
     rainbow (3.0.0)
     rake (12.3.2)
     rb-fsevent (0.10.3)
@@ -231,31 +226,31 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler
+  bundler (>= 1.17.2)
   crypt_ident!
-  flay
-  flog
-  github-markup
-  guard
-  guard-minitest
-  guard-rake
-  guard-rubocop
-  guard-shell
-  inch
-  minitest
-  minitest-hooks
-  minitest-matchers
-  minitest-reporters
-  minitest-tagz
-  pry-byebug
-  pry-doc
-  rake
-  redcarpet
-  reek
-  rubocop
-  simplecov
-  yard
-  yard-classmethods
+  flay (= 2.12.0)
+  flog (= 4.6.2)
+  github-markup (= 3.0.2)
+  guard (= 2.15.0)
+  guard-minitest (= 2.4.6)
+  guard-rake (= 1.0.0)
+  guard-rubocop (= 1.3.0)
+  guard-shell (= 0.7.1)
+  inch (= 0.8.0)
+  minitest (= 5.11.3)
+  minitest-hooks (= 1.5.0)
+  minitest-matchers (= 1.4.1)
+  minitest-reporters (= 1.3.5)
+  minitest-tagz (= 1.6.0)
+  pry-byebug (= 3.6.0)
+  pry-doc (= 0.13.5)
+  rake (>= 12.3.2)
+  redcarpet (= 3.4.0)
+  reek (= 5.2.0)
+  rubocop (= 0.61.1)
+  simplecov (= 0.16.1)
+  yard (= 0.9.16)
+  yard-classmethods (= 1.0.0)
 
 BUNDLED WITH
    1.17.2

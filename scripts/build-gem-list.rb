@@ -55,7 +55,7 @@ list = [
   'guard-rake:1.0.0',
   'guard-rubocop:1.3.0',
   'guard-shell:0.7.1',
-  'hanami-controller:1.3.0',
+  # 'hanami-controller:1.3.0',
   'hanami-model:1.3.0',
   'inch:0.8.0',
   # 'minitest-fail-fast:0.1.0',
