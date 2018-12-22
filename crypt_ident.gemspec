@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Authentication module using BCrypt; initially Hanami-specific.}
   # spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "https://github.com/jdickey/cript_ident"
+  spec.homepage      = "https://github.com/jdickey/crypt_ident"
   spec.license       = "MIT"
   spec.metadata["yard.run"] = "yri" # use "yard" to build full HTML docs.
 

@@ -117,7 +117,7 @@ Only minimal code snippets are included here to help explain use cases.  However
 
 Finally, a note on terminology. Terms that have meaning (e.g., _Guest User_) within this module's domain language, or [Ubiquitous Language](https://www.martinfowler.com/bliki/UbiquitousLanguage.html), **must** be capitalised, at least on first use within a paragraph. This is to stress to the reader that, while these terms may have "obvious" meanings, their use within this module and its related documents (including this one) **should** be consistent, specific, and rigorous in their meaning. In the [API Documentation](docs/CryptIdent.html), each of these terms **must** be listed in the _Ubiquitous Language Terms_ section under each method description in which they are used.
 
-After the first usage in a paragraph, the term **may** be used less strictly; e.g., by referring to a _Clear-Text Password_ simply as a _password_ *if* doing so does not introduce ambiguity or confusion. The reader should feel free to [open an issue report](https://github.com/jdickey/cript_ident/issues) for any lapses of consistency or clarity. (Thank you!)
+After the first usage in a paragraph, the term **may** be used less strictly; e.g., by referring to a _Clear-Text Password_ simply as a _password_ *if* doing so does not introduce ambiguity or confusion. The reader should feel free to [open an issue report](https://github.com/jdickey/crypt_ident/issues) for any lapses of consistency or clarity. (Thank you!)
 
 <sub style="font-size: 0.75rem;">[Back to Top](#CryptIdent)</sub>
 
