@@ -68,11 +68,11 @@ list = [
   # immediately.
   # 'monotime:0.6.1',
   'pry-byebug:3.6.0',
-  'pry-doc:0.13.5',
+  'pry-doc:1.0.0',
   'rake:12.3.2',
   'redcarpet:3.4.0',
-  'reek:5.2.0',
-  'rubocop:0.61.1',
+  'reek:5.3.0',
+  'rubocop:0.62.0',
   'simplecov:0.16.1',
   'yard-classmethods:1.0.0',
   'yard:0.9.16'

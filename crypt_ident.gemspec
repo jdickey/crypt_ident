@@ -61,9 +61,9 @@ Gem::Specification.new do |spec|
   # looking to use this Gem to help with.
   # spec.add_development_dependency 'monotime' #, '0.6.1'
   spec.add_development_dependency 'pry-byebug', '3.6.0'
-  spec.add_development_dependency 'pry-doc', '0.13.5'
-  spec.add_development_dependency 'reek', '5.2.0'
-  spec.add_development_dependency 'rubocop', '0.61.1'
+  spec.add_development_dependency 'pry-doc', '1.0.0'
+  spec.add_development_dependency 'reek', '5.3.0'
+  spec.add_development_dependency 'rubocop', '0.62.0'
   spec.add_development_dependency 'simplecov', '0.16.1'
   spec.add_development_dependency 'yard', '0.9.16'
   spec.add_development_dependency 'yard-classmethods', '1.0.0'
