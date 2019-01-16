@@ -9,14 +9,20 @@ describe 'CryptIdent#sign_up' do
     attribs = valid_input_params
     password_hash = ::BCrypt::Password.create(attribs[:password])
     all_attribs = { password_hash: password_hash }.merge(valid_input_params)
-    repo.create(all_attribs)
+    CryptIdent.config.repository.create(all_attribs)
   end
-  let(:params) { { repo: repo, current_user: nil } }
-  let(:repo) { UserRepository.new }
+  let(:params) { { current_user: nil } }
   let(:user_name) { 'J Random User' }
   let(:valid_input_params) { { name: user_name } }
 
-  before { CryptIdent.reset_crypt_ident_config }
+  before do
+    CryptIdent.config.repository = UserRepository.new
+  end
+
+  after do
+    CryptIdent.config.repository.clear
+    CryptIdent.config.repository = nil
+  end
 
   describe 'with no Authenticated Current User and a valid User Name' do
     it 'adds the new User Entity to the Repository' do
@@ -27,6 +33,7 @@ describe 'CryptIdent#sign_up' do
         # *Must* define both `result.success` and `result.failure` blocks
         result.failure { fail 'Oops' }
       end
+      repo = CryptIdent.config.repository
       expect(repo.all.count).must_equal 1
       expect(repo.last).must_equal actual_user
     end
@@ -38,8 +45,8 @@ describe 'CryptIdent#sign_up' do
         end
         result.failure { fail 'Oops' }
       end
-      expect(saved[:conf]).must_equal CryptIdent.cryptid_config
-      expect(saved[:user]).must_equal repo.last
+      expect(saved[:conf]).must_equal CryptIdent.config
+      expect(saved[:user]).must_equal CryptIdent.config.repository.last
     end
 
     it 'encrypts a random Password value, ignoring any specified value' do
@@ -83,18 +90,18 @@ describe 'CryptIdent#sign_up' do
     end
 
     it 'does not change the contents of the Repository' do
-      all_before = repo.all
+      all_before = CryptIdent.config.repository.all
       sign_up(valid_input_params, params) do |result|
         result.success { next }
 
         result.failure { next }
       end
-      expect(repo.all).must_equal all_before
+      expect(CryptIdent.config.repository.all).must_equal all_before
     end
   end # describe 'with an existing User having the same :name attribute'
 
   describe 'with an Authenticated Current User' do
-    let(:params) { { repo: repo, current_user: existing } }
+    let(:params) { { current_user: existing } }
 
     it 'returns :current_user_exists from the method' do
       valid_input_params[:name] = 'N Other User'
@@ -109,14 +116,14 @@ describe 'CryptIdent#sign_up' do
 
     it 'does not change the contents of the Repository' do
       _ = existing
-      all_before = repo.all
+      all_before = CryptIdent.config.repository.all
       valid_input_params[:name] = 'N Other User'
       sign_up(valid_input_params, params) do |result|
         result.success { next }
 
         result.failure { next }
       end
-      expect(repo.all).must_equal all_before
+      expect(CryptIdent.config.repository.all).must_equal all_before
     end
   end # describe 'with an Authenticated Current User'
 
@@ -130,9 +137,14 @@ describe 'CryptIdent#sign_up' do
     end
 
     before do
-      repo.define_singleton_method :create do |data|
+      @method = CryptIdent.config.repository.method(:create)
+      CryptIdent.config.repository.define_singleton_method :create do |data|
         raise Hanami::Model::Error, 'Something broke. Oh, well.'
       end
+    end
+
+    after do
+      CryptIdent.config.repository.define_singleton_method(:create, @method)
     end
 
     it 'returns :user_creation_failed from the method' do
@@ -144,13 +156,13 @@ describe 'CryptIdent#sign_up' do
     end
 
     it 'does not change the contents of the Repository' do
-      all_before = repo.all
+      all_before = CryptIdent.config.repository.all
       sign_up(valid_input_params, params) do |result|
         result.success { next }
 
         result.failure { next }
       end
-      expect(repo.all).must_equal all_before
+      expect(CryptIdent.config.repository.all).must_equal all_before
     end
   end # describe 'if the new User could not be created in the Repository'
 

@@ -38,7 +38,7 @@ module CryptIdent
     private_constant :LogicError
 
     def illegal_current_user?
-      !current_user.guest_user? && !same_user?
+      !current_user.guest? && !same_user?
     end
 
     def password_comparator
@@ -53,11 +53,11 @@ module CryptIdent
     def set_ivars(user, password, current)
       @user = user
       @password = password
-      @current_user = current || CryptIdent.cryptid_config.guest_user
+      @current_user = current || CryptIdent.config.guest_user
     end
 
     def validate_user_and_current_user
-      raise LogicError, 'user_is_guest' if user.guest_user?
+      raise LogicError, 'user_is_guest' if user.guest?
       raise LogicError, 'illegal_current_user' if illegal_current_user?
     end
 

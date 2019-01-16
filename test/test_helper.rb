@@ -53,7 +53,7 @@ class User < Hanami::Entity
     attribute :updated_at, Types::Time.default { Time.now }
   end
 
-  def guest_user?
+  def guest?
     @attributes[:id] && @attributes[:id] < 1
   end
 

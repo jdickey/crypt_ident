@@ -11,27 +11,31 @@ describe 'CryptIdent#change_password' do
   let(:target_user) do
     password_hash = BCrypt::Password.create(original_password)
     user = User.new name: user_name, password_hash: password_hash
-    our_repo = CryptIdent.configure_crypt_ident do |config|
-      config.repository = repo if repo
-    end.repository
+    our_repo = CryptIdent.config.repository || UserRepository.new
+    CryptIdent.config.repository = our_repo
     our_repo.create(user)
   end
   let(:user_name) { 'J Random User' }
 
+  before do
+    CryptIdent.config.repository ||= UserRepository.new
+    CryptIdent.config.repository.clear
+    _ = target_user
+  end
+
+  after do
+    CryptIdent.config.repository.clear
+    CryptIdent.config.repository = nil
+  end
+
   describe 'Successfully change password using' do
     let(:result_from_success) do
       lambda do
-        change_password(*call_params, repo: repo)  do |result|
+        change_password(*call_params) do |result|
           result.success { |user:| actual = user }
           result.failure { next }
         end
       end
-    end
-
-    before do
-      dummy_repo = repo || CryptIdent.cryptid_config.repository
-      dummy_repo.clear
-      _ = target_user
     end
 
     describe 'specified Repository' do
@@ -63,13 +67,14 @@ describe 'CryptIdent#change_password' do
       describe 'persists an Entity with' do
         it 'the same attributes as the returned Entity' do
           actual = result_from_success.call
-          persisted_entity = repo.find(actual.id)
+          persisted_entity = CryptIdent.config.repository.find(actual.id)
           expect(persisted_entity).must_equal actual
         end
 
         it 'an updated :hashed_pass attribute' do
           old_hashed_pass = target_user.password_hash
           actual = result_from_success.call
+          repo = CryptIdent.config.repository
           new_hashed_pass = repo.find(actual.id).password_hash
           expect(old_hashed_pass == original_password).must_equal true
           expect(new_hashed_pass == original_password).wont_equal true
@@ -83,7 +88,7 @@ describe 'CryptIdent#change_password' do
 
       it 'correctly updates the Repository' do
         actual = result_from_success.call
-        repo = CryptIdent.cryptid_config.repository
+        repo = CryptIdent.config.repository
         updated = repo.find(target_user.id).password_hash
         expect(actual.password_hash.object_id).must_equal updated.object_id
       end
@@ -91,15 +96,16 @@ describe 'CryptIdent#change_password' do
   end # describe 'Successfully change password using'
 
   describe 'Fail to change password because the specified' do
-    let(:repo) { CryptIdent.cryptid_config.repository }
     let(:result_from_failure) do
       lambda do |user, current, new_password|
-        change_password(user, current, new_password, repo: repo)  do |result|
+        change_password(user, current, new_password) do |result|
           result.success { next }
           result.failure { |code:| actual = code }
         end
       end
     end
+
+    before { CryptIdent.config.repository ||= UserRepository.new }
 
     describe '"user" Entity was invalid in this context' do
       it 'causes the method to report an error code of :invalid_user' do
@@ -109,14 +115,14 @@ describe 'CryptIdent#change_password' do
       end
 
       it 'does not affect the Repository' do
-        before_call = repo.all
+        before_call = CryptIdent.config.repository.all
         ret = result_from_failure.call(nil, 'password', 'anything')
-        expect(before_call).must_equal repo.all
+        expect(before_call).must_equal CryptIdent.config.repository.all
       end
     end # describe '"user" Entity was invalid in this context'
 
     describe 'Clear-Text Password could not be Authenticated' do
-      let(:user) { repo.first || target_user }
+      let(:user) { CryptIdent.config.repository.first }
 
       it 'causes the method to return :bad_password' do
         ret = result_from_failure.call(user, 'bad password', 'anything')
@@ -125,9 +131,9 @@ describe 'CryptIdent#change_password' do
 
       it 'does not affect the Repository' do
         _ = user
-        before_call = repo.all
+        before_call = CryptIdent.config.repository.all
         result_from_failure.call(user, 'bad password', 'anything')
-        expect(before_call).must_equal repo.all
+        expect(before_call).must_equal CryptIdent.config.repository.all
       end
     end # describe 'Clear-Text Password could not be Authenticated'
   end # describe 'Fail to change password because the specified'

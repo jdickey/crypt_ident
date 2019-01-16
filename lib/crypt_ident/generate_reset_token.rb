@@ -52,7 +52,7 @@ module CryptIdent
     end
 
     def new_token
-      token_length = CryptIdent.cryptid_config.token_bytes
+      token_length = CryptIdent.config.token_bytes
       clear_text_token = SecureRandom.alphanumeric(token_length)
       Base64.strict_encode64(clear_text_token)
     end
@@ -62,7 +62,7 @@ module CryptIdent
     end
 
     def updated_attribs
-      prea = Time.now + CryptIdent.cryptid_config.reset_expiry
+      prea = Time.now + CryptIdent.config.reset_expiry
       { token: new_token, password_reset_expires_at: prea }
     end
 
@@ -91,12 +91,12 @@ module CryptIdent
 
     # Reek sees a :reek:ControlParameter in `repo`. Ignoring.
     def repo_from(repo)
-      repo || CryptIdent.cryptid_config.repository
+      repo || CryptIdent.config.repository
     end
 
     def validate_current_user
       @current_user ||= repo.guest_user
-      return current_user if current_user.guest_user?
+      return current_user if current_user.guest?
 
       raise LogicError, user_logged_in_error
     end

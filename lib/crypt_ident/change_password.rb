@@ -19,17 +19,14 @@ module CryptIdent
     include Dry::Monads::Result::Mixin
     include Dry::Matcher.for(:call, with: Dry::Matcher::ResultMatcher)
 
-    # Reek complains about :reek:ControlParameter for `repo`. Oh, well.
-    def initialize(config:, repo:, user:)
-      @repo = repo || config.repository
+    def initialize(config:, user:)
+      @repo = config.repository
       @user = user
-      @updated_attribs = nil
     end
 
     def call(current_password, new_password)
       verify_preconditions(current_password)
 
-      # Success(user: update(new_password))
       success_result(new_password)
     rescue LogicError => error
       failure_result(error.message)
@@ -37,7 +34,7 @@ module CryptIdent
 
     private
 
-    attr_reader :repo, :updated_attribs, :user
+    attr_reader :repo, :user
 
     LogicError = Class.new(RuntimeError)
     private_constant :LogicError
@@ -55,13 +52,13 @@ module CryptIdent
     end
 
     def update(new_password)
-      update_attribs(new_password)
+      updated_attribs = update_attribs(new_password)
       repo.update(user.id, updated_attribs)
     end
 
     def update_attribs(new_password)
       new_hash = ::BCrypt::Password.create(new_password)
-      @updated_attribs = { password_hash: new_hash, updated_at: Time.now }
+      { password_hash: new_hash, updated_at: Time.now }
     end
 
     def valid_password?(password)
@@ -70,7 +67,7 @@ module CryptIdent
 
     def valid_user?
       _ = user.password_hash
-      !user.guest_user?
+      !user.guest?
     rescue NoMethodError
       false
     end

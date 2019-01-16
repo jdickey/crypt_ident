@@ -28,7 +28,7 @@ module CryptIdent
 
     def guest_user_from?(session_data)
       user = session_data[:current_user] || UserRepository.guest_user
-      user.guest_user?
+      user.guest?
     end
 
     def expiry_from(session_data)

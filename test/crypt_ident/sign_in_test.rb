@@ -5,19 +5,19 @@ require 'test_helper'
 include CryptIdent
 
 describe 'CryptIdent#sign_in' do
-  let(:guest_user) { CryptIdent.cryptid_config.guest_user }
+  let(:guest_user) { CryptIdent.config.guest_user }
   let(:password) { 'Suitably Entropic Password' }
-  let(:repo) { UserRepository.new }
   let(:user) do
     password_hash = BCrypt::Password.create(password)
     user = User.new name: user_name, password_hash: password_hash
-    our_repo = repo || CryptIdent.cryptid_config.repository
+    our_repo = CryptIdent.config.repository || UserRepository.new
     our_repo.create(user)
   end
   let(:user_name) { 'J Random User' }
 
   before do
-    our_repo = repo || CryptIdent.cryptid_config.repository
+    our_repo = UserRepository.new
+    CryptIdent.config.repository = our_repo
     our_repo.clear
   end
 

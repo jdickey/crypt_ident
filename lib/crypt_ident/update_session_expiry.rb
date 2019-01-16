@@ -18,8 +18,9 @@ module CryptIdent
   # This class *is not* part of the published API.
   # @private
   class UpdateSessionExpiry
-    def initialize
-      @config = CryptIdent.cryptid_config
+    def initialize(config)
+      @guest_user = config.guest_user
+      @session_expiry = config.session_expiry
     end
 
     def call(session_data = {})
@@ -32,7 +33,7 @@ module CryptIdent
 
     private
 
-    attr_reader :config
+    attr_reader :guest_user, :session_expiry
 
     GUEST_YEARS = 100
     SECONDS_PER_YEAR = 31_536_000
@@ -43,12 +44,12 @@ module CryptIdent
     end
 
     def guest_user?(session_data)
-      user = session_data[:current_user] || config.repository.guest_user
-      user.guest_user?
+      user = session_data[:current_user] || guest_user
+      user.guest?
     end
 
     def updated_expiry
-      { expires_at: Time.now + config.session_expiry }
+      { expires_at: Time.now + session_expiry }
     end
   end
 end

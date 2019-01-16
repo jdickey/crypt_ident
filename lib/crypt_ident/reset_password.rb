@@ -28,11 +28,12 @@ module CryptIdent
     LogicError = Class.new(RuntimeError)
 
     def initialize
-      @current_user = @config = @new_password = @token = :unassigned
+      @current_user = :unassigned
     end
 
-    def call(token, new_password, repo: nil, current_user: nil)
-      init_ivars(new_password, repo, current_user)
+    def call(token, new_password, current_user: nil)
+      init_ivars(current_user)
+      verify_no_current_user(token)
       user = verify_token(token)
       Success(user: update(user, new_password))
     rescue LogicError => error
@@ -41,19 +42,15 @@ module CryptIdent
 
     private
 
-    attr_reader :config
+    attr_reader :current_user
 
     def encrypted(password)
       BCrypt::Password.create(password)
     end
 
-    # Reek sees a :reek:ControlParameter for `current_user`. Too bad.
-    def init_ivars(new_password, repo, current_user)
-      @config = CryptIdent.configure_crypt_ident do |config|
-        config.repository = repo if repo
-      end
-      @current_user = current_user || @config.guest_user
-      @new_password = new_password
+    # Reek sees a :reek:ControlParameter. Yep.
+    def init_ivars(current_user)
+      @current_user = current_user || CryptIdent.config.guest_user
     end
 
     def new_attribs(password)
@@ -62,12 +59,8 @@ module CryptIdent
     end
 
     def raise_logic_error(code, token)
-      payload = { code: code, config: config, token: token }
+      payload = { code: code, token: token }
       raise LogicError, Marshal.dump(payload)
-    end
-
-    def repo
-      @config.repository
     end
 
     def report_failure(error)
@@ -78,7 +71,7 @@ module CryptIdent
     end
 
     def update(user, password)
-      repo.update(user.id, new_attribs(password))
+      CryptIdent.config.repository.update(user.id, new_attribs(password))
     end
 
     def validate_match_and_token(match, token)
@@ -87,8 +80,15 @@ module CryptIdent
       match
     end
 
+    def verify_no_current_user(token)
+      return if !current_user || current_user.guest?
+
+      payload = { code: :invalid_current_user, token: token }
+      raise LogicError, Marshal.dump(payload)
+    end
+
     def verify_token(token)
-      match = config.repository.find_by_token(token).first
+      match = CryptIdent.config.repository.find_by_token(token).first
       validate_match_and_token(match, token)
     end
   end

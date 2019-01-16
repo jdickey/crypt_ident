@@ -20,10 +20,6 @@ module CryptIdent
     include Dry::Monads::Result::Mixin
     include Dry::Matcher.for(:call, with: Dry::Matcher::ResultMatcher)
 
-    def initialize(repo = nil)
-      @ci_config = config_with_repo(repo)
-    end
-
     def call(attribs, current_user:)
       return failure_for(:current_user_exists) if current_user?(current_user)
 
@@ -32,22 +28,14 @@ module CryptIdent
 
     private
 
-    attr_reader :ci_config
-
     def all_attribs(attribs)
       new_attribs.merge(attribs)
     end
 
-    def config_with_repo(repo)
-      CryptIdent.configure_crypt_ident do |config|
-        config.repository = repo if repo
-      end
-    end
-
     # XXX: This has a Flog score of 9.8. Truly simplifying PRs welcome.
     def create_result(attribs_in)
-      user = ci_config.repository.create(attribs_in)
-      Success(user: user, config: ci_config)
+      user = CryptIdent.config.repository.create(attribs_in)
+      success_for(user)
     rescue Hanami::Model::UniqueConstraintViolationError
       failure_for(:user_already_created)
     rescue Hanami::Model::Error
@@ -55,11 +43,11 @@ module CryptIdent
     end
 
     def current_user?(user)
-      user && !user.guest_user?
+      user && !user.guest?
     end
 
     def failure_for(code)
-      Failure(code: code, config: ci_config)
+      Failure(code: code, config: CryptIdent.config)
     end
 
     def hashed_password(password_in)
@@ -69,7 +57,7 @@ module CryptIdent
     end
 
     def new_attribs
-      prea = Time.now + ci_config.reset_expiry
+      prea = Time.now + CryptIdent.config.reset_expiry
       {
         password_hash: hashed_password(nil),
         password_reset_expires_at: prea,
@@ -78,9 +66,13 @@ module CryptIdent
     end
 
     def new_token
-      token_length = ci_config.token_bytes
+      token_length = CryptIdent.config.token_bytes
       clear_text_token = SecureRandom.alphanumeric(token_length)
       Base64.strict_encode64(clear_text_token)
+    end
+
+    def success_for(user)
+      Success(user: user, config: CryptIdent.config)
     end
   end
 end

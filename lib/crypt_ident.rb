@@ -22,95 +22,6 @@ require_relative './crypt_ident/update_session_expiry'
 # @author Jeff Dickey
 # @version 0.1.0
 module CryptIdent
-  # Memoised configuration object.
-  #
-  # @!attribute [r] cryptid_config
-  #   @return [Config] The memoised configuration object
-  attr_reader :cryptid_config
-
-  def self.included(_other)
-    # NOTE: Yes, this is a WTAF.
-    # rubocop:disable Naming/MemoizedInstanceVariableName
-    @cryptid_config ||= Config.new
-    # rubocop:enable Naming/MemoizedInstanceVariableName
-  end
-
-  # Set configuration information at the class (actually, module) level.
-  #
-  # **IMPORTANT:** Even though we follow time-honoured convention
-  # here and call the variable yielded by the `CryptIdent.configure_crypt_ident`
-  # block `config`, settings *are not* being stored in an *instance variable*
-  # called `@config`. That is *too likely* to conflict with something Important;
-  # remember, we're a module, not a class, and good table manners are *also*
-  # Important.
-  #
-  # This is normally run from the `controller.prepare` block inside your app's
-  # `apps/<app name>/application.rb` file, where the default for `app_name` in a
-  # Hanami app is `web`.
-  #
-  # @since 0.1.0
-  # @authenticated Irrelevant; normally called during framework setup.
-  # @return {CryptIdent::Config}
-  # @example
-  #   CryptIdent.configure_crypt_ident do |config| # show defaults
-  #     config.error_key = :error
-  #     config.guest_user = nil
-  #     config.hashing_cost = 8
-  #     config.repository = UserRepository.new
-  #     config.guest_user = config.repository.guest_user
-  #     config.reset_expiry = (24 * 60 * 60)
-  #     config.session_expiry = 900
-  #     config.success_key = :success
-  #     config.token_bytes = 24
-  #   end
-  # @session_data Irrelevant; normally called during framework setup.
-  # @ubiq_lang None; only related to demonstrated configuration settings.
-  # @yieldparam [Struct] config Mutable Struct initialised to default config.
-  # @yieldreturn [void]
-  def self.configure_crypt_ident
-    config = _starting_config
-    yield config if block_given?
-    @cryptid_config = Config.new(config.to_h)
-  end
-
-  # Get initial config settings for `.configure_crypt_ident`.
-  #
-  # This exists solely to get Flog's score down into the single digits.
-  #
-  # @private
-  # @since 0.1.0
-  # @return {CryptIdent::Config}
-  def self._starting_config
-    starting_config = @cryptid_config || Config.new
-    hash = starting_config.to_h
-    Struct.new(*hash.keys).new(*hash.values)
-  end
-
-  # Reset configuration information to default values.
-  #
-  # This **should** primarily be used during testing, and would normally be run
-  # from a `before` block for a test suite.
-  #
-  # @since 0.1.0
-  # @authenticated Irrelevant; normally called during framework setup.
-  # @return {CryptIdent::Config}
-  # @example Show how a modified configuration value is reset.
-  #   CryptIdent.configure_crypt_ident do |config|
-  #     config.hashing_cost = 20 # default 8
-  #   end
-  #   # ...
-  #   foo = CryptIdent.cryptid_config.hashing_cost # 20
-  #   # ...
-  #   CryptIdent.reset_crypt_ident_config
-  #   foo == CryptIdent.cryptid_config.hashing_cost # default, 8
-  # @session_data Irrelevant; normally called during testing
-  # @ubiq_lang None; only related to demonstrated configuration settings.
-  def self.reset_crypt_ident_config
-    @cryptid_config = Config.new
-  end
-
-  ############################################################################ #
-
   # Persist a new User to a Repository based on passed-in attributes, where the
   # resulting Entity (on success) contains a  `:password_hash` attribute
   # containing the encrypted value of a **random** Clear-Text Password; any
@@ -185,9 +96,8 @@ module CryptIdent
   #   - Entity
   #   - Guest User
   #   - Registered User
-  #   - Repository
-  def sign_up(attribs, current_user:, repo: nil)
-    SignUp.new(repo).call(attribs, current_user: current_user) do |result|
+  def sign_up(attribs, current_user:)
+    SignUp.new.call(attribs, current_user: current_user) do |result|
       yield result
     end
   end
@@ -405,10 +315,6 @@ module CryptIdent
   #                 specified User
   # @param [String] new_password The new Clear-Text Password to encrypt and add
   #                 to the returned Entity, and persist to the Repository
-  # @param [Object, nil] repo The Repository to which the updated User Entity is
-  #                 to be persisted. If the default value of `nil`, then the
-  #                 UserRepository specified in the default configuration is
-  #                 used.
   # @return (void) Use the `result` yield parameter to determine results.
   # @yieldparam result [Dry::Matcher::Evaluator] Indicates whether the attempt
   #               to create a new User succeeded or failed. Block **must**
@@ -456,9 +362,8 @@ module CryptIdent
   #   - Guest User
   #   - Registered User
   #   - Repository
-  def change_password(user_in, current_password, new_password, repo: nil)
-    new_params = { config: CryptIdent.cryptid_config, repo: repo,
-                   user: user_in }
+  def change_password(user_in, current_password, new_password)
+    new_params = { config: CryptIdent.config, user: user_in }
     call_params = [current_password, new_password]
     ChangePassword.new(new_params).call(*call_params) { |result| yield result }
   end
@@ -657,8 +562,8 @@ module CryptIdent
   #   - Password Reset Token
   #   - Registered User
   #
-  def reset_password(token, new_password, repo: nil, current_user: nil)
-    other_params = { repo: repo, current_user: current_user }
+  def reset_password(token, new_password, current_user: nil)
+    other_params = { current_user: current_user }
     ResetPassword.new.call(token, new_password, other_params) do |result|
       yield result
     end
@@ -772,6 +677,6 @@ module CryptIdent
   #   - User
   #
   def update_session_expiry(session_data = {})
-    UpdateSessionExpiry.new.call(session_data)
+    UpdateSessionExpiry.new(CryptIdent.config).call(session_data)
   end
 end
