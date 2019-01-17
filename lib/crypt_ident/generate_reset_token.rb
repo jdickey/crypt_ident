@@ -28,11 +28,11 @@ module CryptIdent
     LogicError = Class.new(RuntimeError)
 
     def initialize
-      @current_user = @repo = @user_name = :unassigned
+      @current_user = @user_name = :unassigned
     end
 
-    def call(user_name, current_user: nil, repo: nil)
-      init_ivars(user_name, current_user, repo)
+    def call(user_name, current_user: nil)
+      init_ivars(user_name, current_user)
       Success(user: updated_user)
     rescue LogicError => error
       # rubocop:disable Security/MarshalLoad
@@ -43,11 +43,16 @@ module CryptIdent
 
     private
 
-    attr_reader :current_user, :repo, :user_name
+    attr_reader :current_user, :user_name
 
-    def init_ivars(user_name, current_user, repo)
+    def current_user_or_guest
+      guest_user = CryptIdent.config.repository.guest_user
+      @current_user = guest_user if [nil, :unassigned].include?(@current_user)
+      @current_user
+    end
+
+    def init_ivars(user_name, current_user)
       @current_user = current_user
-      @repo = repo
       @user_name = user_name
     end
 
@@ -58,7 +63,7 @@ module CryptIdent
     end
 
     def update_repo(user)
-      repo.update(user.id, updated_attribs)
+      CryptIdent.config.repository.update(user.id, updated_attribs)
     end
 
     def updated_attribs
@@ -67,16 +72,20 @@ module CryptIdent
     end
 
     def updated_user
-      @repo = repo_from(repo)
       validate_current_user
       update_repo(user_by_name)
     end
 
-    def user_by_name
-      found = repo.find_by_name(user_name)
-      return found.first unless found.empty?
+    def find_user_by_name
+      found = CryptIdent.config.repository.find_by_name(user_name)
+      found.first # will be `nil` if no match found
+    end
 
-      raise LogicError, user_not_found_error
+    def user_by_name
+      found_user = find_user_by_name
+      raise LogicError, user_not_found_error unless found_user
+
+      found_user
     end
 
     def user_logged_in_error
@@ -89,14 +98,8 @@ module CryptIdent
                    name: user_name)
     end
 
-    # Reek sees a :reek:ControlParameter in `repo`. Ignoring.
-    def repo_from(repo)
-      repo || CryptIdent.config.repository
-    end
-
     def validate_current_user
-      @current_user ||= repo.guest_user
-      return current_user if current_user.guest?
+      return current_user if current_user_or_guest.guest?
 
       raise LogicError, user_logged_in_error
     end

@@ -69,6 +69,11 @@
 
   
   
+  <dl>
+      <dt>Extended by:</dt>
+      <dd>Dry::Configurable</dd>
+  </dl>
+  
   
   
   
@@ -170,97 +175,9 @@ data, which is quite theoretically possible in an Interactor but practically
 
 
 
-  <h2>Instance Attribute Summary <small><a href="#" class="summary_toggle">collapse</a></small></h2>
-  <ul class="summary">
-    
-      <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#cryptid_config-instance_method" title="#cryptid_config (instance method)">#<strong>cryptid_config</strong>  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-    
-      <span class="note title readonly">readonly</span>
-    
-    
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'><p>Memoised configuration object.</p>
-</div></span>
-  
-</li>
-
-    
-  </ul>
 
 
 
-
-  
-    <h2>
-      Class Method Summary
-      <small><a href="#" class="summary_toggle">collapse</a></small>
-    </h2>
-
-    <ul class="summary">
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#configure_crypt_ident-class_method" title="configure_crypt_ident (class method)">.<strong>configure_crypt_ident</strong> {|config| ... } &#x21d2; CryptIdent::Config </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'><p>Set configuration information at the class (actually, module) level.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#reset_crypt_ident_config-class_method" title="reset_crypt_ident_config (class method)">.<strong>reset_crypt_ident_config</strong>  &#x21d2; CryptIdent::Config </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'><p>Reset configuration information to default values.</p>
-</div></span>
-  
-</li>
-
-      
-    </ul>
   
     <h2>
       Instance Method Summary
@@ -272,7 +189,7 @@ data, which is quite theoretically possible in an Interactor but practically
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#change_password-instance_method" title="#change_password (instance method)">#<strong>change_password</strong>(user_in, current_password, new_password, repo: nil) {|result| ... } </a>
+      <a href="#change_password-instance_method" title="#change_password (instance method)">#<strong>change_password</strong>(user_in, current_password, new_password) {|result| ... } </a>
     
 
     
@@ -295,7 +212,7 @@ data, which is quite theoretically possible in an Interactor but practically
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#generate_reset_token-instance_method" title="#generate_reset_token (instance method)">#<strong>generate_reset_token</strong>(user_name, repo: nil, current_user: nil) {|result| ... } </a>
+      <a href="#generate_reset_token-instance_method" title="#generate_reset_token (instance method)">#<strong>generate_reset_token</strong>(user_name, current_user: nil) {|result| ... } </a>
     
 
     
@@ -318,7 +235,7 @@ data, which is quite theoretically possible in an Interactor but practically
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#reset_password-instance_method" title="#reset_password (instance method)">#<strong>reset_password</strong>(token, new_password, repo: nil, current_user: nil) {|result| ... } </a>
+      <a href="#reset_password-instance_method" title="#reset_password (instance method)">#<strong>reset_password</strong>(token, new_password, current_user: nil) {|result| ... } </a>
     
 
     
@@ -410,7 +327,7 @@ data, which is quite theoretically possible in an Interactor but practically
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#sign_up-instance_method" title="#sign_up (instance method)">#<strong>sign_up</strong>(attribs, current_user:, repo: nil) {|result| ... } </a>
+      <a href="#sign_up-instance_method" title="#sign_up (instance method)">#<strong>sign_up</strong>(attribs, current_user:) {|result| ... } </a>
     
 
     
@@ -457,371 +374,7 @@ data, which is quite theoretically possible in an Interactor but practically
   
 
 
-  <div id="instance_attr_details" class="attr_details">
-    <h2>Instance Attribute Details</h2>
-    
-      
-      <span id=""></span>
-      <div class="method_details first">
-  <h3 class="signature first" id="cryptid_config-instance_method">
   
-    #<strong>cryptid_config</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Memoised configuration object.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-29
-30
-31</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 29</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_cryptid_config'>cryptid_config</span>
-  <span class='ivar'>@cryptid_config</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-  </div>
-
-
-  <div id="class_method_details" class="method_details_list">
-    <h2>Class Method Details</h2>
-
-    
-      <div class="method_details first">
-  <h3 class="signature first" id="configure_crypt_ident-class_method">
-  
-    .<strong>configure_crypt_ident</strong> {|config| ... } &#x21d2; <tt><span class='object_link'><a href="CryptIdent/Config.html" title="CryptIdent::Config (class)">CryptIdent::Config</a></span></tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Set configuration information at the class (actually, module) level.</p>
-
-<p><strong>IMPORTANT:</strong> Even though we follow time-honoured convention
-here and call the variable yielded by the <code>CryptIdent.configure_crypt_ident</code>
-block <code>config</code>, settings <em>are not</em> being stored in an <em>instance variable</em>
-called <code>@config</code>. That is <em>too likely</em> to conflict with something Important;
-remember, we&#39;re a module, not a class, and good table manners are <em>also</em>
-Important.</p>
-
-<p>This is normally run from the <code>controller.prepare</code> block inside your app&#39;s
-<code>apps/&lt;app name&gt;/application.rb</code> file, where the default for <code>app_name</code> in a
-Hanami app is <code>web</code>.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-  <div class="examples">
-    <p class="tag_title">Examples:</p>
-    
-      
-      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure_crypt_ident'>configure_crypt_ident</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span> <span class='comment'># show defaults
-</span>  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_error_key'>error_key</span> <span class='op'>=</span> <span class='symbol'>:error</span>
-  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span> <span class='op'>=</span> <span class='kw'>nil</span>
-  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_hashing_cost'>hashing_cost</span> <span class='op'>=</span> <span class='int'>8</span>
-  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_repository'>repository</span> <span class='op'>=</span> <span class='const'>UserRepository</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
-  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span> <span class='op'>=</span> <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_repository'>repository</span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span>
-  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_reset_expiry'>reset_expiry</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='int'>24</span> <span class='op'>*</span> <span class='int'>60</span> <span class='op'>*</span> <span class='int'>60</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_session_expiry'>session_expiry</span> <span class='op'>=</span> <span class='int'>900</span>
-  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_success_key'>success_key</span> <span class='op'>=</span> <span class='symbol'>:success</span>
-  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_token_bytes'>token_bytes</span> <span class='op'>=</span> <span class='int'>24</span>
-<span class='kw'>end</span></code></pre>
-    
-  </div>
-
-<p class="tag_title">Yield Parameters:</p>
-<ul class="yieldparam">
-  
-    <li>
-      
-        <span class='name'>config</span>
-      
-      
-        <span class='type'>(<tt>Struct</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>Mutable Struct initialised to default config.</p>
-</div>
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Yield Returns:</p>
-<ul class="yieldreturn">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>void</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="CryptIdent/Config.html" title="CryptIdent::Config (class)">CryptIdent::Config</a></span></tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Since:</p>
-<ul class="since">
-  
-    <li>
-      
-      
-      
-      
-        
-        <div class='inline'><p>0.1.0</p>
-</div>
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Required Authentication Status:</p>
-<ul class="authenticated">
-  
-    <li>
-      
-      
-      
-      
-        
-        <div class='inline'><p>Irrelevant; normally called during framework setup.</p>
-</div>
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Session Data Interacted With:</p>
-<ul class="session_data">
-  
-    <li>
-      
-      
-      
-      
-        
-        <div class='inline'><p>Irrelevant; normally called during framework setup.</p>
-</div>
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Ubiquitous Language Terms:</p>
-<ul class="ubiq_lang">
-  
-    <li>
-      
-      
-      
-      
-        
-        <div class='inline'><p>None; only related to demonstrated configuration settings.</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-70
-71
-72
-73
-74</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 70</span>
-
-<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_configure_crypt_ident'>configure_crypt_ident</span>
-  <span class='id identifier rubyid_config'>config</span> <span class='op'>=</span> <span class='id identifier rubyid__starting_config'>_starting_config</span>
-  <span class='kw'>yield</span> <span class='id identifier rubyid_config'>config</span> <span class='kw'>if</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
-  <span class='ivar'>@cryptid_config</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="CryptIdent/Config.html" title="CryptIdent::Config (class)">Config</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_to_h'>to_h</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="reset_crypt_ident_config-class_method">
-  
-    .<strong>reset_crypt_ident_config</strong>  &#x21d2; <tt><span class='object_link'><a href="CryptIdent/Config.html" title="CryptIdent::Config (class)">CryptIdent::Config</a></span></tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Reset configuration information to default values.</p>
-
-<p>This <strong>should</strong> primarily be used during testing, and would normally be run
-from a <code>before</code> block for a test suite.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-  <div class="examples">
-    <p class="tag_title">Examples:</p>
-    
-      
-        <p class="example_title"><div class='inline'><p>Show how a modified configuration value is reset.</p>
-</div></p>
-      
-      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure_crypt_ident'><span class='object_link'><a href="#configure_crypt_ident-class_method" title="CryptIdent.configure_crypt_ident (method)">configure_crypt_ident</a></span></span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span>
-  <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_hashing_cost'>hashing_cost</span> <span class='op'>=</span> <span class='int'>20</span> <span class='comment'># default 8
-</span><span class='kw'>end</span>
-<span class='comment'># ...
-</span><span class='id identifier rubyid_foo'>foo</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_cryptid_config'><span class='object_link'><a href="#cryptid_config-instance_method" title="CryptIdent#cryptid_config (method)">cryptid_config</a></span></span><span class='period'>.</span><span class='id identifier rubyid_hashing_cost'>hashing_cost</span> <span class='comment'># 20
-</span><span class='comment'># ...
-</span><span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_reset_crypt_ident_config'>reset_crypt_ident_config</span>
-<span class='id identifier rubyid_foo'>foo</span> <span class='op'>==</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_cryptid_config'><span class='object_link'><a href="#cryptid_config-instance_method" title="CryptIdent#cryptid_config (method)">cryptid_config</a></span></span><span class='period'>.</span><span class='id identifier rubyid_hashing_cost'>hashing_cost</span> <span class='comment'># default, 8</span></code></pre>
-    
-  </div>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="CryptIdent/Config.html" title="CryptIdent::Config (class)">CryptIdent::Config</a></span></tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Since:</p>
-<ul class="since">
-  
-    <li>
-      
-      
-      
-      
-        
-        <div class='inline'><p>0.1.0</p>
-</div>
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Required Authentication Status:</p>
-<ul class="authenticated">
-  
-    <li>
-      
-      
-      
-      
-        
-        <div class='inline'><p>Irrelevant; normally called during framework setup.</p>
-</div>
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Session Data Interacted With:</p>
-<ul class="session_data">
-  
-    <li>
-      
-      
-      
-      
-        
-        <div class='inline'><p>Irrelevant; normally called during testing</p>
-</div>
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Ubiquitous Language Terms:</p>
-<ul class="ubiq_lang">
-  
-    <li>
-      
-      
-      
-      
-        
-        <div class='inline'><p>None; only related to demonstrated configuration settings.</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-108
-109
-110</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 108</span>
-
-<span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_reset_crypt_ident_config'>reset_crypt_ident_config</span>
-  <span class='ivar'>@cryptid_config</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="CryptIdent/Config.html" title="CryptIdent::Config (class)">Config</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-  </div>
 
   <div id="instance_method_details" class="method_details_list">
     <h2>Instance Method Details</h2>
@@ -830,7 +383,7 @@ from a <code>before</code> block for a test suite.</p>
       <div class="method_details first">
   <h3 class="signature first" id="change_password-instance_method">
   
-    #<strong>change_password</strong>(user_in, current_password, new_password, repo: nil) {|result| ... } 
+    #<strong>change_password</strong>(user_in, current_password, new_password) {|result| ... } 
   
 
   
@@ -884,7 +437,7 @@ contingency properly.</p>
       <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_user_in'>user_in</span> <span class='op'>=</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_error_code'>error_code</span> <span class='op'>=</span> <span class='symbol'>:unassigned</span>
-  <span class='id identifier rubyid_config'>config</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_cryptid_config'><span class='object_link'><a href="#cryptid_config-instance_method" title="CryptIdent#cryptid_config (method)">cryptid_config</a></span></span>
+  <span class='id identifier rubyid_config'>config</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_cryptid_config'>cryptid_config</span>
   <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:password</span><span class='rbracket'>]</span><span class='comma'>,</span>
                   <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:new_password</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
     <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_success'>success</span> <span class='kw'>do</span> <span class='op'>|</span><span class='label'>user:</span><span class='op'>|</span>
@@ -952,24 +505,6 @@ specified User</p>
         &mdash;
         <div class='inline'><p>The new Clear-Text Password to encrypt and add
 to the returned Entity, and persist to the Repository</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>repo</span>
-      
-      
-        <span class='type'>(<tt>Object</tt>, <tt>nil</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>The Repository to which the updated User Entity is
-to be persisted. If the default value of <code>nil</code>, then the
-UserRepository specified in the default configuration is
-used.</p>
 </div>
       
     </li>
@@ -1096,19 +631,17 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
-459
-460
-461
-462
-463
-464</pre>
+365
+366
+367
+368
+369</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 459</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 365</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_new_params'>new_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>config:</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_cryptid_config'><span class='object_link'><a href="#cryptid_config-instance_method" title="CryptIdent#cryptid_config (method)">cryptid_config</a></span></span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='id identifier rubyid_repo'>repo</span><span class='comma'>,</span>
-                 <span class='label'>user:</span> <span class='id identifier rubyid_user_in'>user_in</span> <span class='rbrace'>}</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_new_params'>new_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>config:</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='comma'>,</span> <span class='label'>user:</span> <span class='id identifier rubyid_user_in'>user_in</span> <span class='rbrace'>}</span>
   <span class='id identifier rubyid_call_params'>call_params</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='rbracket'>]</span>
   <span class='const'>ChangePassword</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_new_params'>new_params</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_call_params'>call_params</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span> <span class='kw'>yield</span> <span class='id identifier rubyid_result'>result</span> <span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
@@ -1120,7 +653,7 @@ method-call blocks to retrieve data from the method.</p>
       <div class="method_details ">
   <h3 class="signature " id="generate_reset_token-instance_method">
   
-    #<strong>generate_reset_token</strong>(user_name, repo: nil, current_user: nil) {|result| ... } 
+    #<strong>generate_reset_token</strong>(user_name, current_user: nil) {|result| ... } 
   
 
   
@@ -1221,25 +754,6 @@ end</code></pre>
         &mdash;
         <div class='inline'><p>The name of the User for whom a Password Reset
 Token is to be generated.</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>repo</span>
-      
-      
-        <span class='type'>(<tt>Object</tt>, <tt>nil</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>The Repository to which the Entity for the named
-User is persisted after &quot;updating&quot; it with Token and
-Password Reset Set At attributes. If the default value of
-<code>nil</code>, then the UserRepository specified in the default
-configuration is used.</p>
 </div>
       
     </li>
@@ -1379,18 +893,18 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
-561
-562
-563
-564
-565
-566</pre>
+461
+462
+463
+464
+465
+466</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 561</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 461</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_generate_reset_token'>generate_reset_token</span><span class='lparen'>(</span><span class='id identifier rubyid_user_name'>user_name</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_other_params'>other_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>repo:</span> <span class='id identifier rubyid_repo'>repo</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_generate_reset_token'>generate_reset_token</span><span class='lparen'>(</span><span class='id identifier rubyid_user_name'>user_name</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_other_params'>other_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
   <span class='const'>GenerateResetToken</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_user_name'>user_name</span><span class='comma'>,</span> <span class='id identifier rubyid_other_params'>other_params</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
     <span class='kw'>yield</span> <span class='id identifier rubyid_result'>result</span>
   <span class='kw'>end</span>
@@ -1403,7 +917,7 @@ method-call blocks to retrieve data from the method.</p>
       <div class="method_details ">
   <h3 class="signature " id="reset_password-instance_method">
   
-    #<strong>reset_password</strong>(token, new_password, repo: nil, current_user: nil) {|result| ... } 
+    #<strong>reset_password</strong>(token, new_password, current_user: nil) {|result| ... } 
   
 
   
@@ -1640,18 +1154,18 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
-660
-661
-662
-663
-664
-665</pre>
+560
+561
+562
+563
+564
+565</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 660</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 560</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_reset_password'>reset_password</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_other_params'>other_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>repo:</span> <span class='id identifier rubyid_repo'>repo</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_reset_password'>reset_password</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_other_params'>other_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
   <span class='const'>ResetPassword</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='id identifier rubyid_other_params'>other_params</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
     <span class='kw'>yield</span> <span class='id identifier rubyid_result'>result</span>
   <span class='kw'>end</span>
@@ -1824,12 +1338,12 @@ a User Entity or <code>nil</code>, signifying the Guest User. If the
       <pre class="lines">
 
 
-712
-713
-714</pre>
+612
+613
+614</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 712</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 612</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_session_expired?'>session_expired?</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='const'>SessionExpired</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span><span class='rparen'>)</span>
@@ -2110,13 +1624,13 @@ failure (as described above).</p>
       <pre class="lines">
 
 
-300
-301
-302
-303</pre>
+210
+211
+212
+213</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 300</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 210</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_in'>sign_in</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_params'>params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>user:</span> <span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='label'>password:</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -2321,12 +1835,12 @@ ignored; <code>config</code> is passed to <code>success</code> as a convenience.
       <pre class="lines">
 
 
-365
-366
-367</pre>
+275
+276
+277</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 365</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 275</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_out'>sign_out</span><span class='lparen'>(</span><span class='label'>current_user:</span><span class='rparen'>)</span>
   <span class='const'>SignOut</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span> <span class='kw'>yield</span> <span class='id identifier rubyid_result'>result</span> <span class='rbrace'>}</span>
@@ -2339,7 +1853,7 @@ ignored; <code>config</code> is passed to <code>success</code> as a convenience.
       <div class="method_details ">
   <h3 class="signature " id="sign_up-instance_method">
   
-    #<strong>sign_up</strong>(attribs, current_user:, repo: nil) {|result| ... } 
+    #<strong>sign_up</strong>(attribs, current_user:) {|result| ... } 
   
 
   
@@ -2550,7 +2064,6 @@ the reason for the failure (as described above).</p>
 <li>Entity</li>
 <li>Guest User</li>
 <li>Registered User</li>
-<li>Repository</li>
 </ul>
 </div>
       
@@ -2564,17 +2077,17 @@ the reason for the failure (as described above).</p>
       <pre class="lines">
 
 
-189
-190
-191
-192
-193</pre>
+99
+100
+101
+102
+103</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 189</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 99</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='const'>SignUp</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_repo'>repo</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span><span class='rparen'>)</span>
+  <span class='const'>SignUp</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
     <span class='kw'>yield</span> <span class='id identifier rubyid_result'>result</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
@@ -2763,15 +2276,15 @@ Registered User, or the Guest User otherwise.</p>
       <pre class="lines">
 
 
-774
-775
-776</pre>
+674
+675
+676</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 774</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 674</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_update_session_expiry'>update_session_expiry</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
-  <span class='const'>UpdateSessionExpiry</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span><span class='rparen'>)</span>
+  <span class='const'>UpdateSessionExpiry</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2783,9 +2296,9 @@ Registered User, or the Guest User otherwise.</p>
 </div>
 
       <div id="footer">
-  Generated on Sun Dec 23 02:55:30 2018 by
+  Generated on Fri Jan 18 02:29:38 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.16 (ruby-2.5.3).
+  0.9.16 (ruby-2.6.0).
 </div>
 
     </div>

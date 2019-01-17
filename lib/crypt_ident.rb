@@ -427,11 +427,6 @@ module CryptIdent
   # @authenticated Must not be Authenticated.
   # @param [String] user_name The name of the User for whom a Password Reset
   #                 Token is to be generated.
-  # @param [Object, nil] repo The Repository to which the Entity for the named
-  #                 User is persisted after "updating" it with Token and
-  #                 Password Reset Set At attributes. If the default value of
-  #                 `nil`, then the UserRepository specified in the default
-  #                 configuration is used.
   # @param [User]   current_user Entity representing the currently
   #                 Authenticated User Entity. This **must** be a Registered
   #                 User.
@@ -463,8 +458,8 @@ module CryptIdent
   #   - Authentication
   #   - Password Reset Token
   #   - Registered User
-  def generate_reset_token(user_name, repo: nil, current_user: nil)
-    other_params = { repo: repo, current_user: current_user }
+  def generate_reset_token(user_name, current_user: nil)
+    other_params = { current_user: current_user }
     GenerateResetToken.new.call(user_name, other_params) do |result|
       yield result
     end
