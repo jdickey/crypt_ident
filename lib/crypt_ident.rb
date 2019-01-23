@@ -59,9 +59,6 @@ module CryptIdent
   # @param [User, nil] current_user Entity representing the current
   #               Authenticated User, or the Guest User. A value of `nil` is
   #               treated as though the Guest User had been specified.
-  # @param [Hanami::Repository, nil] repo Repository to be used for accessing
-  #               User data. A value of `nil` indicates that the default
-  #               Repository specified in the Configuration should be used.
   # @return (void) Use the `result` yield parameter to determine results.
   # @yieldparam result [Dry::Matcher::Evaluator] Indicates whether the attempt
   #               to create a new User succeeded or failed. Block **must**

@@ -75,7 +75,8 @@ list = [
   'rubocop:0.62.0',
   'simplecov:0.16.1',
   'yard-classmethods:1.0.0',
-  'yard:0.9.16'
+  'yard:0.9.16',
+  'sqlite3'
 ]
 
 # pp [:file, __FILE__]

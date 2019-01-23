@@ -4,6 +4,7 @@ require 'bcrypt'
 
 require 'dry/monads/result'
 require 'dry/matcher/result_matcher'
+require 'hanami/utils/kernel'
 
 require_relative './config'
 
@@ -48,6 +49,12 @@ module CryptIdent
       BCrypt::Password.create(password)
     end
 
+    def expired_token?(entity)
+      prea = entity.password_reset_expires_at
+      # Calling this on a non-reset Entity is treated as expiring at the epoch
+      Time.now > Hanami::Utils::Kernel.Time(prea.to_i)
+    end
+
     # Reek sees a :reek:ControlParameter. Yep.
     def init_ivars(current_user)
       @current_user = current_user || CryptIdent.config.guest_user
@@ -76,7 +83,7 @@ module CryptIdent
 
     def validate_match_and_token(match, token)
       raise_logic_error(:token_not_found, token) unless match
-      raise_logic_error(:expired_token, token) if match.expired?
+      raise_logic_error(:expired_token, token) if expired_token?(match)
       match
     end
 
@@ -88,7 +95,7 @@ module CryptIdent
     end
 
     def verify_token(token)
-      match = CryptIdent.config.repository.find_by_token(token).first
+      match = Array(CryptIdent.config.repository.find_by_token(token)).first
       validate_match_and_token(match, token)
     end
   end

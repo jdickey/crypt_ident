@@ -167,7 +167,7 @@ data, which is quite theoretically possible in an Interactor but practically
 
 </div>
         </dt>
-        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>0.1.2</span><span class='tstring_end'>&#39;</span></span></pre></dd>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>0.2.0</span><span class='tstring_end'>&#39;</span></span></pre></dd>
       
     </dl>
   
@@ -631,14 +631,14 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
+362
+363
+364
 365
-366
-367
-368
-369</pre>
+366</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 365</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 362</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_new_params'>new_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>config:</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='comma'>,</span> <span class='label'>user:</span> <span class='id identifier rubyid_user_in'>user_in</span> <span class='rbrace'>}</span>
@@ -893,15 +893,15 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
+458
+459
+460
 461
 462
-463
-464
-465
-466</pre>
+463</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 461</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 458</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_generate_reset_token'>generate_reset_token</span><span class='lparen'>(</span><span class='id identifier rubyid_user_name'>user_name</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_other_params'>other_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -1154,15 +1154,15 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
+557
+558
+559
 560
 561
-562
-563
-564
-565</pre>
+562</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 560</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 557</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_password'>reset_password</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_other_params'>other_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -1338,12 +1338,12 @@ a User Entity or <code>nil</code>, signifying the Guest User. If the
       <pre class="lines">
 
 
-612
-613
-614</pre>
+609
+610
+611</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 612</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 609</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_session_expired?'>session_expired?</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='const'>SessionExpired</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span><span class='rparen'>)</span>
@@ -1624,13 +1624,13 @@ failure (as described above).</p>
       <pre class="lines">
 
 
-210
-211
-212
-213</pre>
+207
+208
+209
+210</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 210</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 207</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_in'>sign_in</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_params'>params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>user:</span> <span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='label'>password:</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -1835,12 +1835,12 @@ ignored; <code>config</code> is passed to <code>success</code> as a convenience.
       <pre class="lines">
 
 
-275
-276
-277</pre>
+272
+273
+274</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 275</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 272</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_out'>sign_out</span><span class='lparen'>(</span><span class='label'>current_user:</span><span class='rparen'>)</span>
   <span class='const'>SignOut</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span> <span class='kw'>yield</span> <span class='id identifier rubyid_result'>result</span> <span class='rbrace'>}</span>
@@ -1958,23 +1958,6 @@ treated as though the Guest User had been specified.</p>
       
     </li>
   
-    <li>
-      
-        <span class='name'>repo</span>
-      
-      
-        <span class='type'>(<tt>Hanami::Repository</tt>, <tt>nil</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>Repository to be used for accessing
-User data. A value of <code>nil</code> indicates that the default
-Repository specified in the Configuration should be used.</p>
-</div>
-      
-    </li>
-  
 </ul>
 
 <p class="tag_title">Yield Parameters:</p>
@@ -2077,14 +2060,14 @@ the reason for the failure (as described above).</p>
       <pre class="lines">
 
 
+96
+97
+98
 99
-100
-101
-102
-103</pre>
+100</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 99</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 96</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span><span class='rparen'>)</span>
   <span class='const'>SignUp</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
@@ -2276,12 +2259,12 @@ Registered User, or the Guest User otherwise.</p>
       <pre class="lines">
 
 
-674
-675
-676</pre>
+671
+672
+673</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 674</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 671</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_update_session_expiry'>update_session_expiry</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='const'>UpdateSessionExpiry</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span><span class='rparen'>)</span>
@@ -2296,7 +2279,7 @@ Registered User, or the Guest User otherwise.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan 18 02:29:38 2019 by
+  Generated on Thu Jan 24 02:15:29 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.16 (ruby-2.6.0).
 </div>
