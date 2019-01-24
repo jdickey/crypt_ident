@@ -18,7 +18,8 @@ module CryptIdent
   # This class *is not* part of the published API.
   # @private
   class UpdateSessionExpiry
-    def initialize(config)
+    def initialize
+      config = CryptIdent.config
       @guest_user = config.guest_user
       @session_expiry = config.session_expiry
     end

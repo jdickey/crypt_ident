@@ -61,7 +61,7 @@ describe 'CryptIdent#sign_in' do
       saved_user = :unassigned
       auth_params = { name: 'Another User', password: 'anything' }
       sign_up(auth_params, current_user: nil) do |result|
-        result.success { |config:, user:| saved_user = user }
+        result.success { |user:| saved_user = user }
         result.failure { next }
       end
       saved_user

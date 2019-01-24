@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative './config'
-
 # Include and interact with `CryptIdent` to add authentication to a
 # Hanami controller action.
 #

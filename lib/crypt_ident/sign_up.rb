@@ -47,7 +47,7 @@ module CryptIdent
     end
 
     def failure_for(code)
-      Failure(code: code, config: CryptIdent.config)
+      Failure(code: code)
     end
 
     def hashed_password(password_in)
@@ -72,7 +72,7 @@ module CryptIdent
     end
 
     def success_for(user)
-      Success(user: user, config: CryptIdent.config)
+      Success(user: user)
     end
   end
 end

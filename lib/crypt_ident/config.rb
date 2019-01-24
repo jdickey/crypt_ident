@@ -5,7 +5,7 @@ require 'hanami/entity'
 # Configuration info for CryptIdent.
 #
 # @author Jeff Dickey
-# @version 0.1.0
+# @version 0.2.0
 module CryptIdent
   # Configuration attributes for `CryptIdent`, with default values.
   #
@@ -44,17 +44,4 @@ module CryptIdent
   # `Base64.strict_encode64`.)
   # @see https://ruby-doc.org/stdlib/libdoc/securerandom/rdoc/Random/Formatter.html#method-i-urlsafe_base64
   setting :token_bytes, 24, reader: true
-
-  class Config < Hanami::Entity
-    attributes do
-      # attribute :guest_user, (Types::Class.default { repository.guest_user })
-      # attribute :repository, (Types::Class.default { UserRepository.new })
-
-      # This exists purely to simplify the :guest_user attribute definition, for
-      # the sake of RuboCop. Pfffffft.
-      # def repository
-      #   @attributes[:repository].evaluate
-      # end
-    end
-  end
 end

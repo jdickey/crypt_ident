@@ -171,22 +171,18 @@ describe 'Iterating the steps in the New Member workflow' do
   it 'succeeds along the normal path' do
     # Register a New Member
     sign_up_params = { name: member_name, profile: profile, email: email }
-    the_user = the_code = the_config = :unassigned
+    the_user = the_code = :unassigned
     CryptIdent.sign_up(sign_up_params, current_user: nil) do |result|
-      result.success do |config:, user:|
-        the_config = config
+      result.success do |user:|
         the_user = user
       end
-      result.failure do |code:, config:|
+      result.failure do |code:|
         expect(code).must_equal :unassigned # will fail and report actual code
         the_code = code
-        the_config = config
       end
     end
     expect(the_code).must_equal :unassigned
     expect(the_user).wont_equal :unassigned
-    # FIXME: `config:` as a Result parameter should be removed
-    expect(the_config).must_equal CryptIdent.config
 
     # Perform a Password Reset
 
@@ -215,11 +211,10 @@ describe 'Iterating the steps in the New Member workflow' do
 
     # Sign Out
 
-    the_config = :unassigned
-    CryptIdent.sign_out(current_user: nil) do |result|
-      result.success { |config:| the_config = config }
+    the_result = CryptIdent.sign_out(current_user: nil) do |result|
+      result.success { next }
       result.failure { expect(nil).wont_be :nil? } # Should *never* fire.
     end
-    expect(the_config).must_equal CryptIdent.config
+    expect(the_result).must_be :nil?
   end
 end

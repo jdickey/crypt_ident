@@ -31,14 +31,10 @@ module CryptIdent
   # failure is yielded. That block **must** in turn call **both**
   # `result.success` and `result.failure` to handle success and failure results,
   # respectively. On success, the block yielded to by `result.success` is called
-  # and passed `config:` and `user:` parameters, which are the Config object
-  # active while creating the new User, and the newly-created User Entity itself
-  # respectively.
+  # and passed a `user:` parameter, which is the newly-created User Entity.
   #
-  # If the call fails, the `result.success` block is yielded to, and passed
-  # `config:` and `code:` parameters. The `config:` parameter is the active
-  # configuration as described earlier for `result.success`. The `code:`
-  # parameter will contain one of the following symbols:
+  # If the call fails, the `result.success` block is yielded to, and passed a
+  # `code:` parameter, which will contain one of the following symbols:
   #
   # * `:current_user_exists` indicates that the method was called with a
   # Registered User as the `current_user` parameter.
@@ -63,25 +59,25 @@ module CryptIdent
   # @yieldparam result [Dry::Matcher::Evaluator] Indicates whether the attempt
   #               to create a new User succeeded or failed. Block **must**
   #               call **both** `result.success` and `result.failure` methods,
-  #               where the block passed to `result.success` accepts parameters
-  #               for `config:` (which is the active configuration for the call)
-  #               and `user:` (which is the newly-created User Entity). The
-  #               block passed to `result.failure` accepts parameters for
-  #               `config:` (as before) and `code:`, which is a Symbol reporting
-  #               the reason for the failure (as described above).
+  #               where the block passed to `result.success` accepts a parameter
+  #               for `user:` (which is the newly-created User Entity). The
+  #               block passed to `result.failure` accepts a parameter for
+  #               `code:`, which is a Symbol reporting the reason for the
+  #               failure (as described above).
   # @example in a Controller Action Class
   #   def call(_params)
   #     sign_up(params, current_user: session[:current_user]) do |result|
-  #       result.success do |config:, user:|
+  #       result.success do |user:|
   #         @user = user
   #         message = "#{user.name} successfully created. You may sign in now."
-  #         flash[config.success_key] = message
+  #         flash[CryptIdent.config.success_key] = message
   #         redirect_to routes.root_path
   #       end
   #
-  #       result.failure do |code:, config:|
+  #       result.failure do |code:|
   #         # `#error_message_for` is a method on the same class, not shown
-  #         flash[config.failure_key] = error_message_for(code, params)
+  #         failure_key = CryptIdent.config.failure_key
+  #         flash[failure_key] = error_message_for(code, params)
   #       end
   #     end
   #   end
@@ -216,9 +212,7 @@ module CryptIdent
   # That block **must** in turn call **both** `result.success` and
   # `result.failure` (even though no failure is implemented) to handle success
   # and failure results, respectively. On success, the block yielded to by
-  # `result.success` is called and passed a `config:` parameter, which is simply
-  # the value returned from `CryptIdent.cryptid_config` with no modifier block),
-  # It may safely be ignored.
+  # `result.success` is called without parameters.
   #
   # @since 0.1.0
   # @authenticated Should be Authenticated.
@@ -230,14 +224,14 @@ module CryptIdent
   #               whether a method succeeded or failed. The block **must**
   #               call **both** `result.success` and `result.failure` methods.
   #               In practice, parameters to both may presently be safely
-  #               ignored; `config` is passed to `success` as a convenience.
+  #               ignored.
   # @yieldreturn [void]
   #
   # @example Controller Action Class method example resetting values
   #   def call(_params)
   #     sign_out(session[:current_user]) do |result|
-  #       result.success do |config|
-  #         session[:current_user] = config.guest_user
+  #       result.success do
+  #         session[:current_user] = CryptIdent.config.guest_user
   #         session[:expires_at] = Hanami::Utils::Kernel.Time(0)
   #       end
   #
@@ -248,7 +242,7 @@ module CryptIdent
   # @example Controller Action Class method example deleting values
   #   def call(_params)
   #     sign_out(session[:current_user]) do |result|
-  #       result.success do |config|
+  #       result.success do
   #         session[:current_user] = nil
   #         session[:expires_at] = nil
   #       end
@@ -316,12 +310,11 @@ module CryptIdent
   # @yieldparam result [Dry::Matcher::Evaluator] Indicates whether the attempt
   #               to create a new User succeeded or failed. Block **must**
   #               call **both** `result.success` and `result.failure` methods,
-  #               where the block passed to `result.success` accepts parameters
-  #               for `config:` (which is the active configuration for the call)
-  #               and `user:` (which is the newly-created User Entity). The
-  #               block passed to `result.failure` accepts parameters for
-  #               `config:` (as before) and `code:`, which is a Symbol reporting
-  #               the reason for the failure (as described above).
+  #               where the block passed to `result.success` accepts a parameter
+  #               for `user:` (which is the newly-created User Entity). The
+  #               block passed to `result.failure` accepts a parameter for
+  #               `code:`, which is a Symbol reporting the reason for the
+  #               failure (as described above).
   # @yieldreturn (void) Use the `result.success` and `result.failure`
   #               method-call blocks to retrieve data from the method.
   #
@@ -360,9 +353,10 @@ module CryptIdent
   #   - Registered User
   #   - Repository
   def change_password(user_in, current_password, new_password)
-    new_params = { config: CryptIdent.config, user: user_in }
     call_params = [current_password, new_password]
-    ChangePassword.new(new_params).call(*call_params) { |result| yield result }
+    ChangePassword.new(user: user_in).call(*call_params) do |result|
+      yield result
+    end
   end
 
   # Generate a Password Reset Token
@@ -431,7 +425,7 @@ module CryptIdent
   # @example Demonstrating a (refactorable) Controller Action Class #call method
   #
   #   def call(params)
-  #     config = CryptIdent.cryptid_config
+  #     config = CryptIdent.config
   #     other_params = { current_user: session[:current_user] }
   #     generate_reset_token(params[:name], other_params) do |result|
   #       result.success do |user:|
@@ -485,9 +479,7 @@ module CryptIdent
   #
   # NOTE: Each of the error returns documented below calls the **required**
   # block with a `result` whose `result.failure` matcher is yielded a `code:`
-  # parameter as described; a `config:` parameter of the active
-  # [_Configuration_](#configuration) (including the Repository used to retrieve
-  # the relevant User record); and a `token:` parameter that has the same value
+  # parameter as described, and a `token:` parameter that has the same value
   # as the passed-in `token` parameter.
   #
   # If the passed-in `token` parameter matches the `token` field of a record in
@@ -530,19 +522,19 @@ module CryptIdent
   #       result.success do |user:|
   #         @user = user
   #         message = "Password for #{user.name} successfully reset."
-  #         config = CryptIdent.cryptid_config
-  #         flash[config.success_key] = message
+  #         flash[CryptIdent.config.success_key] = message
   #         redirect_to routes.root_path
   #       end
-  #       result.failure do |code:, config:, token:|
-  #         flash[config.failure_key] = failure_message_for(code, config, token)
+  #       result.failure do |code:, token:|
+  #         failure_key = CryptIdent.config.failure_key
+  #         flash[failure_key] = failure_message_for(code, token)
   #       end
   #     end
   #   end
   #
   #   private
   #
-  #   def failure_message_for(code, config, token)
+  #   def failure_message_for(code, token)
   #     # ...
   #   end
   # @session_data
@@ -669,6 +661,6 @@ module CryptIdent
   #   - User
   #
   def update_session_expiry(session_data = {})
-    UpdateSessionExpiry.new(CryptIdent.config).call(session_data)
+    UpdateSessionExpiry.new.call(session_data)
   end
 end

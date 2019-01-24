@@ -135,17 +135,7 @@ data, which is quite theoretically possible in an Interactor but practically
   
 </ul>
 
-</div><h2>Defined Under Namespace</h2>
-<p class="children">
-  
-    
-  
-    
-      <strong class="classes">Classes:</strong> <span class='object_link'><a href="CryptIdent/Config.html" title="CryptIdent::Config (class)">Config</a></span>
-    
-  
-</p>
-
+</div>
   
     <h2>
       Constant Summary
@@ -527,12 +517,11 @@ to the returned Entity, and persist to the Repository</p>
         <div class='inline'><p>Indicates whether the attempt
 to create a new User succeeded or failed. Block <strong>must</strong>
 call <strong>both</strong> <code>result.success</code> and <code>result.failure</code> methods,
-where the block passed to <code>result.success</code> accepts parameters
-for <code>config:</code> (which is the active configuration for the call)
-and <code>user:</code> (which is the newly-created User Entity). The
-block passed to <code>result.failure</code> accepts parameters for
-<code>config:</code> (as before) and <code>code:</code>, which is a Symbol reporting
-the reason for the failure (as described above).</p>
+where the block passed to <code>result.success</code> accepts a parameter
+for <code>user:</code> (which is the newly-created User Entity). The
+block passed to <code>result.failure</code> accepts a parameter for
+<code>code:</code>, which is a Symbol reporting the reason for the
+failure (as described above).</p>
 </div>
       
     </li>
@@ -631,19 +620,21 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
-362
-363
-364
-365
-366</pre>
+355
+356
+357
+358
+359
+360</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 362</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 355</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_new_params'>new_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>config:</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='comma'>,</span> <span class='label'>user:</span> <span class='id identifier rubyid_user_in'>user_in</span> <span class='rbrace'>}</span>
   <span class='id identifier rubyid_call_params'>call_params</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='rbracket'>]</span>
-  <span class='const'>ChangePassword</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_new_params'>new_params</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_call_params'>call_params</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span> <span class='kw'>yield</span> <span class='id identifier rubyid_result'>result</span> <span class='rbrace'>}</span>
+  <span class='const'>ChangePassword</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='label'>user:</span> <span class='id identifier rubyid_user_in'>user_in</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_call_params'>call_params</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
+    <span class='kw'>yield</span> <span class='id identifier rubyid_result'>result</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -719,7 +710,7 @@ and the <code>:name</code> parameter to the <code>result.failure</code> block wi
       
       <pre class="example code"><code>
 def call(params)
-  config = CryptIdent.cryptid_config
+  config = CryptIdent.config
   other_params = { current_user: session[:current_user] }
   generate_reset_token(params[:name], other_params) do |result|
     result.success do |user:|
@@ -893,15 +884,15 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
-458
-459
-460
-461
-462
-463</pre>
+452
+453
+454
+455
+456
+457</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 458</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 452</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_generate_reset_token'>generate_reset_token</span><span class='lparen'>(</span><span class='id identifier rubyid_user_name'>user_name</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_other_params'>other_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -948,9 +939,7 @@ the updated User as its value.</p>
 
 <p>NOTE: Each of the error returns documented below calls the <strong>required</strong>
 block with a <code>result</code> whose <code>result.failure</code> matcher is yielded a <code>code:</code>
-parameter as described; a <code>config:</code> parameter of the active
-<a href="#configuration"><em>Configuration</em></a> (including the Repository used to retrieve
-the relevant User record); and a <code>token:</code> parameter that has the same value
+parameter as described, and a <code>token:</code> parameter that has the same value
 as the passed-in <code>token</code> parameter.</p>
 
 <p>If the passed-in <code>token</code> parameter matches the <code>token</code> field of a record in
@@ -982,19 +971,19 @@ successful Password Reset, the User must Authenticate as usual.</p>
     result.success do |user:|
       @user = user
       message = &quot;Password for #{user.name} successfully reset.&quot;
-      config = CryptIdent.cryptid_config
-      flash[config.success_key] = message
+      flash[CryptIdent.config.success_key] = message
       redirect_to routes.root_path
     end
-    result.failure do |code:, config:, token:|
-      flash[config.failure_key] = failure_message_for(code, config, token)
+    result.failure do |code:, token:|
+      failure_key = CryptIdent.config.failure_key
+      flash[failure_key] = failure_message_for(code, token)
     end
   end
 end
 
 private
 
-def failure_message_for(code, config, token)
+def failure_message_for(code, token)
   # ...
 end</code></pre>
     
@@ -1154,15 +1143,15 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
-557
-558
-559
-560
-561
-562</pre>
+549
+550
+551
+552
+553
+554</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 557</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 549</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_password'>reset_password</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_other_params'>other_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -1338,12 +1327,12 @@ a User Entity or <code>nil</code>, signifying the Guest User. If the
       <pre class="lines">
 
 
-609
-610
-611</pre>
+601
+602
+603</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 609</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 601</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_session_expired?'>session_expired?</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='const'>SessionExpired</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span><span class='rparen'>)</span>
@@ -1624,13 +1613,13 @@ failure (as described above).</p>
       <pre class="lines">
 
 
-207
-208
-209
-210</pre>
+203
+204
+205
+206</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 207</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 203</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_in'>sign_in</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_params'>params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>user:</span> <span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='label'>password:</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -1659,9 +1648,7 @@ failure is yielded. (Presently, any call to <code>#sign_out</code> results in su
 That block <strong>must</strong> in turn call <strong>both</strong> <code>result.success</code> and
 <code>result.failure</code> (even though no failure is implemented) to handle success
 and failure results, respectively. On success, the block yielded to by
-<code>result.success</code> is called and passed a <code>config:</code> parameter, which is simply
-the value returned from <code>CryptIdent.cryptid_config</code> with no modifier block),
-It may safely be ignored.</p>
+<code>result.success</code> is called without parameters.</p>
 
 
   </div>
@@ -1677,8 +1664,8 @@ It may safely be ignored.</p>
       
       <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid__params'>_params</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_sign_out'>sign_out</span><span class='lparen'>(</span><span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
-    <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_success'>success</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span>
-      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span>
+    <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_success'>success</span> <span class='kw'>do</span>
+      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span>
       <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:expires_at</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'>Hanami</span><span class='op'>::</span><span class='const'>Utils</span><span class='op'>::</span><span class='const'>Kernel</span><span class='period'>.</span><span class='const'>Time</span><span class='lparen'>(</span><span class='int'>0</span><span class='rparen'>)</span>
     <span class='kw'>end</span>
 
@@ -1692,7 +1679,7 @@ It may safely be ignored.</p>
       
       <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid__params'>_params</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_sign_out'>sign_out</span><span class='lparen'>(</span><span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
-    <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_success'>success</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span>
+    <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_success'>success</span> <span class='kw'>do</span>
       <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
       <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:expires_at</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
     <span class='kw'>end</span>
@@ -1741,7 +1728,7 @@ User.</p>
 whether a method succeeded or failed. The block <strong>must</strong>
 call <strong>both</strong> <code>result.success</code> and <code>result.failure</code> methods.
 In practice, parameters to both may presently be safely
-ignored; <code>config</code> is passed to <code>success</code> as a convenience.</p>
+ignored.</p>
 </div>
       
     </li>
@@ -1835,12 +1822,12 @@ ignored; <code>config</code> is passed to <code>success</code> as a convenience.
       <pre class="lines">
 
 
-272
-273
-274</pre>
+266
+267
+268</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 272</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 266</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_out'>sign_out</span><span class='lparen'>(</span><span class='label'>current_user:</span><span class='rparen'>)</span>
   <span class='const'>SignOut</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span> <span class='kw'>yield</span> <span class='id identifier rubyid_result'>result</span> <span class='rbrace'>}</span>
@@ -1870,14 +1857,10 @@ containing the encrypted value of a <strong>random</strong> Clear-Text Password;
 failure is yielded. That block <strong>must</strong> in turn call <strong>both</strong>
 <code>result.success</code> and <code>result.failure</code> to handle success and failure results,
 respectively. On success, the block yielded to by <code>result.success</code> is called
-and passed <code>config:</code> and <code>user:</code> parameters, which are the Config object
-active while creating the new User, and the newly-created User Entity itself
-respectively.</p>
+and passed a <code>user:</code> parameter, which is the newly-created User Entity.</p>
 
-<p>If the call fails, the <code>result.success</code> block is yielded to, and passed
-<code>config:</code> and <code>code:</code> parameters. The <code>config:</code> parameter is the active
-configuration as described earlier for <code>result.success</code>. The <code>code:</code>
-parameter will contain one of the following symbols:</p>
+<p>If the call fails, the <code>result.success</code> block is yielded to, and passed a
+<code>code:</code> parameter, which will contain one of the following symbols:</p>
 
 <ul>
 <li><code>:current_user_exists</code> indicates that the method was called with a
@@ -1905,16 +1888,17 @@ the Controller Action Class level.</p>
       
       <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid__params'>_params</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
-    <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_success'>success</span> <span class='kw'>do</span> <span class='op'>|</span><span class='label'>config:</span><span class='comma'>,</span> <span class='label'>user:</span><span class='op'>|</span>
+    <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_success'>success</span> <span class='kw'>do</span> <span class='op'>|</span><span class='label'>user:</span><span class='op'>|</span>
       <span class='ivar'>@user</span> <span class='op'>=</span> <span class='id identifier rubyid_user'>user</span>
       <span class='id identifier rubyid_message'>message</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_user'>user</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> successfully created. You may sign in now.</span><span class='tstring_end'>&quot;</span></span>
-      <span class='id identifier rubyid_flash'>flash</span><span class='lbracket'>[</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_success_key'>success_key</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_message'>message</span>
+      <span class='id identifier rubyid_flash'>flash</span><span class='lbracket'>[</span><span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_success_key'>success_key</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_message'>message</span>
       <span class='id identifier rubyid_redirect_to'>redirect_to</span> <span class='id identifier rubyid_routes'>routes</span><span class='period'>.</span><span class='id identifier rubyid_root_path'>root_path</span>
     <span class='kw'>end</span>
 
-    <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_failure'>failure</span> <span class='kw'>do</span> <span class='op'>|</span><span class='label'>code:</span><span class='comma'>,</span> <span class='label'>config:</span><span class='op'>|</span>
+    <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_failure'>failure</span> <span class='kw'>do</span> <span class='op'>|</span><span class='label'>code:</span><span class='op'>|</span>
       <span class='comment'># `#error_message_for` is a method on the same class, not shown
-</span>      <span class='id identifier rubyid_flash'>flash</span><span class='lbracket'>[</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_failure_key'>failure_key</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_error_message_for'>error_message_for</span><span class='lparen'>(</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_params'>params</span><span class='rparen'>)</span>
+</span>      <span class='id identifier rubyid_failure_key'>failure_key</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_failure_key'>failure_key</span>
+      <span class='id identifier rubyid_flash'>flash</span><span class='lbracket'>[</span><span class='id identifier rubyid_failure_key'>failure_key</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_error_message_for'>error_message_for</span><span class='lparen'>(</span><span class='id identifier rubyid_code'>code</span><span class='comma'>,</span> <span class='id identifier rubyid_params'>params</span><span class='rparen'>)</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></code></pre>
@@ -1976,12 +1960,11 @@ treated as though the Guest User had been specified.</p>
         <div class='inline'><p>Indicates whether the attempt
 to create a new User succeeded or failed. Block <strong>must</strong>
 call <strong>both</strong> <code>result.success</code> and <code>result.failure</code> methods,
-where the block passed to <code>result.success</code> accepts parameters
-for <code>config:</code> (which is the active configuration for the call)
-and <code>user:</code> (which is the newly-created User Entity). The
-block passed to <code>result.failure</code> accepts parameters for
-<code>config:</code> (as before) and <code>code:</code>, which is a Symbol reporting
-the reason for the failure (as described above).</p>
+where the block passed to <code>result.success</code> accepts a parameter
+for <code>user:</code> (which is the newly-created User Entity). The
+block passed to <code>result.failure</code> accepts a parameter for
+<code>code:</code>, which is a Symbol reporting the reason for the
+failure (as described above).</p>
 </div>
       
     </li>
@@ -2060,14 +2043,14 @@ the reason for the failure (as described above).</p>
       <pre class="lines">
 
 
-96
-97
-98
-99
-100</pre>
+92
+93
+94
+95
+96</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 96</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 92</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span><span class='rparen'>)</span>
   <span class='const'>SignUp</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
@@ -2259,15 +2242,15 @@ Registered User, or the Guest User otherwise.</p>
       <pre class="lines">
 
 
-671
-672
-673</pre>
+663
+664
+665</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 671</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 663</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_update_session_expiry'>update_session_expiry</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
-  <span class='const'>UpdateSessionExpiry</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span><span class='rparen'>)</span>
+  <span class='const'>UpdateSessionExpiry</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2279,7 +2262,7 @@ Registered User, or the Guest User otherwise.</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Jan 24 02:15:29 2019 by
+  Generated on Fri Jan 25 02:28:53 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.16 (ruby-2.6.0).
 </div>

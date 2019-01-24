@@ -19,8 +19,8 @@ module CryptIdent
     include Dry::Monads::Result::Mixin
     include Dry::Matcher.for(:call, with: Dry::Matcher::ResultMatcher)
 
-    def initialize(config:, user:)
-      @repo = config.repository
+    def initialize(user:)
+      @repo = CryptIdent.config.repository
       @user = user
     end
 
