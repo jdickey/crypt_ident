@@ -83,8 +83,8 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/crypt_ident.rb<span class="defines">,<br />
-  lib/crypt_ident/config.rb,<br /> lib/crypt_ident/sign_in.rb,<br /> lib/crypt_ident/sign_up.rb,<br /> lib/crypt_ident/version.rb,<br /> lib/crypt_ident/sign_out.rb,<br /> lib/crypt_ident/reset_password.rb,<br /> lib/crypt_ident/change_password.rb,<br /> lib/crypt_ident/session_expired.rb,<br /> lib/crypt_ident/generate_reset_token.rb,<br /> lib/crypt_ident/update_session_expiry.rb</span>
+    <dd>lib/crypt_ident/config.rb<span class="defines">,<br />
+  lib/crypt_ident/sign_in.rb,<br /> lib/crypt_ident/sign_up.rb,<br /> lib/crypt_ident/version.rb,<br /> lib/crypt_ident/sign_out.rb,<br /> lib/crypt_ident/reset_password.rb,<br /> lib/crypt_ident/change_password.rb,<br /> lib/crypt_ident/session_expired.rb,<br /> lib/crypt_ident/generate_reset_token.rb,<br /> lib/crypt_ident/update_session_expiry.rb</span>
 </dd>
   </dl>
   
@@ -128,7 +128,7 @@ data, which is quite theoretically possible in an Interactor but practically
       
       
         
-        <div class='inline'><p>0.1.0</p>
+        <div class='inline'><p>0.2.0</p>
 </div>
       
     </li>
@@ -620,15 +620,15 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
-355
-356
-357
-358
-359
-360</pre>
+103
+104
+105
+106
+107
+108</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 355</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident/change_password.rb', line 103</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_call_params'>call_params</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='rbracket'>]</span>
@@ -884,15 +884,15 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
-452
-453
-454
-455
-456
-457</pre>
+110
+111
+112
+113
+114
+115</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 452</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident/generate_reset_token.rb', line 110</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_generate_reset_token'>generate_reset_token</span><span class='lparen'>(</span><span class='id identifier rubyid_user_name'>user_name</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_other_params'>other_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -1143,15 +1143,15 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
-549
-550
-551
-552
-553
-554</pre>
+111
+112
+113
+114
+115
+116</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 549</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident/reset_password.rb', line 111</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_password'>reset_password</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_other_params'>other_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -1327,12 +1327,12 @@ a User Entity or <code>nil</code>, signifying the Guest User. If the
       <pre class="lines">
 
 
-601
-602
-603</pre>
+58
+59
+60</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 601</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident/session_expired.rb', line 58</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_session_expired?'>session_expired?</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='const'>SessionExpired</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span><span class='rparen'>)</span>
@@ -1613,13 +1613,13 @@ failure (as described above).</p>
       <pre class="lines">
 
 
-203
-204
-205
-206</pre>
+123
+124
+125
+126</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 203</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident/sign_in.rb', line 123</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_in'>sign_in</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_params'>params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>user:</span> <span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='label'>password:</span> <span class='id identifier rubyid_password'>password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -1822,12 +1822,12 @@ ignored.</p>
       <pre class="lines">
 
 
-266
-267
-268</pre>
+74
+75
+76</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 266</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident/sign_out.rb', line 74</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_out'>sign_out</span><span class='lparen'>(</span><span class='label'>current_user:</span><span class='rparen'>)</span>
   <span class='const'>SignOut</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span> <span class='kw'>yield</span> <span class='id identifier rubyid_result'>result</span> <span class='rbrace'>}</span>
@@ -2043,14 +2043,14 @@ failure (as described above).</p>
       <pre class="lines">
 
 
-92
-93
-94
-95
-96</pre>
+87
+88
+89
+90
+91</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 92</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident/sign_up.rb', line 87</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span><span class='rparen'>)</span>
   <span class='const'>SignUp</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
@@ -2242,12 +2242,12 @@ Registered User, or the Guest User otherwise.</p>
       <pre class="lines">
 
 
-663
-664
-665</pre>
+73
+74
+75</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident.rb', line 663</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident/update_session_expiry.rb', line 73</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_update_session_expiry'>update_session_expiry</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='const'>UpdateSessionExpiry</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span><span class='rparen'>)</span>
@@ -2262,7 +2262,7 @@ Registered User, or the Guest User otherwise.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan 25 02:28:53 2019 by
+  Generated on Sat Jan 26 00:46:02 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.16 (ruby-2.6.0).
 </div>
