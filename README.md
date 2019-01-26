@@ -513,7 +513,7 @@ The return value is a `Hash` which:
 
 # API Documentation
 
-See [the Documentation Index](./docs/index.html).
+See [the Documentation Index](/CryptIdent.html).
 
 <sub style="font-size: 0.75rem;">[Back to Top](#CryptIdent)</sub>
 
