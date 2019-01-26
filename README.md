@@ -19,7 +19,7 @@ It *does not* implement features such as
 
 These either violate current best-practice recommendations from security leaders (e.g., NIST and others no longer recommend password ageing as a defence against cracking) or have other Gems that focus on the features in question (e.g., [`bdmac/strong_password`](https://github.com/bdmac/strong_password)).
 
-
+**NOTE:** One feature of this Gem is that most of the [configuration](#configuration) *should* Work Just Fine for most use cases. However, you **must** explicitly initialise the `:repository` configuration item prior to using the configuration data for the `repository` or the `guest_user` entries. We **recommend** assigning this once, during application startup when other configuration setup is being completed.
 
 # Installation
 
