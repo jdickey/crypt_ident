@@ -159,7 +159,7 @@ module CryptIdent
     end
 
     def valid_password?(password)
-      user.password_hash == password
+      BCrypt::Password.new(user.password_hash) == password
     end
 
     def valid_user?

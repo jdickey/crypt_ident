@@ -5,14 +5,6 @@ require 'test_helper'
 include CryptIdent
 
 describe 'CryptIdent.config has a reader for' do
-  after do
-    # These specs are run in random order. If we do not reset `.repository`
-    # here after (at least) the `.guest_user` test, then IT WILL STILL BE SET
-    # when "verifying" that the default repository value is `nil`.
-    # Hilarity ensues.
-    CryptIdent.config.repository = nil
-  end
-
   it '.error_key that defaults to :error' do
     expect(CryptIdent.config.error_key).must_equal :error
   end
@@ -45,6 +37,7 @@ describe 'CryptIdent.config has a reader for' do
     it 'a Guest User IF the repository has been set' do
       CryptIdent.config.repository = UserRepository.new
       expect(CryptIdent.config.guest_user.guest?).must_equal true
+      CryptIdent.config.repository = nil
     end
   end # describe '.guest_user that returns'
 end # describe 'CryptIdent.config has a reader for' do

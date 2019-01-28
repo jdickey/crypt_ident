@@ -9,27 +9,25 @@
 #
 # This test exercises the following sequence of actions:
 #
-# 1. A new Member is Registered. This generates a Token which a client app would
-#    send to the new Member via email, usually embedded within a URL that the
-#    Member would visit to confirm identity. For our purposes, we simply capture
-#    the Token for use in the following step. The test verifies that this
-#    completes successfully by inspecting the Result monad returned from
-#    `#sign_up`.
+# 1. Register a New User. This generates a Token which a client app would send
+#    to the new User via email, usually embedded within a URL that the User
+#    would visit to confirm identity. For our purposes, we simply capture the
+#    Token for use in the following step. The test verifies that this completes
+#    successfully by inspecting the Result monad returned from `#sign_up`.
 # 2. Use the Token from the first step to perform a Password Reset and set a
-#    (new) Password for the Member. We inspect the Result returned from
+#    (new) Password for the User. We inspect the Result returned from
 #    `#password_reset` to verify success; once verified, we continue to the next
 #    step.
-# 3. Using the newly-specified Password, the Member is Signed In. The test
-#    inspects the return value from `#sign_in` to verify success. (Since
-#    management of the `current_user` stored in session data is outside the
-#    scope of this Gem, no additional means exists to verify the autnentication
-#    status of a Member).
-# 4. The Member is Signed Out. The test verifies that this is reported as
-#    successful by the `#sign_out` method; see the earlier step for a discussion
-#    of why no additional verification means is available.
-# 5. Attempt to Register a new Member using the same information as in the
+# 3. Using the newly-specified Password, Sign In the User. The test inspects
+#    the return value from `#sign_in` to verify success. (Since management of
+#    the `current_user` stored in session data is outside the scope of this Gem,
+#    no additional means exists to verify the autnentication status of a User).
+# 4. Sign Out the User. The test verifies that this is reported as successful by
+#    the `#sign_out` method; see the earlier step for a discussion of why no
+#    additional verification means is available.
+# 5. Attempt to Register a new User using the same information as in the
 #    previous step. The test verifies that this fails and that the `#sign_up`
-#    method indicates that the Member already exists.
+#    method indicates that the User already exists.
 #
 # Again, why do this as opposed to simply trusting unit tests, or waiting until
 # a "real app" can test them? We want to be able to test in an environment that
@@ -50,118 +48,23 @@
 #    resource for documenting changes required to client code to work with the
 #    new version.
 
-################################################################################
-#                                                                              #
-#                             Set up for Minitest                              #
-#                                                                              #
-################################################################################
-
-$LOAD_PATH.unshift File.expand_path('../../lib', __dir__)
-
-require 'minitest/spec'
-require 'minitest/autorun'
-require 'minitest/reporters'
-require 'minitest/tagz'
-
-tags = ENV['TAGS'].split(',') if ENV['TAGS']
-tags ||= []
-tags << 'focus'
-Minitest::Tagz.choose_tags(*tags, run_all_if_no_match: true)
-
-################################################################################
-#                                                                              #
-#                        Our User Model and Repository                         #
-#                                                                              #
-################################################################################
-
-require 'hanami/model'
-require 'securerandom'
-
-class User < Hanami::Entity
-  GUEST_EMAIL = 'guest@example.com'
-  GUEST_NAME = 'Guest User'
-  GUEST_PROFILE = 'This is the Guest User. It can do nothing.'
-
-  def guest?
-    name == GUEST_NAME && email == GUEST_EMAIL && profile == GUEST_PROFILE
-  end
-end
-
-class UserRepository < Hanami::Repository
-  def find_by_token(token)
-    users.where(token: token).map_to(User).one
-  end
-
-  def guest_user
-    @guest_user ||= User.new name: User::GUEST_NAME, email: User::GUEST_EMAIL,
-                             password_hash: SecureRandom.alphanumeric(48),
-                             profile: User::GUEST_PROFILE
-  end
-end
-
-################################################################################
-#                                                                              #
-#                   Bringing up Hanami::Model and ecosystem                    #
-#                                                                              #
-################################################################################
-
-ENV['SQLITE_PATH'] = 'sqlite://tmp/dummy_data.sqlite'
-FileUtils.touch './tmp/dummy_data.sqlite'
-
-require 'fileutils'
-require 'hanami/model/sql'
-require 'hanami/model/migrator'
-require 'hanami/model/migration'
-
-module DatabaseHelper
-  MAPPING = {
-    'postgres' => 'POSTGRES_URL',
-    'mysql' => 'MYSQL_URL',
-    'sqlite' => 'SQLITE_PATH',
-  }
-
-  module_function
-
-  def adapter
-    ENV['DB'] || 'sqlite'
-  end
-
-  def postgres?
-    adapter == 'postgres'
-  end
-
-  def db_url(desired_adapter = nil)
-    env_name = MAPPING.fetch(desired_adapter || adapter)
-    ENV[env_name]
-  end
-end
-
-Hanami::Model.configure do
-  adapter :sql, DatabaseHelper.db_url
-  logger 'tmp/database.log', level: :debug
-  migrations Pathname.new(__dir__ + '/fixtures/migrations').to_s
-end
-Hanami::Model::Migrator.migrate
-Hanami::Model.load!
-
-################################################################################
-#                                                                              #
-#                               TESTS START HERE                               #
-#                                                                              #
-################################################################################
+require 'support/minitest_helper'
+require 'support/model_and_repo_classes'
+require 'support/model_loader'
 
 require 'crypt_ident'
 
 include CryptIdent
 
-describe 'Iterating the steps in the New Member workflow' do
+describe 'Iterating the steps in the New User workflow' do
   let(:email) { 'jrandom@example.com' }
-  let(:member_name) { 'J Random Member' }
+  let(:user_name) { 'J Random User' }
   let(:password) { 'A Suitably Entropic Passphrase Goes Here' }
   let(:profile) { 'Profile content would go here.' }
 
   before do
     CryptIdent.config.repository = UserRepository.new
+    CryptIdent.config.repository.clear
   end
 
   after do
@@ -169,8 +72,8 @@ describe 'Iterating the steps in the New Member workflow' do
   end
 
   it 'succeeds along the normal path' do
-    # Register a New Member
-    sign_up_params = { name: member_name, profile: profile, email: email }
+    # Register a New User
+    sign_up_params = { name: user_name, profile: profile, email: email }
     the_user = the_code = :unassigned
     CryptIdent.sign_up(sign_up_params, current_user: nil) do |result|
       result.success do |user:|
@@ -211,7 +114,7 @@ describe 'Iterating the steps in the New Member workflow' do
 
     # Sign Out
 
-    the_result = CryptIdent.sign_out(current_user: nil) do |result|
+    the_result = CryptIdent.sign_out(current_user: the_user) do |result|
       result.success { next }
       result.failure { expect(nil).wont_be :nil? } # Should *never* fire.
     end

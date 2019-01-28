@@ -21,6 +21,11 @@ describe 'CryptIdent#sign_in' do
     our_repo.clear
   end
 
+  after do
+    CryptIdent.config.repository.clear
+    CryptIdent.config.repository = nil
+  end
+
   describe 'when no Authenticated User is Signed In' do
     describe 'when the correct password is supplied' do
       it 'returns the same User Entity used for Authentication' do

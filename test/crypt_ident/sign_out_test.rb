@@ -27,6 +27,11 @@ describe 'CryptIdent#sign_out' do
       session[:start_time] = Time.now - 60 # 1 minute ago
     end
 
+    after do
+      CryptIdent.config.repository.clear
+      CryptIdent.config.repository = nil
+    end
+
     it 'and session-data items are reset' do
       sign_out(current_user: session[:current_user]) do |result|
         result.success do

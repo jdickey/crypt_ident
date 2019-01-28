@@ -45,7 +45,10 @@ describe 'CryptIdent#generate_reset_token' do
     CryptIdent.config.repository.clear
   end
 
-  after { CryptIdent.config.repository.clear }
+  after do
+    CryptIdent.config.repository.clear
+    CryptIdent.config.repository = nil
+  end
 
   describe 'when supplied a valid User Name and no Current User' do
     describe 'it passes a User Entity to the result.success block with' do

@@ -27,6 +27,7 @@ describe 'CryptIdent#reset_password' do
 
   after do
     CryptIdent.config.repository.clear
+    CryptIdent.config.repository = nil
   end
 
   describe 'when supplied a valid token, a new password, no Current User' do

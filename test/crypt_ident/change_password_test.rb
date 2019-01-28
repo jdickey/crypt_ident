@@ -89,8 +89,6 @@ describe 'CryptIdent#change_password' do
       end
     end
 
-    before { CryptIdent.config.repository ||= UserRepository.new }
-
     describe '"user" Entity was invalid in this context' do
       it 'causes the method to report an error code of :invalid_user' do
         ret = result_from_failure.call(UserRepository.guest_user, 'password',
