@@ -145,7 +145,7 @@ describe 'CryptIdent#reset_password' do
     end
   end # describe 'when no User in the Repository matches the Token'
 
-  describe 'when supplied a Current User (and thus an Authenticated Member)' do
+  describe 'when supplied a Current User (and thus an Authenticated User)' do
     let(:current_user) do
       password_hash = BCrypt::Password.create('Anything At All')
       token = SecureRandom.alphanumeric(24)
@@ -176,5 +176,5 @@ describe 'CryptIdent#reset_password' do
       end
       expect(CryptIdent.config.repository.all).must_equal original
     end
-  end # describe 'when supplied a Current User (...an Authenticated Member)'
+  end # describe 'when supplied a Current User (...an Authenticated User)'
 end

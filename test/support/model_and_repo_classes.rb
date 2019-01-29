@@ -18,9 +18,13 @@ class UserRepository < Hanami::Repository
     users.where(token: token).map_to(User).one
   end
 
-  def guest_user
+  def self.guest_user
     @guest_user ||= User.new name: User::GUEST_NAME, email: User::GUEST_EMAIL,
                              password_hash: SecureRandom.alphanumeric(48),
-                             profile: User::GUEST_PROFILE
+                             profile: User::GUEST_PROFILE, id: -1
+  end
+
+  def guest_user
+    self.class.guest_user
   end
 end

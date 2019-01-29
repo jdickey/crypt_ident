@@ -31,7 +31,7 @@
 #
 # ## Cleanup
 #
-# 7. The Member is Signed Out.
+# 7. The User is Signed Out.
 #
 # For a further discussion of the rationale for these tests, see the commentary
 # in `register_and_authenticate_test.rb` in this directory.
@@ -78,9 +78,8 @@ describe 'Iterating the steps in the Change Password workflow' do
 
     # Sign In
 
-    u2 = :unassigned
     CryptIdent.sign_in(the_user, password) do |result|
-      result.success { |user:| u2 = user }
+      result.success { |user:| the_user = user }
       result.failure { next } # shouldn't happen
     end
 

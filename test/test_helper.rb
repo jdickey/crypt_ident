@@ -10,7 +10,6 @@ end
 
 require 'support/minitest_helper'
 
-# require 'hanami/model'
 require 'hanami/model/error'
 require 'hanami/entity'
 require 'hanami/utils/kernel'
