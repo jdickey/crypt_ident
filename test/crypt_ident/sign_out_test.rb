@@ -5,26 +5,31 @@ require 'test_helper'
 include CryptIdent
 
 describe 'CryptIdent#sign_out' do
-  let(:guest_user) { CryptIdent.cryptid_config.guest_user }
+  let(:guest_user) { CryptIdent.config.guest_user }
   let(:far_future) { Time.now + 100 * 365 * 24 * 3600 } # 100 years should do...
   let(:session) { Hash[] }
 
   describe 'when an Authenticated User is Signed In' do
-    let(:repo) { UserRepository.new }
     let(:user) do
       user_name = 'Some User'
       password = 'Anything'
       password_hash = BCrypt::Password.create(password)
       user = User.new name: user_name, password_hash: password_hash
-      our_repo = repo || CryptIdent.cryptid_config.repository
+      our_repo = CryptIdent.config.repository || UserRepository.new
       our_repo.create(user)
     end
 
     before do
-      our_repo = repo || CryptIdent.cryptid_config.repository
+      our_repo = CryptIdent.config.repository || UserRepository.new
       our_repo.clear
+      CryptIdent.config.repository = our_repo
       session[:current_user] = user
       session[:start_time] = Time.now - 60 # 1 minute ago
+    end
+
+    after do
+      CryptIdent.config.repository.clear
+      CryptIdent.config.repository = nil
     end
 
     it 'and session-data items are reset' do
@@ -71,7 +76,7 @@ describe 'CryptIdent#sign_out' do
 
         result.failure { next }
       end
-      expect(session[:current_user]).must_equal guest_user
+      expect(session[:current_user]).must_be :guest?
       expect(session[:start_time]).must_equal far_future
     end
 

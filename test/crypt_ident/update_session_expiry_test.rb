@@ -17,7 +17,15 @@ describe 'CryptIdent#update_session_expiry' do
   let(:session_data) { { current_user: user } }
 
   before do
-    CryptIdent.configure_crypt_ident { |conf| conf.session_expiry = expiry }
+    @old_expiry = CryptIdent.config.session_expiry
+    @old_repo = CryptIdent.config.repository
+    CryptIdent.config.repository = UserRepository.new
+    CryptIdent.config.session_expiry = expiry
+  end
+
+  after do
+    CryptIdent.config.repository = @old_repo
+    CryptIdent.config.session_expiry = @old_expiry
   end
 
   describe 'when the passed-in :current_user is' do
