@@ -51,8 +51,8 @@ module CryptIdent
   #
   # @example As used in module included by Controller Action Class (see README)
   #   def validate_session
-  #     updates = update_session_expiry(session)
   #     if !session_expired?(session)
+  #       updates = update_session_expiry(session)
   #       session[:expires_at] = updates[:expires_at]
   #       return
   #     end
@@ -60,7 +60,8 @@ module CryptIdent
   #     # ... sign out and redirect appropriately ...
   #   end
   # @session_data
-  #   `:current_user` **must** be a User Entity or `nil` for the Guest User
+  #   `:current_user` **must** be a User Entity. `nil` is accepted to indicate
+  #                   the Guest User
   #   `:expires_at`   set to the session-expiration time on exit, which will be
   #                   arbitrarily far in the future for the Guest User.
   # @ubiq_lang

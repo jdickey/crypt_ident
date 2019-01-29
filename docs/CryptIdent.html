@@ -2105,8 +2105,8 @@ the README.</p>
 </div></p>
       
       <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_validate_session'>validate_session</span>
-  <span class='id identifier rubyid_updates'>updates</span> <span class='op'>=</span> <span class='id identifier rubyid_update_session_expiry'>update_session_expiry</span><span class='lparen'>(</span><span class='id identifier rubyid_session'>session</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_session_expired?'>session_expired?</span><span class='lparen'>(</span><span class='id identifier rubyid_session'>session</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_updates'>updates</span> <span class='op'>=</span> <span class='id identifier rubyid_update_session_expiry'>update_session_expiry</span><span class='lparen'>(</span><span class='id identifier rubyid_session'>session</span><span class='rparen'>)</span>
     <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:expires_at</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:expires_at</span><span class='rbracket'>]</span>
     <span class='kw'>return</span>
   <span class='kw'>end</span>
@@ -2206,7 +2206,8 @@ Registered User, or the Guest User otherwise.</p>
       
       
         
-        <div class='inline'><p><code>:current_user</code> <strong>must</strong> be a User Entity or <code>nil</code> for the Guest User
+        <div class='inline'><p><code>:current_user</code> <strong>must</strong> be a User Entity. <code>nil</code> is accepted to indicate
+                the Guest User
 <code>:expires_at</code>   set to the session-expiration time on exit, which will be
                 arbitrarily far in the future for the Guest User.</p>
 </div>
@@ -2242,12 +2243,12 @@ Registered User, or the Guest User otherwise.</p>
       <pre class="lines">
 
 
-73
 74
-75</pre>
+75
+76</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident/update_session_expiry.rb', line 73</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident/update_session_expiry.rb', line 74</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_update_session_expiry'>update_session_expiry</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='const'>UpdateSessionExpiry</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span><span class='rparen'>)</span>
@@ -2262,7 +2263,7 @@ Registered User, or the Guest User otherwise.</p>
 </div>
 
       <div id="footer">
-  Generated on Wed Jan 30 00:42:59 2019 by
+  Generated on Wed Jan 30 01:12:59 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.18 (ruby-2.6.0).
 </div>

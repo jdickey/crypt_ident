@@ -22,16 +22,18 @@
 #
 # ## Intentional Tests
 #
-# 5. The `session_data[:expires_at]` value is set to either *before* `Time.now`
-#    (to test detecting Expiration) or *after* `Time.now` (to report that the
-#    Session has not Expired).
-# 6. The `CryptIdent#session_expired?` method is called and its return value
-#    examined based on the expiration time as described in the previous step.
+# 5. The `session_data[:expires_at]` value is set to a value *before* `Time.now`
+#    and `CryptIdent#session_expired?` is called to demonstrate that that is
+#    detected.
+# 6. The `CryptIdent#update_session_expiry` method is called, and the value for
+#    `session_data[:expires_at]` updated from its return value.
+# 7. The `CryptIdent#session_expired?` method is called again, to demonstrate
+#    that the Session has not Expired.
 #
 # ## Cleanup
 #
-# 7. The User is Signed Out and its Entity deleted.
-# 8. The Repository is cleared and the Repository object deleted.
+# 8. The User is Signed Out and its Entity deleted.
+# 9. The Repository is cleared and the Repository object deleted.
 #
 # For a further discussion of the rationale for these tests, see the commentary
 # in `register_and_authenticate_test.rb` in this directory.
@@ -44,7 +46,7 @@ require 'crypt_ident'
 
 include CryptIdent
 
-describe 'Iterating the steps in the Change Password workflow' do
+describe 'Demonstrating the CryptIdent#update_session_expiry method' do
   let(:email) { 'jrandom@example.com' }
   let(:long_ago) { Time.now - (24 * 3600 * 365 * 100) }
   let(:new_password) { 'Another Suitably Entropic Multiple-Word Phrase' }
@@ -84,31 +86,24 @@ describe 'Iterating the steps in the Change Password workflow' do
     CryptIdent.config.repository = nil
   end
 
-  describe 'with no Authenticated User' do
-    let(:session_data) { { expires_at: long_ago } }
-
-    it 'does not Expire in a reasonable length of time' do
+  describe 'with an Authenticated User' do
+    it 'proceeds as expected' do
+      session_data = { current_user: @the_user, expires_at: long_ago }
+      expect(CryptIdent.session_expired?(session_data)).must_equal true
+      updates = CryptIdent.update_session_expiry(session_data)
+      session_data[:expires_at] = updates[:expires_at]
       expect(CryptIdent.session_expired?(session_data)).must_equal false
     end
-  end # describe 'with no Authenticated User'
+  end # describe 'with an Authenticated User'
 
-  describe 'with an Authenticated User and session data that should' do
-    let(:session_data) { { current_user: @the_user } }
-
-    describe 'not trigger Expiration' do
-      it 'reports that the Session has not Expired' do
-        # Time.now is five seconds before it would Expire the session
-        session_data[:expires_at] = Time.now + 5
-        expect(CryptIdent.session_expired?(session_data)).must_equal false
-      end
-    end # describe 'not trigger Expiration'
-
-    describe 'trigger Expiration' do
-      it 'reports an Expired Session' do
-        # Time.now is five seconds *after* it would Expire the session
-        session_data[:expires_at] = Time.now - 5
-        expect(CryptIdent.session_expired?(session_data)).must_equal true
-      end
+  describe 'with the Guest User' do
+    it 'proceeds as expected' do
+      session_data = {}
+      expect(CryptIdent.session_expired?(session_data)).must_equal false
+      updates = CryptIdent.update_session_expiry(session_data)
+      expect(updates[:expires_at]).must_be :>, Time.now
+      session_data[:expires_at] = updates[:expires_at]
+      expect(CryptIdent.session_expired?(session_data)).must_equal false
     end
-  end # describe 'with an Authenticated User and session data that should'
+  end
 end
