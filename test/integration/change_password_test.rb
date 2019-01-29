@@ -22,7 +22,7 @@
 #
 # 4. The `#change_password` method is called for the newly-Authenticated User.
 #    Remember that the difference between the `#change_password` method and the
-#    `#password_reset`method is that the former **must** be performed by an
+#    `#reset_password`method is that the former **must** be performed by an
 #    Authenticated User; the latter **must not** be. The result is inspected to
 #    verify success.
 # 5. Sign Out the User.
@@ -53,7 +53,6 @@ describe 'Iterating the steps in the Change Password workflow' do
 
   before do
     CryptIdent.config.repository = UserRepository.new
-    CryptIdent.config.repository.clear
   end
 
   after do

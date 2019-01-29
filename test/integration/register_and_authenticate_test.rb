@@ -16,7 +16,7 @@
 #    successfully by inspecting the Result monad returned from `#sign_up`.
 # 2. Use the Token from the first step to perform a Password Reset and set a
 #    (new) Password for the User. We inspect the Result returned from
-#    `#password_reset` to verify success; once verified, we continue to the next
+#    `#reset_password` to verify success; once verified, we continue to the next
 #    step.
 # 3. Using the newly-specified Password, Sign In the User. The test inspects
 #    the return value from `#sign_in` to verify success. (Since management of
@@ -64,7 +64,6 @@ describe 'Iterating the steps in the New User workflow' do
 
   before do
     CryptIdent.config.repository = UserRepository.new
-    CryptIdent.config.repository.clear
   end
 
   after do

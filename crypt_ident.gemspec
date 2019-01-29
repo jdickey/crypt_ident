@@ -56,7 +56,7 @@ Gem::Specification.new do |spec|
   # spec.add_development_dependency 'minitest-fail-fast' #, '0.1.0'
   spec.add_development_dependency 'minitest-hooks', '1.5.0'
   spec.add_development_dependency 'minitest-matchers', '1.4.1'
-  spec.add_development_dependency 'minitest-reporters', '1.3.5'
+  spec.add_development_dependency 'minitest-reporters', '1.3.6'
   spec.add_development_dependency 'minitest-tagz', '1.6.0'
   # XXX: Great idea; useful; but we've found a way to work around what we were
   # looking to use this Gem to help with.
@@ -64,9 +64,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pry-byebug', '3.6.0'
   spec.add_development_dependency 'pry-doc', '1.0.0'
   spec.add_development_dependency 'reek', '5.3.0'
-  spec.add_development_dependency 'rubocop', '0.62.0'
+  spec.add_development_dependency 'rubocop', '0.63.1'
   spec.add_development_dependency 'simplecov', '0.16.1'
-  spec.add_development_dependency 'yard', '0.9.16'
+  spec.add_development_dependency 'timecop', '0.9.1'
+  spec.add_development_dependency 'yard', '0.9.18'
   spec.add_development_dependency 'yard-classmethods', '1.0.0'
   spec.add_development_dependency 'github-markup', '3.0.2'
   spec.add_development_dependency 'redcarpet', '3.4.0'

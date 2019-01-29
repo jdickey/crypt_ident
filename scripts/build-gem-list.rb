@@ -55,13 +55,12 @@ list = [
   'guard-rake:1.0.0',
   'guard-rubocop:1.3.0',
   'guard-shell:0.7.1',
-  # 'hanami-controller:1.3.0',
   'hanami-model:1.3.0',
   'inch:0.8.0',
   # 'minitest-fail-fast:0.1.0',
   'minitest-hooks:1.5.0',
   'minitest-matchers:1.4.1',
-  'minitest-reporters:1.3.5',
+  'minitest-reporters:1.3.6',
   'minitest-tagz:1.6.0',
   'minitest:5.11.3',
   # XXX: A useful Gem, but not needed for what we were considering using it for
@@ -72,10 +71,11 @@ list = [
   'rake:12.3.2',
   'redcarpet:3.4.0',
   'reek:5.3.0',
-  'rubocop:0.62.0',
+  'rubocop:0.63.1',
   'simplecov:0.16.1',
+  'timecop:0.9.1',
   'yard-classmethods:1.0.0',
-  'yard:0.9.16',
+  'yard:0.9.18',
   'sqlite3'
 ]
 
