@@ -70,7 +70,7 @@ module CryptIdent
   #   def call(params)
   #     user_in = session[:current_user]
   #     error_code = :unassigned
-  #     config = CryptIdent.cryptid_config
+  #     config = CryptIdent.config
   #     change_password(user_in, params[:password],
   #                     params[:new_password]) do |result|
   #       result.success do |user:|

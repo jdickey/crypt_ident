@@ -427,7 +427,7 @@ contingency properly.</p>
       <pre class="example code"><code><span class='kw'>def</span> <span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_user_in'>user_in</span> <span class='op'>=</span> <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_error_code'>error_code</span> <span class='op'>=</span> <span class='symbol'>:unassigned</span>
-  <span class='id identifier rubyid_config'>config</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_cryptid_config'>cryptid_config</span>
+  <span class='id identifier rubyid_config'>config</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span>
   <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_user_in'>user_in</span><span class='comma'>,</span> <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:password</span><span class='rbracket'>]</span><span class='comma'>,</span>
                   <span class='id identifier rubyid_params'>params</span><span class='lbracket'>[</span><span class='symbol'>:new_password</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
     <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_success'>success</span> <span class='kw'>do</span> <span class='op'>|</span><span class='label'>user:</span><span class='op'>|</span>
@@ -1416,7 +1416,7 @@ Repository.</li>
       
       <pre class="example code"><code>def call(params)
   user = UserRepository.new.find_by_email(params[:email])
-  guest_user = CryptIdent::cryptid_config.guest_user
+  guest_user = CryptIdent.config.guest_user
   return update_session_data(guest_user, 0) unless user
 
   current_user = session[:current_user]
@@ -1424,7 +1424,7 @@ Repository.</li>
   sign_in(user, params[:password], current_user: current_user) do |result|
     result.success do |user:|
       @user = user
-      update_session_data(user, config, Time.now)
+      update_session_data(user, Time.now)
       flash[config.success_key] = &quot;User #{user.name} signed in.&quot;
       redirect_to routes.root_path
     end
@@ -1441,9 +1441,9 @@ def error_message_for(code)
   # ...
 end
 
-def update_session_data(user, config, time)
+def update_session_data(user, time)
   session[:current_user] = user
-  expiry = Time.now + config.session_expiry
+  expiry = Time.now + CryptIdent.config.session_expiry
   session[:expires_at] == Hanami::Utils::Kernel.Time(expiry)
 end</code></pre>
     
@@ -2263,7 +2263,7 @@ Registered User, or the Guest User otherwise.</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Jan 31 12:45:21 2019 by
+  Generated on Thu Jan 31 23:50:48 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.18 (ruby-2.6.0).
 </div>

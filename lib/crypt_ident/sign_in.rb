@@ -80,7 +80,7 @@ module CryptIdent
   # @example As in a Controller Action Class (which you'd refactor somewhat):
   #   def call(params)
   #     user = UserRepository.new.find_by_email(params[:email])
-  #     guest_user = CryptIdent::cryptid_config.guest_user
+  #     guest_user = CryptIdent.config.guest_user
   #     return update_session_data(guest_user, 0) unless user
   #
   #     current_user = session[:current_user]
@@ -88,7 +88,7 @@ module CryptIdent
   #     sign_in(user, params[:password], current_user: current_user) do |result|
   #       result.success do |user:|
   #         @user = user
-  #         update_session_data(user, config, Time.now)
+  #         update_session_data(user, Time.now)
   #         flash[config.success_key] = "User #{user.name} signed in."
   #         redirect_to routes.root_path
   #       end
@@ -105,9 +105,9 @@ module CryptIdent
   #     # ...
   #   end
   #
-  #   def update_session_data(user, config, time)
+  #   def update_session_data(user, time)
   #     session[:current_user] = user
-  #     expiry = Time.now + config.session_expiry
+  #     expiry = Time.now + CryptIdent.config.session_expiry
   #     session[:expires_at] == Hanami::Utils::Kernel.Time(expiry)
   #   end
   # @session_data

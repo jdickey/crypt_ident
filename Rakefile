@@ -18,19 +18,17 @@ class FlogTask < Rake::TaskLib
   attr_accessor :methods_only
 end
 
-desc 'Run unit tests using Entities and a dummied Repository'
-task :test do
-  Rake::TestTask.new do |t|
-    # t.pattern = 'test/**/*_test.rb'
+namespace :test do
+  Rake::TestTask.new(:unit) do |t|
+    t.description = 'Run unit tests using Entities and a dummied Repository'
     t.pattern = ['test/crypt_ident_test.rb', 'test/crypt_ident/**/*_test.rb']
     t.libs    << 'test'
     t.warning = false
   end
-end
 
-namespace :test do
-  desc 'Run integration tests using an actual Hanami Repository and Entity'
   Rake::TestTask.new(:integration) do |t|
+    t.description = 'Run integration tests using an actual Hanami Repository ' \
+      'and Entity'
     t.pattern = 'test/integration/**/*_test.rb'
     t.libs << 'test'
     t.warning = false
@@ -87,6 +85,9 @@ namespace :minitest do
     puts 'The mean time reporter statistics have been reset.'
   end
 end
+
+desc 'Run both integration and unit tests'
+task test: ['test:integration', 'test:unit']
 
 task default: [:test, 'test:integration', :flog, :flay, :reek, :rubocop, :inch]
 task spec: :test
