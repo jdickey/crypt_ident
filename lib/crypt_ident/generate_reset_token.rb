@@ -174,8 +174,8 @@ module CryptIdent
     end
 
     def find_user_by_name
-      found = CryptIdent.config.repository.find_by_name(user_name)
-      found.first # will be `nil` if no match found
+      # will be `nil` if no match found
+      CryptIdent.config.repository.find_by_name(user_name)
     end
 
     def user_by_name

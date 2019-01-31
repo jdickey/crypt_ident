@@ -14,6 +14,10 @@ class User < Hanami::Entity
 end
 
 class UserRepository < Hanami::Repository
+  def find_by_name(name)
+    users.where(name: name).map_to(User).one
+  end
+
   def find_by_token(token)
     users.where(token: token).map_to(User).one
   end

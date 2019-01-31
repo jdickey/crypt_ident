@@ -47,7 +47,6 @@ include CryptIdent
 describe 'Iterating the steps in the Change Password workflow' do
   let(:email) { 'jrandom@example.com' }
   let(:long_ago) { Time.now - (24 * 3600 * 365 * 100) }
-  let(:new_password) { 'Another Suitably Entropic Multiple-Word Phrase' }
   let(:password) { 'A Suitably Entropic Passphrase Goes Here' }
   let(:profile) { 'Profile content would go here.' }
   let(:user_name) { 'J Random User' }

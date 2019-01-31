@@ -38,11 +38,11 @@ class UserRepository < Repository
   end
 
   def find_by_name(name)
-    select(:name, name)
+    select(:name, name).first # Issue #26
   end
 
   def find_by_token(token)
-    select(:token, token)
+    select(:token, token).first# Issue #26
   end
 
   # This is here, not because `#create` needs to be implemented in our "real"
@@ -50,7 +50,7 @@ class UserRepository < Repository
   # `Repository` class has no underlying data-persistence layer (and our usual
   # "real" persistence layer is going to be PostreSQL, not Sqlite).
   def create(data)
-    unless find_by_name(data.to_h[:name]).empty?
+    unless find_by_name(data.to_h[:name]).nil?
       message = 'PG::UniqueViolation: ERROR:  ' \
         'duplicate key value violates unique constraint "users_name_key"' \
         "\nDETAIL: Key(name)=(#{data.to_h[:name]}) already exists."
