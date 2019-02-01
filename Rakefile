@@ -18,10 +18,21 @@ class FlogTask < Rake::TaskLib
   attr_accessor :methods_only
 end
 
-Rake::TestTask.new do |t|
-  t.pattern = 'test/**/*_test.rb'
-  t.libs    << 'test'
-  t.warning = false
+namespace :test do
+  Rake::TestTask.new(:unit) do |t|
+    t.description = 'Run unit tests using Entities and a dummied Repository'
+    t.pattern = ['test/crypt_ident_test.rb', 'test/crypt_ident/**/*_test.rb']
+    t.libs    << 'test'
+    t.warning = false
+  end
+
+  Rake::TestTask.new(:integration) do |t|
+    t.description = 'Run integration tests using an actual Hanami Repository ' \
+      'and Entity'
+    t.pattern = 'test/integration/**/*_test.rb'
+    t.libs << 'test'
+    t.warning = false
+  end
 end
 
 FlayTask.new do |t|
@@ -75,5 +86,8 @@ namespace :minitest do
   end
 end
 
-task default: [:test, :flog, :flay, :reek, :rubocop, :inch]
+desc 'Run both integration and unit tests'
+task test: ['test:integration', 'test:unit']
+
+task default: [:test, 'test:integration', :flog, :flay, :reek, :rubocop, :inch]
 task spec: :test
