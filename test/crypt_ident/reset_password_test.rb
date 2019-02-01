@@ -9,9 +9,9 @@ include CryptIdent
 describe 'CryptIdent#reset_password' do
   let(:created_user) do
     password_hash = BCrypt::Password.create(password)
-    user = User.new name: user_name, password_hash: password_hash,
-                    token: token, password_reset_expires_at: expires_at
-    CryptIdent.config.repository.create(user)
+    attribs = { name: user_name, password_hash: password_hash, token: token,
+                password_reset_expires_at: expires_at }
+    CryptIdent.config.repository.create(attribs)
   end
   let(:expires_at) { Time.now + 3600 }
   let(:new_password) { 'New Sufficiently Entropic Passphrase' }
@@ -149,9 +149,9 @@ describe 'CryptIdent#reset_password' do
     let(:current_user) do
       password_hash = BCrypt::Password.create('Anything At All')
       token = SecureRandom.alphanumeric(24)
-      user = User.new name: 'Someone Else', password_hash: password_hash,
-                      token: token, password_reset_expires_at: expires_at
-      CryptIdent.config.repository.create(user)
+      attribs = { name: 'Someone Else', password_hash: password_hash,
+                  token: token, password_reset_expires_at: expires_at }
+      CryptIdent.config.repository.create(attribs)
     end
 
     describe 'it passes values to the result.failure block with' do

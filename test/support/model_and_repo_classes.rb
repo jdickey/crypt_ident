@@ -22,8 +22,12 @@ class UserRepository < Hanami::Repository
     users.where(token: token).map_to(User).one
   end
 
+  # NOTE: TIL: `entity` is a `class_attribute` added to any class that inherits
+  #       from  `Hanami::Repository` which, naturally enough, has the Class of
+  #       the Entity associated with that Repository. It turns hard-coded Entity
+  #       class names in client-repository code from a necessity into a smell.
   def self.guest_user
-    @guest_user ||= User.new name: User::GUEST_NAME, email: User::GUEST_EMAIL,
+    @guest_user ||= entity.new name: User::GUEST_NAME, email: User::GUEST_EMAIL,
                              password_hash: SecureRandom.alphanumeric(48),
                              profile: User::GUEST_PROFILE, id: -1
   end

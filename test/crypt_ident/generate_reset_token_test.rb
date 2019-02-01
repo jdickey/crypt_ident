@@ -7,9 +7,8 @@ include CryptIdent
 describe 'CryptIdent#generate_reset_token' do
   let(:created_user) do
     password_hash = BCrypt::Password.create(password)
-    user = User.new name: user_name, password_hash: password_hash
-    our_repo = CryptIdent.config.repository
-    our_repo.create(user)
+    CryptIdent.config.repository.create(name: user_name,
+                                        password_hash: password_hash)
   end
   let(:other_params) { { current_user: nil } }
   let(:password) { 'A Password' }

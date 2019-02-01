@@ -84,7 +84,7 @@ module CryptIdent
   #     return update_session_data(guest_user, 0) unless user
   #
   #     current_user = session[:current_user]
-  #     config = CryptId.cryptid_config
+  #     config = CryptIdent.config
   #     sign_in(user, params[:password], current_user: current_user) do |result|
   #       result.success do |user:|
   #         @user = user

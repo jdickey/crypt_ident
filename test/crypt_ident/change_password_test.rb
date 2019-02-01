@@ -10,8 +10,8 @@ describe 'CryptIdent#change_password' do
   let(:original_password) { 'Old Clear-Text Password' }
   let(:target_user) do
     password_hash = BCrypt::Password.create(original_password)
-    user = User.new name: user_name, password_hash: password_hash
-    CryptIdent.config.repository.create(user)
+    attribs = { name: user_name, password_hash: password_hash }
+    CryptIdent.config.repository.create(attribs)
   end
   let(:user_name) { 'J Random User' }
 
@@ -27,7 +27,6 @@ describe 'CryptIdent#change_password' do
   end
 
   describe 'Successfully change password and' do
-    let(:repo) { UserRepository.new }
     let(:result_from_success) do
       lambda do
         change_password(*call_params) do |result|
