@@ -2,8 +2,6 @@
 
 require 'test_helper'
 
-include CryptIdent
-
 describe 'CryptIdent#sign_out' do
   let(:guest_user) { CryptIdent.config.guest_user }
   let(:far_future) { Time.now + 100 * 365 * 24 * 3600 } # 100 years should do...
@@ -14,22 +12,18 @@ describe 'CryptIdent#sign_out' do
       user_name = 'Some User'
       password = 'Anything'
       password_hash = BCrypt::Password.create(password)
-      user = User.new name: user_name, password_hash: password_hash
-      our_repo = CryptIdent.config.repository || UserRepository.new
-      our_repo.create(user)
+      attribs = { name: user_name, password_hash: password_hash }
+      CryptIdent.config.repository.create(attribs)
     end
 
     before do
-      our_repo = CryptIdent.config.repository || UserRepository.new
-      our_repo.clear
-      CryptIdent.config.repository = our_repo
+      CryptIdent.config.repository.clear
       session[:current_user] = user
       session[:start_time] = Time.now - 60 # 1 minute ago
     end
 
     after do
       CryptIdent.config.repository.clear
-      CryptIdent.config.repository = nil
     end
 
     it 'and session-data items are reset' do

@@ -105,12 +105,12 @@
 
 <h2>Database/Repository Setup</h2>
 
-<p><code>CryptIdent</code> assumes that the repository used to read and update the underlying database table is named <code>UserRepository</code>; that can be changed using the <a href="#configuration"><em>Configuration</em></a> settings.</p>
+<p>In this README and in the API Documentation, the Repository used to read and update the underlying database table is named <code>UserRepository</code> and, per Hanami conventions, the Entity is named <code>User</code>. <em>The code itself enforces no such assumption;</em> so long as you assign your Repository class to <code>CryptIdent.config.repository</code> (see <a href="#configuration"><em>Configuration</em></a> below), and it follows Hanami conventions for Entity names, this <em>should</em> Just Work. (Please <a href="https://github.com/jdickey/crypt_ident/issues/new">open an issue</a> if you prove otherwise.)</p>
 
-<p>We further assume that the Repository object</p>
+<p>We assume that the Repository object</p>
 
 <ol>
-<li>Has a <em>class method</em> named <code>.entity_name</code> that returns the name of the Entity used by that Repository <em>as a string</em> (e.g., <code>&quot;User&quot;</code> for a <code>UserRepository</code>). (This is to match <code>Hanami::Repository</code>.)</li>
+<li>Has a <em>class method</em> named <code>.entity</code> that returns the <em>class</em> of the Entity used by that Repository (e.g., <code>User</code> for a <code>UserRepository</code>). (This is to match <code>Hanami::Repository</code>.)</li>
 <li>Has a class method named <code>.guest_user</code> that returns an Entity with a descriptive name (e.g., &quot;Guest User&quot;) and is otherwise invalid for persistence (e.g., it has an invalid <code>id</code> attribute); and</li>
 <li>Implements the &quot;usual&quot; common methods (<code>#create</code>, <code>#update</code>, <code>#delete</code>, etc) conforming to an interface compatible with <a href="https://github.com/hanami/model/blob/master/lib/hanami/repository.rb"><code>Hanami::Repository</code></a>. This interface is suitably generic and sufficiently widely implemented, even in ORMs such as ActiveRecord that make no claim to implementing the <a href="https://8thlight.com/blog/mike-ebert/2013/03/23/the-repository-pattern.html">Repository Pattern</a>.</li>
 </ol>
@@ -151,11 +151,13 @@
 </tr>
 </tbody></table>
 
+<p>For examples of this, examine the <code>test/support/fake_repository.rb</code> and <code>test/support/unit_test_model_and_repo_classes.rb</code> files, and the unit (<code>test/crypt_ident/*</code>) and integration (<code>test/integration/*</code>) tests.</p>
+
 <p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
 <h2>User Entity</h2>
 
-<p><code>CryptIdent</code> currently <strong>requires</strong> the Entity persisted to and retrieved from the Repository to have the class name <code>User</code>. In addition to attributes matching the fields specified in the <em>Database/Repository Setup</em> table above (which <code>Hanami::Entity</code> and most analogous ORM Entities expose by default), the Entity <strong>must</strong> respond to the <code>#guest?</code> message, returning <code>true</code> if it is the Guest User (as returned by <code>UserRepository#guest_user</code>), or <code>false</code> otherwise. It <em>may</em> have other methods as appropriate to the client code.</p>
+<p>As mentioned in the <em>Database/Repository Setup</em> section above, <code>CryptIdent</code> makes no assumption about the class constant/name of the Entity persisted to and retrieved from the Repository, other than it follow Hanami conventions. (In this and related documents, we refer to that Entity class as <code>User</code>.) In addition to attributes matching the fields specified in the previous section, (which <code>Hanami::Entity</code> and most analogous ORM Entities expose by default), the Entity <strong>must</strong> respond to the <code>#guest?</code> message, returning <code>true</code> if it is the Guest User (as returned by <code>UserRepository#guest_user</code>), or <code>false</code> otherwise. It <em>may</em> have other methods as appropriate to the client code.</p>
 
 <p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
@@ -171,17 +173,17 @@
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><code>error_key</code></td>
+<td style="text-align: left"><code>:error_key</code></td>
 <td><code>:error</code></td>
 <td>Modify this setting if you want to use a different key for flash messages reporting unsuccessful actions.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>guest_user</code></td>
+<td style="text-align: left"><code>:guest_user</code></td>
 <td>Return value from <code>repository</code> <code>.guest_user</code> method</td>
 <td>This value is used for the session variable <code>session[:current_user]</code> when no User has <a href="#signing-in">signed in</a>, or after a previously Authenticated User has <a href="#signing-out">signed out</a>. If your application <em>does not</em> make use of the <a href="https://en.wikipedia.org/wiki/Null_object_pattern">Null Object pattern</a>, you would assign <code>nil</code> to this configuration setting. (See <a href="https://robots.thoughtbot.com/rails-refactoring-example-introduce-null-object">this Thoughtbot post</a> for a good discussion of Null Objects in Ruby.)</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>hashing_cost</code></td>
+<td style="text-align: left"><code>:hashing_cost</code></td>
 <td>8</td>
 <td>This is the <a href="https://github.com/codahale/bcrypt-ruby#cost-factors">hashing cost</a> used to <em>encrypt a password</em> and is applied at the hashed-password-creation step; it <strong>does not</strong> modify the default cost for the encryption engine. <strong>Note that</strong> any change to this value <strong>will</strong> invalidate and make useless all existing Encrypted Password stored values.</td>
 </tr>
@@ -197,7 +199,7 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>:session_expiry</code></td>
-<td>900 (15 minutes)</td>
+<td>900 (15 minutes, in seconds)</td>
 <td>Number of seconds <em>from either</em> the time that a User is successfully Authenticated <em>or</em> the <code>update_session_expiry</code> method is called <em>before</em> a call to <code>session_expired?</code> will return <code>true</code>.</td>
 </tr>
 <tr>
@@ -236,7 +238,7 @@
 
 <p>The methods employed directly by these use cases use <a href="https://dry-rb.org/gems/dry-matcher/result-matcher/">Result matchers</a> and <a href="https://dry-rb.org/gems/dry-monads/1.0/result/"><code>Result</code> monads</a> to provide a <em>consistent, fluent, explicit, and understandable</em> mechanism for detecting and handling success and failure.</p>
 
-<p>Each method <em>requires</em> a block, to which a <code>result</code> indicating success or failure is yielded. That block <strong>must</strong> in turn define blocks for <strong>both</strong> <code>result.success</code> and <code>result.failure</code> to handle success and failure results, respectively. Each of the two blocks takes parameters which the method uses to communicate either the successful result (and possible supporting information), or the reason for failure, along with supporting information. Not all failure cases use all parameters to the <code>result.failure</code> block. Any that are not relevant may be safely ignored (and <strong>should</strong> by convention have a value of <code>:unassigned</code> yielded to the <code>result.failure</code> block).</p>
+<p>Each method (with two exceptions, noted in their documentation) <em>requires</em> a block, to which a <code>result</code> indicating success or failure is yielded. That block <strong>must</strong> in turn define blocks for <strong>both</strong> <code>result.success</code> and <code>result.failure</code> to handle success and failure results, respectively. Each of the two blocks takes parameters which the method uses to communicate either the successful result (and possible supporting information), or the reason for failure, along with supporting information. Not all failure cases use all parameters to the <code>result.failure</code> block. Any that are not relevant may be safely ignored (and <strong>should</strong> by convention have a value of <code>:unassigned</code> yielded to the <code>result.failure</code> block).</p>
 
 <p>The active configuration <strong>is not</strong> passed as a parameter to either the <code>success</code> or <code>failure</code> blocks; it is always accessible as <code>CryptIdent.config</code>, and is based on the <a href="https://dry-rb.org/gems/dry-configurable/"><code>dry-configurable</code></a> Gem.</p>
 
@@ -248,9 +250,9 @@
 
 <p>If you&#39;ve set up your <code>controller.prepare</code> block as <strong>recommended</strong> in the preceding section, <code>CryptIdent</code> is loaded and configured but <em>does not</em> implement session-handling &quot;out of the box&quot;; as with <a href="https://github.com/sebastjan-hribar/tachiban#session-handling">other libraries</a>, it must be implemented <em>by you</em> as described in the <a href="#session-expiration"><em>Session Expiration</em></a> description below.</p>
 
-<h3>Code Samples in API Reference are Authoritative</h3>
+<h3>Code Samples in Integration Tests are Authoritative</h3>
 
-<p>Only minimal code snippets are included here to help explain use cases.  However, the <a href="docs/CryptIdent.html">API Reference</a> should be considered authoritative; any discrepancies between the API and/or code snippets there and here should be regarded as a bug (and a <a href="https://github.com/jdickey/crypt_ident/issues/">report</a> filed if not already filed.</p>
+<p>Integration tests, in <code>test/integration/*_test.rb</code>, are the authoritative documentation-through-working-code of each method and workflow supported by this Gem. Only minimal code snippets are included here to help explain use cases.  However, the <a href="docs/CryptIdent.html">API Reference</a> provides a more conventionally-documented reference to each <code>CryptIdent</code> method; any discrepancies between the integration tests, documented API, and/or code snippets there and here should be regarded as a bug (and a <a href="https://github.com/jdickey/crypt_ident/issues/">report</a> filed if not already filed.</p>
 
 <h3>Terminology and the project Ubiquitous Language</h3>
 
@@ -393,7 +395,7 @@
 <p>Note that, as of Release 0.2.0, the method simply passes control to the (required) block, in whose <code>result.success</code> call block you can delete or reset <code>session[:current_user]</code> and <code>session[:start_time]</code>. We <strong>recommend</strong> reset values of:</p>
 
 <ul>
-<li><code>CryptIdent.configure_crypt_ident.guest_user</code> for <code>session[:current_user]</code> and</li>
+<li><code>CryptIdent.config.guest_user</code> for <code>session[:current_user]</code> and</li>
 <li><code>Hanami::Utils::Kernel.Time(0)</code> for <code>session[:start_time]</code>, which will set the timestamp to 1 January 1970 at midnight  &mdash; a value which should <em>far</em> exceed your session-expiry limit if you decide not to simply delete the previous values by assigning <code>nil</code> to them.</li>
 </ul>
 
@@ -666,9 +668,9 @@
 
 <p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
-<h1>License</h1>
+<h1>Copyright and License</h1>
 
-<p>The gem is available as open source under the terms of the <a href="https://opensource.org/licenses/MIT">MIT License</a>.</p>
+<p>This Gem, its source code, and all supporting documents and artefacts are Copyright &copy;2019 by Jeff Dickey. They are available as open source under the terms of the <a href="https://opensource.org/licenses/MIT">MIT License</a>.</p>
 
 <p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
@@ -680,7 +682,7 @@
 </div></div>
 
       <div id="footer">
-  Generated on Fri Feb  1 14:23:37 2019 by
+  Generated on Sat Feb  2 02:36:19 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.18 (ruby-2.6.0).
 </div>

@@ -17,3 +17,6 @@ require 'hanami/utils/kernel'
 require 'support/unit_test_model_and_repo_classes'
 
 require 'crypt_ident'
+
+include CryptIdent
+CryptIdent.config.repository = UserRepository.new

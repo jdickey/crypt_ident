@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-include CryptIdent
+# include CryptIdent
 
 describe 'CryptIdent.config has a reader for' do
   it '.error_key that defaults to :error' do
@@ -13,8 +13,9 @@ describe 'CryptIdent.config has a reader for' do
     expect(CryptIdent.config.hashing_cost).must_equal 8
   end
 
-  it '.repository that defaults to nil (DANGER, WILL ROBINSON!)' do
-    expect(CryptIdent.config.repository).must_be :nil?
+  it '.repository' do
+    expect(CryptIdent.config).must_respond_to(:repository)
+    expect(CryptIdent.config).must_respond_to(:repository=)
   end
 
   it '.reset_expiry that defaults to 24 hours' do
@@ -35,9 +36,10 @@ describe 'CryptIdent.config has a reader for' do
 
   describe '.guest_user that returns' do
     it 'a Guest User IF the repository has been set' do
-      CryptIdent.config.repository = UserRepository.new
-      expect(CryptIdent.config.guest_user.guest?).must_equal true
-      CryptIdent.config.repository = nil
+      old_repo = CryptIdent.config.repository
+      CryptIdent.config.repository = CryptIdent.config.repository.class.new
+      expect(CryptIdent.config.guest_user).must_be :guest?
+      CryptIdent.config.repository = old_repo
     end
   end # describe '.guest_user that returns'
 end # describe 'CryptIdent.config has a reader for' do

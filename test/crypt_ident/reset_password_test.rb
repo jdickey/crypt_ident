@@ -4,8 +4,6 @@ require 'test_helper'
 
 require 'securerandom'
 
-include CryptIdent
-
 describe 'CryptIdent#reset_password' do
   let(:created_user) do
     password_hash = BCrypt::Password.create(password)
@@ -20,14 +18,12 @@ describe 'CryptIdent#reset_password' do
   let(:user_name) { 'J Random Someone' }
 
   before do
-    CryptIdent.config.repository = UserRepository.new
     CryptIdent.config.repository.clear
     _ = created_user
   end
 
   after do
     CryptIdent.config.repository.clear
-    CryptIdent.config.repository = nil
   end
 
   describe 'when supplied a valid token, a new password, no Current User' do

@@ -2,16 +2,17 @@
 
 require 'test_helper'
 
-include CryptIdent
-
 describe 'CryptIdent#session_expired?' do
-  let(:guest_user) { UserRepository.guest_user }
+  let(:guest_user) { CryptIdent.config.guest_user }
   let(:pwhash) { BCrypt::Password.create('password') }
   let(:session_data) { { current_user: user } }
 
   describe 'when the passed-in :current_user is' do
     describe 'a Registered User' do
-      let(:user) { User.new(name: 'User 1', password_hash: pwhash, id: 27) }
+      let(:user) do
+        entitycls = CryptIdent.config.repository.entity
+        entitycls.new(name: 'User 1', password_hash: pwhash, id: 27)
+      end
 
       describe 'and when the passed-in :expires_at is' do
         it 'a future time' do

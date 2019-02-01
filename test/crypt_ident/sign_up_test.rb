@@ -2,8 +2,6 @@
 
 require 'test_helper'
 
-include CryptIdent
-
 describe 'CryptIdent#sign_up' do
   let(:existing) do
     attribs = valid_input_params
@@ -15,13 +13,8 @@ describe 'CryptIdent#sign_up' do
   let(:user_name) { 'J Random User' }
   let(:valid_input_params) { { name: user_name } }
 
-  before do
-    CryptIdent.config.repository = UserRepository.new
-  end
-
   after do
     CryptIdent.config.repository.clear
-    CryptIdent.config.repository = nil
   end
 
   describe 'with no Authenticated Current User and a valid User Name' do

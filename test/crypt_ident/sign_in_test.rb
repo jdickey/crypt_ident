@@ -2,28 +2,22 @@
 
 require 'test_helper'
 
-include CryptIdent
-
 describe 'CryptIdent#sign_in' do
   let(:guest_user) { CryptIdent.config.guest_user }
   let(:password) { 'Suitably Entropic Password' }
   let(:user) do
     password_hash = BCrypt::Password.create(password)
-    user = User.new name: user_name, password_hash: password_hash
-    our_repo = CryptIdent.config.repository || UserRepository.new
-    our_repo.create(user)
+    attribs = { name: user_name, password_hash: password_hash }
+    CryptIdent.config.repository.create(attribs)
   end
   let(:user_name) { 'J Random User' }
 
   before do
-    our_repo = UserRepository.new
-    CryptIdent.config.repository = our_repo
-    our_repo.clear
+    CryptIdent.config.repository.clear
   end
 
   after do
     CryptIdent.config.repository.clear
-    CryptIdent.config.repository = nil
   end
 
   describe 'when no Authenticated User is Signed In' do

@@ -2,8 +2,6 @@
 
 require 'test_helper'
 
-include CryptIdent
-
 describe 'CryptIdent#change_password' do
   let(:call_params) { [target_user, original_password, new_password] }
   let(:new_password) { 'New Clear-Text Password' }
@@ -16,14 +14,12 @@ describe 'CryptIdent#change_password' do
   let(:user_name) { 'J Random User' }
 
   before do
-    CryptIdent.config.repository ||= UserRepository.new
     CryptIdent.config.repository.clear
     _ = target_user
   end
 
   after do
     CryptIdent.config.repository.clear
-    CryptIdent.config.repository = nil
   end
 
   describe 'Successfully change password and' do
@@ -90,7 +86,7 @@ describe 'CryptIdent#change_password' do
 
     describe '"user" Entity was invalid in this context' do
       it 'causes the method to report an error code of :invalid_user' do
-        ret = result_from_failure.call(UserRepository.guest_user, 'password',
+        ret = result_from_failure.call(CryptIdent.config.guest_user, 'password',
                                        'anything')
         expect(ret).must_equal :invalid_user
       end
