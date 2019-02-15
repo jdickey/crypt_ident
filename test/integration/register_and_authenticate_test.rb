@@ -74,7 +74,8 @@ describe 'Iterating the steps in the New User workflow' do
     # Register a New User
     sign_up_params = { name: user_name, profile: profile, email: email }
     the_user = the_code = :unassigned
-    CryptIdent.sign_up(sign_up_params, current_user: nil) do |result|
+    guest_user = CryptIdent.config.guest_user.to_h
+    CryptIdent.sign_up(sign_up_params, current_user: guest_user) do |result|
       result.success do |user:|
         the_user = user
       end
@@ -113,7 +114,7 @@ describe 'Iterating the steps in the New User workflow' do
 
     # Sign Out
 
-    the_result = CryptIdent.sign_out(current_user: the_user) do |result|
+    the_result = CryptIdent.sign_out(current_user: the_user.to_h) do |result|
       result.success { next }
       result.failure { expect(nil).wont_be :nil? } # Should *never* fire.
     end

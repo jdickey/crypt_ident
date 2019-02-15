@@ -22,7 +22,7 @@ describe 'CryptIdent#change_password' do
     CryptIdent.config.repository.clear
   end
 
-  describe 'Successfully change password and' do
+  describe 'Successfully change password' do
     let(:result_from_success) do
       lambda do
         change_password(*call_params) do |result|
@@ -32,7 +32,7 @@ describe 'CryptIdent#change_password' do
       end
     end
 
-    describe 'returns an Entity with' do
+    describe 'and returns an Entity with' do
       describe 'changed attribute values for' do
         it ':password_hash' do
           old_hashed_pass = target_user.password_hash
@@ -53,9 +53,9 @@ describe 'CryptIdent#change_password' do
         new_values = actual.to_h.values_at(:id, :name, :created_at)
         expect(old_values).must_equal new_values
       end
-    end # describe 'returns an Entity with'
+    end # describe 'and returns an Entity with'
 
-    describe 'persists an Entity with' do
+    describe 'and persists an Entity with' do
       it 'the same attributes as the returned Entity' do
         actual = result_from_success.call
         persisted_entity = CryptIdent.config.repository.find(actual.id)
@@ -71,8 +71,16 @@ describe 'CryptIdent#change_password' do
         expect(new_hashed_pass == original_password).wont_equal true
         expect(new_hashed_pass == new_password).must_equal true
       end
-    end # describe 'persists an Entity with'
-  end # describe 'Successfully change password and'
+    end # describe 'and persists an Entity with'
+
+    describe 'while passing in a Hash of attributes as the User' do
+      it 'as equivalent to a User Entity' do
+        call_params[0] = call_params[0].to_h
+        actual = result_from_success.call
+        expect(actual.name).must_equal call_params[0][:name]
+      end
+    end # describe 'while passing in a Hash of attributes as the User'
+  end # describe 'Successfully change password'
 
   describe 'Fail to change password because the specified' do
     let(:result_from_failure) do

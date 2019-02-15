@@ -138,8 +138,7 @@ module CryptIdent
     # case where raising *and catching* an exception is Useful
     def call(user:, password:, current_user: nil)
       set_ivars(user, password, current_user)
-      validate_user_and_current_user
-      verify_matching_password
+      validate_call_params
       Success(user: user)
     rescue LogicError => error
       Failure(code: error.message.to_sym)
@@ -168,12 +167,16 @@ module CryptIdent
     def set_ivars(user, password, current)
       @user = user
       @password = password
-      @current_user = current || CryptIdent.config.guest_user
+      guest_user = CryptIdent.config.guest_user
+      current ||= guest_user
+      @current_user = guest_user.class.new(current)
     end
 
-    def validate_user_and_current_user
+    def validate_call_params
       raise LogicError, 'user_is_guest' if user.guest?
       raise LogicError, 'illegal_current_user' if illegal_current_user?
+
+      verify_matching_password
     end
 
     def verify_matching_password

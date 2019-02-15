@@ -154,7 +154,13 @@ module CryptIdent
 
     # Reek sees a :reek:ControlParameter. Yep.
     def init_ivars(current_user)
-      @current_user = current_user || CryptIdent.config.guest_user
+      guest_user = CryptIdent.config.guest_user
+      current_user ||= guest_user
+      @current_user = guest_user.class.new(current_user)
+    end
+
+    def matching_record_for(token)
+      Array(CryptIdent.config.repository.find_by_token(token)).first
     end
 
     def new_attribs(password)
@@ -185,14 +191,14 @@ module CryptIdent
     end
 
     def verify_no_current_user(token)
-      return if !current_user || current_user.guest?
+      return if current_user.guest?
 
       payload = { code: :invalid_current_user, token: token }
       raise LogicError, Marshal.dump(payload)
     end
 
     def verify_token(token)
-      match = Array(CryptIdent.config.repository.find_by_token(token)).first
+      match = matching_record_for(token)
       validate_match_and_token(match, token)
     end
   end

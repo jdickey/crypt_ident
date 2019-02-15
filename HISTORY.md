@@ -1,5 +1,9 @@
 # CryptIdent Version History
 
+## 0.2.1 (16 February 2018)
+
+To commemorate The Valentine's Day Massacre, we've just re-discovered that Rack (the server protocol underlying all reasonably-modern Ruby Web frameworks) doesn't deal nicely with objects stored in `session` data (which is, by default, persisted in a cookie). If you assign, say, a `Hanami::Entity`-subclass instance to `session[:current_user]` (where `session` is Hanami's access to `Rack::Session`), when you later read from `session[:current_user]`, you'll be handed back a `Hash` of the Entity's attributes. Entity semantics specify that any two instances of the same Entity class with the sasme attribute values refer to _the same value_ of the Entity, not merely equal values, so converting back to an Entity is harmless. You just need to remember to do it and, as of 0.2.0, we didn't. That is fixed here, throughout the published API.
+
 ## 0.2.0 (2 February 2018)
 
 Initial *confident* public (pre-)release.

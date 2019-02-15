@@ -18,7 +18,7 @@ describe 'CryptIdent#sign_out' do
 
     before do
       CryptIdent.config.repository.clear
-      session[:current_user] = user
+      session[:current_user] = user.to_h # session data doesn't store Entities
       session[:start_time] = Time.now - 60 # 1 minute ago
     end
 

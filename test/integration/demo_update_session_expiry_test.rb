@@ -49,7 +49,6 @@ include CryptIdent
 describe 'Demonstrating the CryptIdent#update_session_expiry method' do
   let(:email) { 'jrandom@example.com' }
   let(:long_ago) { Time.now - (24 * 3600 * 365 * 100) }
-  let(:new_password) { 'Another Suitably Entropic Multiple-Word Phrase' }
   let(:password) { 'A Suitably Entropic Passphrase Goes Here' }
   let(:profile) { 'Profile content would go here.' }
   let(:user_name) { 'J Random User' }
@@ -88,7 +87,7 @@ describe 'Demonstrating the CryptIdent#update_session_expiry method' do
 
   describe 'with an Authenticated User' do
     it 'proceeds as expected' do
-      session_data = { current_user: @the_user, expires_at: long_ago }
+      session_data = { current_user: @the_user.to_h, expires_at: long_ago }
       expect(CryptIdent.session_expired?(session_data)).must_equal true
       updates = CryptIdent.update_session_expiry(session_data)
       session_data[:expires_at] = updates[:expires_at]

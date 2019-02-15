@@ -9,7 +9,7 @@ describe 'CryptIdent#sign_up' do
     all_attribs = { password_hash: password_hash }.merge(valid_input_params)
     CryptIdent.config.repository.create(all_attribs)
   end
-  let(:params) { { current_user: nil } }
+  let(:params) { { current_user: CryptIdent.config.guest_user.to_h } }
   let(:user_name) { 'J Random User' }
   let(:valid_input_params) { { name: user_name } }
 

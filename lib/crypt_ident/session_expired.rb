@@ -75,7 +75,11 @@ module CryptIdent
 
     def guest_user_from?(session_data)
       user = session_data[:current_user] || UserRepository.guest_user
-      user.guest?
+      # If the `session_data` in fact came from Rack session data, then any
+      # objects (such as a `User` Entity) have been converted to JSON-compatible
+      # types. Hanami Entities can be implicitly converted to and from Hashes of
+      # their attributes, so this part's easy...
+      User.new(user).guest?
     end
 
     def expiry_from(session_data)

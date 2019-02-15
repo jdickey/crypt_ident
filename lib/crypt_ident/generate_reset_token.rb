@@ -76,14 +76,16 @@ module CryptIdent
   # @authenticated Must not be Authenticated.
   # @param [String] user_name The name of the User for whom a Password Reset
   #                 Token is to be generated.
-  # @param [User]   current_user Entity representing the currently
+  # @param [User, Hash] current_user Entity representing the currently
   #                 Authenticated User Entity. This **must** be a Registered
-  #                 User.
+  #                 User, either as an Entity or as a Hash of attributes.
   # @return (void)
   # @example Demonstrating a (refactorable) Controller Action Class #call method
   #
   #   def call(params)
   #     config = CryptIdent.config
+  #     # Remember that reading an Entity stored in session data will in fact
+  #     #   return a *Hash of its attribute values*. This is acceptable.
   #     other_params = { current_user: session[:current_user] }
   #     generate_reset_token(params[:name], other_params) do |result|
   #       result.success do |user:|
@@ -105,6 +107,7 @@ module CryptIdent
   #   `:current_user` **must not** be a Registered User.
   # @ubiq_lang
   #   - Authentication
+  #   - Guest User
   #   - Password Reset Token
   #   - Registered User
   def generate_reset_token(user_name, current_user: nil)
@@ -125,7 +128,8 @@ module CryptIdent
     LogicError = Class.new(RuntimeError)
 
     def initialize
-      @current_user = @user_name = :unassigned
+      @current_user = nil
+      @user_name = :unassigned
     end
 
     def call(user_name, current_user: nil)
@@ -144,8 +148,10 @@ module CryptIdent
 
     def current_user_or_guest
       guest_user = CryptIdent.config.repository.guest_user
-      @current_user = guest_user if [nil, :unassigned].include?(@current_user)
-      @current_user
+      current_user = @current_user || guest_user
+      # This will convert a Hash of attributes to an Entity instance. It leaves
+      # an actual Entity value unmolested.
+      @current_user = guest_user.class.new(current_user)
     end
 
     def init_ivars(user_name, current_user)

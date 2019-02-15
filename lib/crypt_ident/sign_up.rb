@@ -121,7 +121,9 @@ module CryptIdent
     end
 
     def current_user?(user)
-      user && !user.guest?
+      guest_user = CryptIdent.config.guest_user
+      user ||= guest_user
+      !guest_user.class.new(user).guest?
     end
 
     def failure_for(code)

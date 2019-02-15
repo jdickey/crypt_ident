@@ -37,6 +37,7 @@ describe 'Iterating the steps in the Password Reset (failure) workflow' do
   it 'produces the expected failure' do
     two_years_ago = Time.now - (24 * 3600 * 365 * 2)
     the_user = :unassigned
+    current = CryptIdent.config.guest_user.to_h
     Timecop.travel(two_years_ago) do
       # Register a New User
       sign_up_params = { name: user_name, profile: profile, email: email }
@@ -46,9 +47,11 @@ describe 'Iterating the steps in the Password Reset (failure) workflow' do
       end
     end
 
-    # Perform a Password Reset and verify that Token has expired
+    # Perform a Password Reset and verify that Token has expired. Use explicit
+    # Guest User (as a Hash of attributes).
 
-    CryptIdent.reset_password(the_user.token, password) do |result|
+    CryptIdent.reset_password(the_user.token, password,
+      current_user: CryptIdent.config.guest_user.to_h) do |result|
       result.success { raise 'Oops' } # shouldn't happen
       result.failure { |code:, token:| expect(code).must_equal :expired_token }
     end

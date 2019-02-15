@@ -711,6 +711,8 @@ and the <code>:name</code> parameter to the <code>result.failure</code> block wi
       <pre class="example code"><code>
 def call(params)
   config = CryptIdent.config
+  # Remember that reading an Entity stored in session data will in fact
+  #   return a *Hash of its attribute values*. This is acceptable.
   other_params = { current_user: session[:current_user] }
   generate_reset_token(params[:name], other_params) do |result|
     result.success do |user:|
@@ -754,14 +756,14 @@ Token is to be generated.</p>
         <span class='name'>current_user</span>
       
       
-        <span class='type'>(<tt>User</tt>)</span>
+        <span class='type'>(<tt>User</tt>, <tt>Hash</tt>)</span>
       
       
       
         &mdash;
         <div class='inline'><p>Entity representing the currently
 Authenticated User Entity. This <strong>must</strong> be a Registered
-User.</p>
+User, either as an Entity or as a Hash of attributes.</p>
 </div>
       
     </li>
@@ -869,6 +871,7 @@ method-call blocks to retrieve data from the method.</p>
         
         <div class='inline'><ul>
 <li>Authentication</li>
+<li>Guest User</li>
 <li>Password Reset Token</li>
 <li>Registered User</li>
 </ul>
@@ -884,15 +887,15 @@ method-call blocks to retrieve data from the method.</p>
       <pre class="lines">
 
 
-110
-111
-112
 113
 114
-115</pre>
+115
+116
+117
+118</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/crypt_ident/generate_reset_token.rb', line 110</span>
+      <pre class="code"><span class="info file"># File 'lib/crypt_ident/generate_reset_token.rb', line 113</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_generate_reset_token'>generate_reset_token</span><span class='lparen'>(</span><span class='id identifier rubyid_user_name'>user_name</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_other_params'>other_params</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>current_user:</span> <span class='id identifier rubyid_current_user'>current_user</span> <span class='rbrace'>}</span>
@@ -2263,7 +2266,7 @@ Registered User, or the Guest User otherwise.</p>
 </div>
 
       <div id="footer">
-  Generated on Sat Feb  2 02:59:00 2019 by
+  Generated on Sat Feb 16 04:11:47 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.18 (ruby-2.6.0).
 </div>

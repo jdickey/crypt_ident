@@ -118,7 +118,7 @@ module CryptIdent
 
     def initialize(user:)
       @repo = CryptIdent.config.repository
-      @user = user
+      @user = user_from_param(user)
     end
 
     def call(current_password, new_password)
@@ -153,6 +153,18 @@ module CryptIdent
       repo.update(user.id, updated_attribs)
     end
 
+    # The `user` param *might* have come from `Rack::Session` data, which
+    # doesn't support Ruby objects beyond native JSON types. Fortunately
+    # a) the definitions of equality and identity for two Entities compare
+    #    attribute values only; and
+    # b) Hanami Entities can be freely *and implicitly* converted to and from
+    #    Hashes of their attributes.
+    # So...this makes it all good. Except that Reek sees a
+    # :reek:ControlParameter for `user`. Pffft.
+    def user_from_param(user)
+      User.new(user || repo.guest_user)
+    end
+
     def update_attribs(new_password)
       new_hash = ::BCrypt::Password.create(new_password)
       { password_hash: new_hash, updated_at: Time.now }
@@ -162,18 +174,11 @@ module CryptIdent
       BCrypt::Password.new(user.password_hash) == password
     end
 
-    def valid_user?
-      _ = user.password_hash
-      !user.guest?
-    rescue NoMethodError
-      false
-    end
-
     def verify_preconditions(current_password)
-      raise_logic_error :invalid_user unless valid_user?
+      raise_logic_error :invalid_user if user.guest?
       raise_logic_error :bad_password unless valid_password?(current_password)
     end
   end
-  # Leave the class visible durinig Gem development and testing; hide in an app
+  # Leave the class visible during Gem development and testing; hide in an app
   private_constant :ChangePassword if Hanami.respond_to?(:env?)
 end

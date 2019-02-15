@@ -59,6 +59,10 @@
 
       <div id="content"><div id='filecontents'><h1>CryptIdent Version History</h1>
 
+<h2>0.2.1 (16 February 2018)</h2>
+
+<p>To commemorate The Valentine&#39;s Day Massacre, we&#39;ve just re-discovered that Rack (the server protocol underlying all reasonably-modern Ruby Web frameworks) doesn&#39;t deal nicely with objects stored in <code>session</code> data (which is, by default, persisted in a cookie). If you assign, say, a <code>Hanami::Entity</code>-subclass instance to <code>session[:current_user]</code> (where <code>session</code> is Hanami&#39;s access to <code>Rack::Session</code>), when you later read from <code>session[:current_user]</code>, you&#39;ll be handed back a <code>Hash</code> of the Entity&#39;s attributes. Entity semantics specify that any two instances of the same Entity class with the sasme attribute values refer to <em>the same value</em> of the Entity, not merely equal values, so converting back to an Entity is harmless. You just need to remember to do it and, as of 0.2.0, we didn&#39;t. That is fixed here, throughout the published API.</p>
+
 <h2>0.2.0 (2 February 2018)</h2>
 
 <p>Initial <em>confident</em> public (pre-)release.</p>
@@ -77,7 +81,7 @@
 </div></div>
 
       <div id="footer">
-  Generated on Sat Feb  2 02:59:00 2019 by
+  Generated on Sat Feb 16 04:11:47 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.18 (ruby-2.6.0).
 </div>

@@ -101,54 +101,76 @@ describe 'with' do
     CryptIdent.config.repository = nil
   end
 
-  describe 'no Current User and' do
-    describe 'an existing User Name' do
-      it 'succeeds' do
+  describe 'a value for the Current User of' do
+    describe 'the default nil and' do
+      describe 'an existing User Name' do
+        it 'succeeds' do
+          the_user = :unassigned
+          CryptIdent.generate_reset_token(user_name) do |result|
+            result.success { |user:| the_user = user }
+            result.failure { |code:, current_user:, name:|
+              pp [:test_112, code, current_user, name, user_name]
+              raise 'Oops'
+            }
+            # result.failure { raise 'Oops' }
+          end
+          expect(the_user.name).must_equal user_name
+          expect(the_user.password_reset_expires_at).must_be :>, Time.now
+          expect(the_user).must_equal CryptIdent.config.repository.last
+        end
+      end # describe 'an existing User Name'
+
+      describe 'a nonexistent User Name' do
+        it 'fails' do
+          the_code = the_name = the_user = :unassigned
+          bad_user_name = 'Some Other User'
+          CryptIdent.generate_reset_token(bad_user_name) do |result|
+            result.success { raise 'Oops' }
+            result.failure do |code:, current_user:, name:|
+              the_code = code
+              the_name = name
+              the_user = current_user
+            end
+          end
+          expect(the_code).must_equal :user_not_found
+          expect(the_name).must_equal bad_user_name
+          expect(the_user).must_equal CryptIdent.config.guest_user
+        end
+      end # describe 'a nonexistent User Name'
+    end # describe 'the default nil and'
+
+    describe 'the Guest User and' do
+      it 'an existing User Name succeeds' do
         the_user = :unassigned
-        CryptIdent.generate_reset_token(user_name) do |result|
+        CryptIdent.generate_reset_token(user_name,
+          current_user: CryptIdent.config.guest_user.to_h) do |result|
           result.success { |user:| the_user = user }
-          result.failure { raise 'Oops' }
+          result.failure do |code:, current_user:, name:|
+            raise 'Oops'
+          end
         end
         expect(the_user.name).must_equal user_name
         expect(the_user.password_reset_expires_at).must_be :>, Time.now
         expect(the_user).must_equal CryptIdent.config.repository.last
       end
-    end # describe 'an existing User Name'
+    end # describe 'the Guest User and'
 
-    describe 'a nonexistent User Name' do
+    describe 'an existing User Entity and' do
       it 'fails' do
         the_code = the_name = the_user = :unassigned
-        bad_user_name = 'Some Other User'
-        CryptIdent.generate_reset_token(bad_user_name) do |result|
-          result.success { raise 'Oops' }
-          result.failure do |code:, current_user:, name:|
+        xuser = set_up_user('Another User', 'other@example.com', 'profile')
+        CryptIdent.generate_reset_token(user_name, current_user: xuser) do |res|
+          res.success { raise 'Oops' }
+          res.failure do |code:, current_user:, name:|
             the_code = code
             the_name = name
             the_user = current_user
           end
         end
-        expect(the_code).must_equal :user_not_found
-        expect(the_name).must_equal bad_user_name
-        expect(the_user).must_equal CryptIdent.config.guest_user
+        expect(the_code).must_equal :user_logged_in
+        expect(the_name).must_equal :unassigned
+        expect(the_user).must_equal xuser
       end
-    end # describe 'a nonexistent User Name'
-  end # describe 'no Current User and'
-
-  describe 'an existing User Entity as the Current User' do
-    it 'fails' do
-      the_code = the_name = the_user = :unassigned
-      xuser = set_up_user('Another User', 'other@example.com', 'profile')
-      CryptIdent.generate_reset_token(user_name, current_user: xuser) do |res|
-        res.success { raise 'Oops' }
-        res.failure do |code:, current_user:, name:|
-          the_code = code
-          the_name = name
-          the_user = current_user
-        end
-      end
-      expect(the_code).must_equal :user_logged_in
-      expect(the_name).must_equal :unassigned
-      expect(the_user).must_equal xuser
-    end
-  end # describe 'an existing User Entity as the Current User'
+    end # describe 'an existing User Entity and'
+  end # describe 'a value for the Current User of'
 end # describe 'with'
