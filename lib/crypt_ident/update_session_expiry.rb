@@ -88,10 +88,11 @@ module CryptIdent
     end
 
     def call(session_data = {})
+      result_data = session_data.to_hash
       if guest_user?(session_data)
-        session_data.merge(guest_data)
+        result_data.merge(guest_data)
       else
-        session_data.merge(updated_expiry)
+        result_data.merge(updated_expiry)
       end
     end
 

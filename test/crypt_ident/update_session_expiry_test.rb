@@ -54,4 +54,23 @@ describe 'CryptIdent#update_session_expiry' do
       end
     end
   end # describe 'when the passed-in :current_user is'
+
+  describe 'when the session data' do
+    it 'supports only a subset of standard Hash methods (Issue #28)' do
+      entitycls = CryptIdent.config.repository.entity
+      user = entitycls.new(name: 'User 1', password_hash: pwhash, id: 27)
+      session_data = Object.new
+      session_data.instance_variable_set(:@data, { current_user: user });
+      session_data.define_singleton_method(:[]) do |key|
+        @data[key]
+      end
+      session_data.define_singleton_method(:to_hash) do
+        @data.to_hash.dup
+      end
+
+      expected_min = Time.now + CryptIdent.config.session_expiry
+      actual = update_session_expiry(session_data)
+      expect(actual[:expires_at]).must_be :>=, expected_min
+    end
+  end # describe 'when the session data'
 end
