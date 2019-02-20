@@ -15,7 +15,7 @@ require_relative './config'
 # *quite* the PITA. YHBW.
 #
 # @author Jeff Dickey
-# @version 0.2.0
+# @version 0.2.2
 module CryptIdent
   # Generate a Password Reset Token
   #

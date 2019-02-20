@@ -5,7 +5,7 @@ require 'hanami/entity'
 # Configuration info for CryptIdent.
 #
 # @author Jeff Dickey
-# @version 0.2.0
+# @version 0.2.2
 module CryptIdent
   # Configuration attributes for `CryptIdent`, with default values.
   #

@@ -10,7 +10,7 @@ require_relative './config'
 # *quite* the PITA. YHBW.
 #
 # @author Jeff Dickey
-# @version 0.2.0
+# @version 0.2.2
 module CryptIdent
   # Generate a Hash containing an updated Session Expiration timestamp, which
   # can then be used for session management.

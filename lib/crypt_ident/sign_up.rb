@@ -15,7 +15,7 @@ require 'dry/matcher/result_matcher'
 # *quite* the PITA. YHBW.
 #
 # @author Jeff Dickey
-# @version 0.2.0
+# @version 0.2.2
 module CryptIdent
   # Persist a new User to a Repository based on passed-in attributes, where the
   # resulting Entity (on success) contains a  `:password_hash` attribute

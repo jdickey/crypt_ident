@@ -11,7 +11,7 @@ require 'dry/matcher/result_matcher'
 # *quite* the PITA. YHBW.
 #
 # @author Jeff Dickey
-# @version 0.2.0
+# @version 0.2.2
 module CryptIdent
   # Sign out a previously Authenticated User.
   #

@@ -13,7 +13,7 @@ require 'dry/matcher/result_matcher'
 # *quite* the PITA. YHBW.
 #
 # @author Jeff Dickey
-# @version 0.2.0
+# @version 0.2.2
 module CryptIdent
   # Attempt to Authenticate a User, passing in an Entity for that User (which
   # **must** contain a `password_hash` attribute), and a Clear-Text Password.
