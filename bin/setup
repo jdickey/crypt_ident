@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# set -euo pipefail
+# IFS=$'\n\t'
+# set -vx
+
+# This works for MRI; it may or may not work for other Rubies.
+RUBY_VERSION=`ruby --version | cut -d ' ' -f 2 | sed 's/p.*//'`
+
+##
+## Initialise Gemset and setup if `rbenv` is available
+##
+
+rm -f Gemfile.lock .rbenv-gemsets
+
+if [[ `rbenv --version 2>/dev/null` ]]; then
+  rbenv local $RUBY_VERSION
+  rbenv gemset delete $RUBY_VERSION ./tmp/gemset 2>/dev/null || true
+  find ./tmp/gemset -delete 2>/dev/null || true
+  rbenv rehash
+  rbenv gemset create $RUBY_VERSION ./tmp/gemset
+  echo ./tmp/gemset > .rbenv-gemsets
+  rbenv rehash
+fi
+
+##
+## Install Gems
+##
+
+echo 'Building list of Gems to install...'
+gem install --ignore-dependencies `scripts/build-gem-list.rb`
+
+# ############################################################################ #
+
+bundle install --binstubs --local

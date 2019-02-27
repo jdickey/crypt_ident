@@ -1,0 +1,19 @@
+---
+
+detectors:
+  IrresponsibleModule:
+    enabled: false
+
+  LongParameterList:
+    max_params: 4 # If it's good enough for Sandi, it's good enough for us
+
+  UtilityFunction:
+    public_methods_only: true
+    exclude: ['CryptIdent']
+
+  NestedIterators:
+    max_allowed_nesting: 4
+
+  TooManyStatements:
+    exclude:
+    - call
