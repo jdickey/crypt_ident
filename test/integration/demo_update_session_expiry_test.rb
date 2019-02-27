@@ -33,7 +33,7 @@
 # ## Cleanup
 #
 # 8. The User is Signed Out and its Entity deleted.
-# 9. The Repository is cleared and the Repository object deleted.
+# 9. The Repository is cleared.
 #
 # For a further discussion of the rationale for these tests, see the commentary
 # in `register_and_authenticate_test.rb` in this directory.
@@ -54,7 +54,6 @@ describe 'Demonstrating the CryptIdent#update_session_expiry method' do
   let(:user_name) { 'J Random User' }
 
   before do
-    CryptIdent.config.repository = UserRepository.new
     # Register a New User
     sign_up_params = { name: user_name, profile: profile, email: email }
     @the_user = :unassigned
@@ -82,7 +81,6 @@ describe 'Demonstrating the CryptIdent#update_session_expiry method' do
     end
     @the_user = nil
     CryptIdent.config.repository.clear
-    CryptIdent.config.repository = nil
   end
 
   describe 'with an Authenticated User' do

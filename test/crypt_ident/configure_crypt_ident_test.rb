@@ -34,12 +34,7 @@ describe 'CryptIdent.config has a reader for' do
     expect(CryptIdent.config.token_bytes).must_equal 24
   end
 
-  describe '.guest_user that returns' do
-    it 'a Guest User IF the repository has been set' do
-      old_repo = CryptIdent.config.repository
-      CryptIdent.config.repository = CryptIdent.config.repository.class.new
-      expect(CryptIdent.config.guest_user).must_be :guest?
-      CryptIdent.config.repository = old_repo
-    end
-  end # describe '.guest_user that returns'
+  it '.guest_user that returns a Guest User' do
+    expect(CryptIdent.config.guest_user).must_be :guest?
+  end
 end # describe 'CryptIdent.config has a reader for' do

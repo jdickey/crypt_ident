@@ -57,14 +57,14 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'minitest-hooks', '1.5.0'
   spec.add_development_dependency 'minitest-matchers', '1.4.1'
   spec.add_development_dependency 'minitest-reporters', '1.3.6'
-  spec.add_development_dependency 'minitest-tagz', '1.6.0'
+  spec.add_development_dependency 'minitest-tagz', '1.7.0'
   # XXX: Great idea; useful; but we've found a way to work around what we were
   # looking to use this Gem to help with.
   # spec.add_development_dependency 'monotime' #, '0.6.1'
-  spec.add_development_dependency 'pry-byebug', '3.6.0'
+  spec.add_development_dependency 'pry-byebug', '3.7.0'
   spec.add_development_dependency 'pry-doc', '1.0.0'
   spec.add_development_dependency 'reek', '5.3.1'
-  spec.add_development_dependency 'rubocop', '0.64.0'
+  spec.add_development_dependency 'rubocop', '0.65.0'
   spec.add_development_dependency 'simplecov', '0.16.1'
   spec.add_development_dependency 'timecop', '0.9.1'
   spec.add_development_dependency 'yard', '0.9.18'

@@ -17,8 +17,18 @@ module CryptIdent
   #
   extend Dry::Configurable
 
+  def self.included(base)
+    super
+    configure do |conf|
+      conf.repository = conf.user_repo_class.new
+      conf.guest_user = conf.repository.guest_user
+    end
+  end
+
   # Flash index to use for error messages.
   setting :error_key, :error, reader: true
+  # Class to use for :repository, which is the *User* Repository. Oops on that.
+  setting :user_repo_class, UserRepository, reader: true
   setting :guest_user, reader: true
   # Hashing cost for BCrypt. Note that each 1-unit increase *doubles* the
   # processing time needed to encode/decode a password.
@@ -27,12 +37,7 @@ module CryptIdent
   # Hanami Repository instance to use for accessing User data.
   # NOTE: This *does not* have a default. It is the responsibility of the client
   #   code to *always* assign this before use.
-  # NOTE: Also, setting the repository causes the `.guest_user` value to be
-  #   assigned. If anyone knows a better way to accomplish this, PRs welcome.
-  setting(:repository, reader: true) do |value|
-    config.guest_user = value.guest_user if value
-    value
-  end
+  setting :repository, reader: true
   # Password-reset expiry in seconds; defaults to 24 hours.
   setting :reset_expiry, (24 * 60 * 60), reader: true
   # Authentication session expiry in seconds; defaults to 15 minutes.
