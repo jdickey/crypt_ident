@@ -61,7 +61,7 @@
 
 <p>Yet another fairly basic authentication Gem. (Authorisation, and batteries, sold separately.)</p>
 
-<p>This is initially tied to Hanami 1.2.0+; specifically, it assumes that user entities have an API compatible with <code>Hanami::Entity</code> for accessing the field/attribute values listed below in <a href="#databaserepository-setup"><em>Database/Repository Setup</em></a> (which itself assumes a Repository API compatible with that of Hanami 1.2&#39;s Repository classes). The Gem is mostly a thin layer around <a href="https://github.com/codahale/bcrypt-ruby">BCrypt</a> that, in conjunction with Hanami entities or work-alikes, supports the most common use cases for password-based authentication:</p>
+<p>This is initially tied to Hanami 1.3.0+; specifically, it assumes that user entities have an API compatible with <code>Hanami::Entity</code> for accessing the field/attribute values listed below in <a href="#databaserepository-setup"><em>Database/Repository Setup</em></a> (which itself assumes a Repository API compatible with that of Hanami 1.3&#39;s Repository classes). The Gem is mostly a thin layer around <a href="https://github.com/codahale/bcrypt-ruby">BCrypt</a> that, in conjunction with Hanami entities or work-alikes, supports the most common use cases for password-based authentication:</p>
 
 <ol>
 <li><a href="#registration">Registration</a>;</li>
@@ -69,7 +69,7 @@
 <li><a href="#signing-out">Signing out</a>;</li>
 <li><a href="#password-change">Password change</a>;</li>
 <li><a href="#password-reset">Password reset</a>; and</li>
-<li><a href="#session-expiration">Session expiration</a>.</li>
+<li><a href="#session-management-overview">Session expiration management</a>.</li>
 </ol>
 
 <p>It <em>does not</em> implement features such as</p>
@@ -103,12 +103,12 @@
 
 <h2>Database/Repository Setup</h2>
 
-<p><code>CryptIdent</code> assumes that the repository used to read and update the underlying database table is named <code>UserRepository</code>; that can be changed using the <a href="#configuration"><em>Configuration</em></a> settings.</p>
+<p>In this README and in the API Documentation, the Repository used to read and update the underlying database table is named <code>UserRepository</code> and, per Hanami conventions, the Entity is named <code>User</code>. <em>The code itself enforces no such assumption;</em> so long as you assign your Repository class to <code>CryptIdent.config.repository</code> (see <a href="#configuration"><em>Configuration</em></a> below), and it follows Hanami conventions for Entity names, this <em>should</em> Just Work. (Please <a href="https://github.com/jdickey/crypt_ident/issues/new">open an issue</a> if you prove otherwise.)</p>
 
-<p>We further assume that the Repository object</p>
+<p>We assume that the Repository object</p>
 
 <ol>
-<li>Has a <em>class method</em> named <code>.entity_name</code> that returns the name of the Entity used by that Repository <em>as a string</em> (e.g., <code>&quot;User&quot;</code> for a <code>UserRepository</code>);</li>
+<li>Has a <em>class method</em> named <code>.entity</code> that returns the <em>class</em> of the Entity used by that Repository (e.g., <code>User</code> for a <code>UserRepository</code>). (This is to match <code>Hanami::Repository</code>.)</li>
 <li>Has a class method named <code>.guest_user</code> that returns an Entity with a descriptive name (e.g., &quot;Guest User&quot;) and is otherwise invalid for persistence (e.g., it has an invalid <code>id</code> attribute); and</li>
 <li>Implements the &quot;usual&quot; common methods (<code>#create</code>, <code>#update</code>, <code>#delete</code>, etc) conforming to an interface compatible with <a href="https://github.com/hanami/model/blob/master/lib/hanami/repository.rb"><code>Hanami::Repository</code></a>. This interface is suitably generic and sufficiently widely implemented, even in ORMs such as ActiveRecord that make no claim to implementing the <a href="https://8thlight.com/blog/mike-ebert/2013/03/23/the-repository-pattern.html">Repository Pattern</a>.</li>
 </ol>
@@ -138,9 +138,9 @@
 <td>The <em>encrypted</em> Password associated with that User.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>password_reset_sent_at</code></td>
+<td style="text-align: left"><code>password_reset_expires_at</code></td>
 <td>timestamp without time zone</td>
-<td>Defaults to <code>nil</code>; set this to the current time (<code>Time.now</code>) when responding to a Password Reset request (e.g., by email). The <code>token</code> (below) will expire at this time offset by the <code>reset_expiry</code> configuration value (see <em>Configuration</em>, below).</td>
+<td>Defaults to <code>nil</code>; set this to the Expiry Time (<code>Time.now + config.reset_expiry</code>) when responding to a Password Reset request (e.g., by email). The <code>token</code> (below) will expire at this time (see <em>Configuration</em>, below).</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>token</code></td>
@@ -148,6 +148,16 @@
 <td>Defaults to <code>nil</code>. A Password Reset Token; a URL-safe secure random number (see <a href="https://ruby-doc.org/stdlib-2.5.1/libdoc/securerandom/rdoc/Random/Formatter.html#method-i-urlsafe_base64">standard-library documentation</a>) used to uniquely identify a Password Reset request.</td>
 </tr>
 </tbody></table>
+
+<p>For examples of this, examine the <code>test/support/fake_repository.rb</code> and <code>test/support/unit_test_model_and_repo_classes.rb</code> files, and the unit (<code>test/crypt_ident/*</code>) and integration (<code>test/integration/*</code>) tests.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
+
+<h2>User Entity</h2>
+
+<p>As mentioned in the <em>Database/Repository Setup</em> section above, <code>CryptIdent</code> makes no assumption about the class constant/name of the Entity persisted to and retrieved from the Repository, other than it follow Hanami conventions. (In this and related documents, we refer to that Entity class as <code>User</code>.) In addition to attributes matching the fields specified in the previous section, (which <code>Hanami::Entity</code> and most analogous ORM Entities expose by default), the Entity <strong>must</strong> respond to the <code>#guest?</code> message, returning <code>true</code> if it is the Guest User (as returned by <code>UserRepository#guest_user</code>), or <code>false</code> otherwise. It <em>may</em> have other methods as appropriate to the client code.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
 <h2>Configuration</h2>
 
@@ -161,17 +171,17 @@
 </tr>
 </thead><tbody>
 <tr>
-<td style="text-align: left"><code>error_key</code></td>
+<td style="text-align: left"><code>:error_key</code></td>
 <td><code>:error</code></td>
 <td>Modify this setting if you want to use a different key for flash messages reporting unsuccessful actions.</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>guest_user</code></td>
+<td style="text-align: left"><code>:guest_user</code></td>
 <td>Return value from <code>repository</code> <code>.guest_user</code> method</td>
 <td>This value is used for the session variable <code>session[:current_user]</code> when no User has <a href="#signing-in">signed in</a>, or after a previously Authenticated User has <a href="#signing-out">signed out</a>. If your application <em>does not</em> make use of the <a href="https://en.wikipedia.org/wiki/Null_object_pattern">Null Object pattern</a>, you would assign <code>nil</code> to this configuration setting. (See <a href="https://robots.thoughtbot.com/rails-refactoring-example-introduce-null-object">this Thoughtbot post</a> for a good discussion of Null Objects in Ruby.)</td>
 </tr>
 <tr>
-<td style="text-align: left"><code>hashing_cost</code></td>
+<td style="text-align: left"><code>:hashing_cost</code></td>
 <td>8</td>
 <td>This is the <a href="https://github.com/codahale/bcrypt-ruby#cost-factors">hashing cost</a> used to <em>encrypt a password</em> and is applied at the hashed-password-creation step; it <strong>does not</strong> modify the default cost for the encryption engine. <strong>Note that</strong> any change to this value <strong>will</strong> invalidate and make useless all existing Encrypted Password stored values.</td>
 </tr>
@@ -182,13 +192,13 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>:reset_expiry</code></td>
-<td>86400</td>
+<td>86400 (24 hours in seconds)</td>
 <td>Number of seconds from the time a password-reset request token is stored before it becomes invalid.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>:session_expiry</code></td>
-<td>900</td>
-<td>Number of seconds <em>from either</em> the time that a User is successfully Authenticated <em>or</em> the <code>restart_session_counter</code> method is called <em>before</em> a call to <code>session_expired?</code> will return <code>true</code>.</td>
+<td>900 (15 minutes, in seconds)</td>
+<td>Number of seconds <em>from either</em> the time that a User is successfully Authenticated <em>or</em> the <code>update_session_expiry</code> method is called <em>before</em> a call to <code>session_expired?</code> will return <code>true</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left"><code>:success_key</code></td>
@@ -197,7 +207,7 @@
 </tr>
 <tr>
 <td style="text-align: left"><code>:token_bytes</code></td>
-<td>16</td>
+<td>24</td>
 <td>Number of bytes of random data to generate when building a password-reset token. See <code>token</code> in the <a href="#databaserepository-setup"><em>Database/Repository Setup</em></a> section, above.</td>
 </tr>
 </tbody></table>
@@ -205,33 +215,50 @@
 <p>For example</p>
 
 <pre class="code ruby"><code class="ruby">  <span class='id identifier rubyid_include'>include</span> <span class='const'><span class='object_link'><a href="CryptIdent.html" title="CryptIdent (module)">CryptIdent</a></span></span>
-  <span class='const'><span class='object_link'><a href="CryptIdent.html" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure_crypt_id'>configure_crypt_id</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span>
+
+  <span class='const'><span class='object_link'><a href="CryptIdent.html" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure'>configure</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_config'>config</span><span class='op'>|</span>
     <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_repository'>repository</span> <span class='op'>=</span> <span class='const'>MainApp</span><span class='op'>::</span><span class='const'>Repositories</span><span class='op'>::</span><span class='const'>User</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='comment'># note: *not* a Hanami recommended practice!
 </span>    <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_error_key'>error_key</span> <span class='op'>=</span> <span class='symbol'>:alert</span>
     <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_hashing_cost'>hashing_cost</span> <span class='op'>=</span> <span class='int'>6</span> <span class='comment'># less secure and less resource-intensive
 </span>    <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_token_bytes'>token_bytes</span> <span class='op'>=</span> <span class='int'>20</span>
     <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_reset_expiry'>reset_expiry</span> <span class='op'>=</span> <span class='int'>7200</span> <span class='comment'># two hours; &quot;we run a tight ship here&quot;
-</span>    <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span> <span class='op'>=</span> <span class='const'>UserRepository</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span>
-  <span class='kw'>end</span>
+</span>    <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span> <span class='op'>=</span> <span class='const'>MainApp</span><span class='op'>::</span><span class='const'>Repositories</span><span class='op'>::</span><span class='const'>User</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span> <span class='comment'># Likewise, *not* conventional
+</span>  <span class='kw'>end</span>
 </code></pre>
 
 <p>would change the configuration as you would expect whenever that code was run. (We <strong>recommend</strong> that this be done inside the <code>controller.prepare</code> block of your Hanami <code>web</code> (or equivalent) app&#39;s <code>application.rb</code> file.)</p>
 
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
+
 <h2>Introductory Notes on Workflows</h2>
+
+<h3>Interfaces</h3>
+
+<p>The methods employed directly by these use cases use <a href="https://dry-rb.org/gems/dry-matcher/result-matcher/">Result matchers</a> and <a href="https://dry-rb.org/gems/dry-monads/1.0/result/"><code>Result</code> monads</a> to provide a <em>consistent, fluent, explicit, and understandable</em> mechanism for detecting and handling success and failure.</p>
+
+<p>Each method (with two exceptions, noted in their documentation) <em>requires</em> a block, to which a <code>result</code> indicating success or failure is yielded. That block <strong>must</strong> in turn define blocks for <strong>both</strong> <code>result.success</code> and <code>result.failure</code> to handle success and failure results, respectively. Each of the two blocks takes parameters which the method uses to communicate either the successful result (and possible supporting information), or the reason for failure, along with supporting information. Not all failure cases use all parameters to the <code>result.failure</code> block. Any that are not relevant may be safely ignored (and <strong>should</strong> by convention have a value of <code>:unassigned</code> yielded to the <code>result.failure</code> block).</p>
+
+<p>The active configuration <strong>is not</strong> passed as a parameter to either the <code>success</code> or <code>failure</code> blocks; it is always accessible as <code>CryptIdent.config</code>, and is based on the <a href="https://dry-rb.org/gems/dry-configurable/"><code>dry-configurable</code></a> Gem.</p>
+
+<p>For further discussion of this, see the documentation of the individual methods in the <a href="docs/CryptIdent.html">API Reference</a>.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
 <h3>Session Handling Not Automatic</h3>
 
 <p>If you&#39;ve set up your <code>controller.prepare</code> block as <strong>recommended</strong> in the preceding section, <code>CryptIdent</code> is loaded and configured but <em>does not</em> implement session-handling &quot;out of the box&quot;; as with <a href="https://github.com/sebastjan-hribar/tachiban#session-handling">other libraries</a>, it must be implemented <em>by you</em> as described in the <a href="#session-expiration"><em>Session Expiration</em></a> description below.</p>
 
-<h3>Code Samples in API Reference are Authoritative</h3>
+<h3>Code Samples in Integration Tests are Authoritative</h3>
 
-<p>Only minimal code snippets are included here to help explain use cases.  However, the <a href="docs/CryptIdent.html">API Reference</a> should be considered authoritative; any discrepancies between the API and/or code snippets there and here should be regarded as a bug (and a <a href="https://github.com/jdickey/crypt_ident/issues/">report</a> filed if not already filed.</p>
+<p>Integration tests, in <code>test/integration/*_test.rb</code>, are the authoritative documentation-through-working-code of each method and workflow supported by this Gem. Only minimal code snippets are included here to help explain use cases.  However, the <a href="docs/CryptIdent.html">API Reference</a> provides a more conventionally-documented reference to each <code>CryptIdent</code> method; any discrepancies between the integration tests, documented API, and/or code snippets there and here should be regarded as a bug (and a <a href="https://github.com/jdickey/crypt_ident/issues/">report</a> filed if not already filed.</p>
 
 <h3>Terminology and the project Ubiquitous Language</h3>
 
-<p>Finally, a note on terminology. Terms that have meaning (e.g., <em>Guest User</em>) within this module&#39;s domain language, or <a href="https://www.martinfowler.com/bliki/UbiquitousLanguage.html">Ubiquitous Language</a>, <strong>must</strong> be capitalised, at least on first use within a paragraph. This is to stress to the reader that, while these terms may have &quot;obvious&quot; meanings, their use within this module and its related documents (including this one) <strong>should</strong> be consistent, specific, and rigorous in their meaning. In the <a href="docs/CryptIdent.html">API Documentation</a>, each of these terms <strong>must</strong> be listed in the <em>Ubiquitous Language Terms</em> section under each method description in which they are used.</p>
+<p>Finally, a note on terminology. Terms that have meaning (e.g., <em>Guest User</em>) within this module&#39;s domain language, or <a href="https://www.martinfowler.com/bliki/UbiquitousLanguage.html">Ubiquitous Language</a>, <strong>must</strong> be capitalised, at least on first use within a paragraph. This is to stress to the reader that, while these terms may have &quot;obvious&quot; meanings, their use within this module and its related documents (including this one) <strong>must</strong> be consistent, specific, and rigorous in their meaning. In the <a href="docs/CryptIdent.html">API Documentation</a>, each of these terms <strong>must</strong> be listed in the <em>Ubiquitous Language Terms</em> section under each method description in which they are used. (If you find any omissions, inconsistencies, or other errors, please open a <a href="https://github.com/jdickey/conversagence-hanami/issues/new">new issue</a> if it has not already been <a href="https://github.com/jdickey/conversagence-hanami/issues">reported</a>.)</p>
 
-<p>After the first usage in a paragraph, the term <strong>may</strong> be used less strictly (e.g., by referring to a <em>Clear-Text Password</em> simply as a <em>password</em> <em>if</em> doing so does not introduce ambiguity or confusion. The reader should feel free to <a href="https://github.com/jdickey/cript_ident/issues">open an issue report</a> if you spot any lapses. (Thank you!)</p>
+<p>After the first usage in a paragraph, the term <strong>may</strong> be used less strictly; e.g., by referring to a <em>Clear-Text Password</em> simply as a <em>password</em> <em>if</em> doing so does not introduce ambiguity or confusion. The reader should feel free to <a href="https://github.com/jdickey/crypt_ident/issues">open an issue report</a> for any lapses of consistency or clarity. (Thank you!)</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
 <h2>Use-Case Workflows</h2>
 
@@ -242,57 +269,47 @@
 <p>Method involved:</p>
 
 <pre class="code ruby"><code class="ruby">  <span class='kw'>module</span> <span class='const'><span class='object_link'><a href="CryptIdent.html" title="CryptIdent (module)">CryptIdent</a></span></span>
-    <span class='kw'>def</span> <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_params'>params</span><span class='comma'>,</span> <span class='label'>current_user:</span><span class='comma'>,</span> <span class='label'>repo:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>on_error:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_on_success'>on_success</span><span class='rparen'>)</span>
+    <span class='kw'>def</span> <span class='id identifier rubyid_sign_up'>sign_up</span><span class='lparen'>(</span><span class='id identifier rubyid_attribs'>attribs</span><span class='comma'>,</span> <span class='label'>current_user:</span><span class='rparen'>)</span>
       <span class='comment'># ...
 </span>    <span class='kw'>end</span>
   <span class='kw'>end</span>
 </code></pre>
 
-<p>This is the first of our use cases that involves calling a function which expects a block to be supplied; if one isn&#39;t, then a log-format warning message will remind you of the error.</p>
+<p>This is the first of our use cases that involves calling a function which expects a block to be supplied. If one isn&#39;t, then a <code>LocalJumpError</code> will be raised. If either the <code>success</code> or <code>failure</code> blocks are omitted within that block, then a <code>Dry::Matcher::NonExhaustiveMatchError</code> will be raised. (It <em>is</em> permissible to completely omit the parameters to a <code>success</code> or <code>failure</code> block; e.g., for the <code>#sign_out</code> method which does not support reporting a failure.)</p>
 
-<p>The <code>params</code> parameter is a Hash-like object such as a <code>Hanami::Action::Params</code> instance. It <strong>must</strong> have a <code>:name</code> entry, as well as any other keys and matching field values required by the Entity which will be created from the <code>params</code> values, <em>other than</em> a <code>:password_hash</code> key. It <strong>should</strong> have a <code>:password</code> entry; if none is specified, then a <em>random</em> <code>:password_hash</code> attribute (rather than one created by encrypting the <code>:password</code>) will be assigned to the resulting Entity.</p>
+<p>The <code>attribs</code> parameter is a Hash-like object such as a <code>Hanami::Action::Params</code> instance. It <strong>must</strong> have a <code>:name</code> entry, as well as any other keys and matching field values required by the Entity which will be created from the <code>params</code> values, <em>other than</em> a <code>:password_hash</code> key. It also <strong>must not</strong> have a <code>:password</code> entry; if one is supplied, it will be <em>ignored</em>. This is to support our standard workflow of having newly-Registered Users be initially assigned a Clear-Text Password of random text, then immediately starting the <a href="#password-reset">Password Reset</a> workflow to further validate their supplied email address.</p>
 
-<p>Pass in the value of the <code>session[:current_user]</code> session variable as the <code>:current_user</code> parameter. This <strong>should</strong> be an Entity value; if it is an integer, it will be used as an <code>id</code> to <code>#find</code> from the Repository in use by the method.</p>
+<p>Pass in the value of the <code>session[:current_user]</code> session variable as the <code>:current_user</code> parameter. This <strong>must</strong> be an Entity value rather than an <code>id</code> value. Supplying a value of <code>nil</code> is permitted, and is equivalent to specifying the Guest User (see <a href="#database-repository-setup"><em>Database/Repository Setup</em></a>).</p>
 
-<p>If a Repository instance different than that loaded by the <a href="#configuration"><em>Configuration</em></a> is to be used, pass it in as the <code>repo:</code> parameter. Leaving the default value, <code>nil</code>, <strong>should</strong> work in a properly-designed application.</p>
+<p>As described <a href="#interfaces">earlier</a>, this method <strong>requires</strong> a block which accepts a <code>result</code> parameter. The block <strong>must</strong> define <em>both</em> <code>result.success</code> and <code>result.failure</code> blocks, passing each a block which itself takes appropriate parameters. These will be further described below.</p>
 
-<p>To have the <code>#sign_up</code> method call a Callable (<code>Proc</code> or lambda) when an error is detected, supply it as the <code>on_error:</code> parameter. The parameters to be passed to it include</p>
-
-<ol>
-<li>an error ID Symbol, which will also be the value returned by the <code>#sign_up</code> method itself;</li>
-<li>the <code>params</code> passed to the <code>#sign_up</code> method;</li>
-<li>a <span class='object_link'><a href="CryptIdent/Config.html" title="CryptIdent::Config (class)">CryptIdent::Config</a></span> instance describing the active configuration values;</li>
-<li>a Hash of any other information relevant to the error; this will be documented in the <a href="file.CryptIdent.html" title="API Guide">API Guide</a> when relevant, defaulting to an empty Hash otherwise.</li>
-</ol>
-
-<p>The block associated with the <code>#sign_up</code> call (documented as <code>&amp;on_success</code> above) will be called <em>if and only if</em> the method is successful (and returns a User instance). The block <strong>must</strong> accept two parameters:</p>
-
-<ol>
-<li>the User Entity that was created; and</li>
-<li>a <span class='object_link'><a href="CryptIdent/Config.html" title="CryptIdent::Config (class)">CryptIdent::Config</a></span> instance describing the active configuration values.</li>
-</ol>
-
-<p>These will be further described below:</p>
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
 <h4>Success, aka Golden Path</h4>
 
-<p>If the <code>params</code> include all values required by the underlying schema, including a valid <code>name</code> attribute that does not exist in the underlying data store, and an entry for <code>password</code>, then the specified <code>password</code> will be encrypted into a URL-safe string and used for the <code>password_hash</code> attribute of the new Entity. If the <code>password</code> is <code>nil</code>, empty, or blank, the resulting<code>password_hash</code> attribute will be randomised, requiring a <a href="#password-reset"><em>Password Reset</em></a> before the user can <a href="#signing-in"><em>Sign In</em></a>.</p>
+<p>If the <code>params</code> include all values required by the underlying schema, including a valid <code>name</code> attribute that does not exist in the underlying data store, then it (with a <code>password_hash</code> attribute created from a random-text Clear-Text Password) will be persisted to the Repository specified by <code>repo:</code> (or to the Repository specified by the <a href="#configuratino"><em>Configuration</em></a> if the <code>repo:</code> value is <code>nil</code>). That User Entity will be passed to the <code>result.success</code> block as the <code>user:</code> parameter.</p>
 
-<p>The <code>&amp;on_success</code> block will be called with the newly-created User Entity and Config object as parameters. This would typically be used to define UI interactions such as flash messages, redirection, and so on.</p>
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
 <h4>Error Conditions</h4>
 
 <h5>Authenticated User as <code>current_user:</code> Parameter</h5>
 
-<p>If the specified <code>current_user:</code> parameter is a valid User instance or ID, then that is presumed to be the Current User of the application. Authenticated Users are prohibited from creating other Users, and so the call will fail and return <code>:current_user_exists</code>. This will also be the error ID passed to any defined <code>on_error:</code> handler.</p>
+<p>If the specified <code>current_user:</code> parameter is a valid User Entity other than the Guest User, then that is presumed to be the Current User of the application. Authenticated Users are prohibited from creating other Users, and so the <code>result.failure</code> block will be called with a <code>code:</code> of <code>:current_user_exists</code>.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
 <h5>Specified <code>:name</code> Attribute Already Used for an Existing User</h5>
 
-<p>If the specified <code>:name</code> attribute exists in a record within the Repository, then the call will fail and the returned error ID will be <code>:user_already_created</code>.</p>
+<p>If there is no improper value for the <code>current_user:</code> parameter, and if the specified <code>:name</code> attribute exists in a record within the Repository, then the <code>result.failure</code> block will be called with a <code>:code</code> of <code>:user_already_created</code>.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
 <h5>Record Could Not be Created Within Repository</h5>
 
-<p>If the Repository method <code>#create</code> returned an error, then the call will fail and the returned error ID will be <code>:user_creation_failed</code>.</p>
+<p>If neither of the earlier conditions apply, but the Repository method <code>#create</code> returned an error, then the <code>result.failure</code> block will be called with a <code>:code</code> of <code>:user_creation_failed</code>.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
 <h3>Signing In</h3>
 
@@ -307,27 +324,37 @@
   <span class='kw'>end</span>
 </code></pre>
 
-<p>Once a User has been <a href="#registration">Registered</a>, Signing In is a matter of retrieving that user&#39;s Entity (containing a <code>password_hash</code> attribute) and calling <code>#sign_in</code> passing in that Entity, the purported Clear-Text Password, and the currently Authenticated User (if any), then seeing what the return value is.</p>
+<p>Once a User has been <a href="#registration">Registered</a> and <a href="#password-reset">Reset their Password</a>, Signing In is a matter of retrieving that user&#39;s Entity (containing a <code>password_hash</code> attribute) and calling <code>#sign_in</code> passing in that Entity, the purported Clear-Text Password, and the currently Authenticated User (if any), then using the <code>result</code> passed to the yielded block to determine and respond to the success or failure of the call.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
 <h4>Successfully Signing In</h4>
 
-<p>While no Authenticated Member currently exists (as shown by the <code>session[:current_user]</code> having a value of either <code>nil</code> or the Guest User), supplying a User Entity and the correct Clear-Text Password for that User to a call to <code>#sign_in</code> will produce the <em>same</em> User Entity as a returned value, indicating success.</p>
+<p>So long as no User is currently Authenticated in the Session (as shown by the <code>session[:current_user]</code> having a value of either <code>nil</code> or the Guest User), supplying a User Entity and the correct Clear-Text Password for that User to a call to <code>#sign_in</code> will cause the block for the <code>#sign_in</code> method call to yield the <em>same</em> User Entity to the <code>result.success</code> block, indicating success.</p>
 
 <p>Note that this process is unchanged if the passed-in <code>current_user</code> is <em>the same as</em> the User Entity attempting Authentication. It is up to client code to determine how to proceed if Authentication fails in this case.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
 <h4>Error Conditions</h4>
 
 <h5>Incorrect Password Supplied</h5>
 
-<p>While no Authenticated Member currently exists (as shown by the <code>session[:current_user]</code> having a value of either <code>nil</code> or the Guest User), supplying a User Entity and an <em>incorrect</em> Clear-Text Password for that User to a call to <code>#sign_in</code> will return a value of <code>nil</code>, indicating failure.</p>
+<p>While no Authenticated Member currently exists (as shown by the <code>session[:current_user]</code> having a value of either <code>nil</code> or the Guest User), supplying a User Entity and an <em>incorrect</em> Clear-Text Password for that User to a call to <code>#sign_in</code> will yield a call to the block&#39;s <code>result.failure</code> block with a <code>code:</code> of <code>:invalid_password</code>.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
 <h5>Authenticated User Exists</h5>
 
-<p>If the passed-in <code>current_user</code> is a User Entity <em>other than</em> the specified <code>user</code> Entity <em>or</em> the Guest User, no match will be attempted, and the method will return <code>nil</code>. (A value of <code>nil</code> for the <code>:current_user</code> parameter is treated as equivalent to the Guest User.)</p>
+<p>If the passed-in <code>current_user</code> is a User Entity <em>other than</em> the specified <code>user</code> Entity <em>or</em> the Guest User, no match will be attempted, and the method will yield a call to the block&#39;s <code>result.failure</code> block with a <code>code:</code> value of <code>:illegal_current_user</code>.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
 <h5>Guest User Attempts Authentication</h5>
 
-<p>While no Authenticated Member currently exists (as shown by the <code>session[:current_user]</code> having a value of either <code>nil</code> or the Guest User), supplying <em>the Guest User</em> as the User Entity to be Authenticated will fail without attempting to authenticate any supplied Clear-Text Password.</p>
+<p>While no Authenticated Member currently exists (as shown by the <code>session[:current_user]</code> having a value of either <code>nil</code> or the Guest User), supplying <em>the Guest User</em> as the User Entity to be Authenticated will yield a call to the block&#39;s <code>result.failure</code> block with a <code>code:</code> value of <code>:user_is_guest</code>.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
 <h4>Other Notes</h4>
 
@@ -347,6 +374,8 @@
 <li><code>session[:current_user]</code> to <code>nil</code> or to the Guest User (see <a href="#configuration"><em>Configuration</em></a>).</li>
 </ul>
 
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
+
 <h3>Signing Out</h3>
 
 <h4>Overview</h4>
@@ -354,68 +383,162 @@
 <p>Method involved:</p>
 
 <pre class="code ruby"><code class="ruby"><span class='kw'>module</span> <span class='const'><span class='object_link'><a href="CryptIdent.html" title="CryptIdent (module)">CryptIdent</a></span></span>
-  <span class='kw'>def</span> <span class='id identifier rubyid_sign_out'>sign_out</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_sign_out'>sign_out</span><span class='lparen'>(</span><span class='label'>current_user:</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span>
 </code></pre>
 
-<p>Signing out any previously Authenticated User is straightforward: call the <code>sign_out</code> method, adding a block that clears your <code>session[:current_user]</code> and <code>session[:start_time]</code> variables.</p>
+<p>Signing out any previously Authenticated User is straightforward: call the <code>sign_out</code> method, passing in that User as the <code>current_user:</code> parameter. As with the earlier methods, this method also <strong>requires</strong> a block which accepts a <code>result</code> parameter and has <code>result.success</code> and <code>result.failure</code> calls/blocks. No parameters are yielded to either block.</p>
 
-<p>Note that, as of Release 0.1.0, the method simply passes control to the (required) block, in which you can delete or reset <code>session[:current_user]</code> and <code>session[:start_time]</code>. We <strong>recommend</strong> reset values of:</p>
+<p>Note that, as of Release 0.2.0, the method simply passes control to the (required) block, in whose <code>result.success</code> call block you can delete or reset <code>session[:current_user]</code> and <code>session[:start_time]</code>. We <strong>recommend</strong> reset values of:</p>
 
 <ul>
-<li><code>CryptIdent.configure_crypt_ident.guest_user</code> for <code>session[:current_user]</code> and</li>
-<li><code>Hanami::Utils::Kernel.Time(0)</code> for <code>session[:start_time]</code>, which will set the timestamp to 1 January 1970 at midnight  -- a value which should *far° exceed your session-expiry limit</li>
+<li><code>CryptIdent.config.guest_user</code> for <code>session[:current_user]</code> and</li>
+<li><code>Hanami::Utils::Kernel.Time(0)</code> for <code>session[:start_time]</code>, which will set the timestamp to 1 January 1970 at midnight  &mdash; a value which should <em>far</em> exceed your session-expiry limit if you decide not to simply delete the previous values by assigning <code>nil</code> to them.</li>
 </ul>
 
-<p>if you decide not to simply delete the previous values.</p>
+<p>The required <code>result.failure</code> block can simply be skipped, as</p>
 
-<h3>Password Change -- TODO: FIXME</h3>
+<pre class="code ruby"><code class="ruby">    <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_failure'>failure</span> <span class='lbrace'>{</span> <span class='kw'>next</span> <span class='rbrace'>}</span>
+</code></pre>
 
-<p>To change an <a href="#signing-in">authenticated</a> user&#39;s password, the current clear-text password, new clear-text password, and clear-text password confirmation are passed to <code>change_password</code>.</p>
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
-<p>If the Encrypted Password in the <code>session[:current_user]</code> entity does not match the encrypted value of the specified current Clear-Text Password, then the method returns <code>:bad_password</code> and no changes occur.</p>
+<h3>Password Change</h3>
 
-<p>If the current-password check succeeds but the new Clear-Text Password and its confirmation do not match, then the method returns <code>:mismatched_password</code> and no changes occur.</p>
+<h4>Overview</h4>
 
-<p>If the new Clear-Text Password and its confirmation match, then the <em>encrypted value</em> of that new password is returned, and the <code>session[:current_user]</code> Entity is replaced with an Entity identical except that it has the new encrypted value for <code>password_hash</code>.</p>
+<p>Method involved:</p>
 
-<h3>Password Reset -- TODO: FIXME</h3>
+<pre class="code ruby"><code class="ruby">  <span class='kw'>module</span> <span class='const'><span class='object_link'><a href="CryptIdent.html" title="CryptIdent (module)">CryptIdent</a></span></span>
+    <span class='kw'>def</span> <span class='id identifier rubyid_change_password'>change_password</span><span class='lparen'>(</span><span class='id identifier rubyid_user'>user</span><span class='comma'>,</span> <span class='id identifier rubyid_current_password'>current_password</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='rparen'>)</span>
+      <span class='comment'># ...
+</span>    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+</code></pre>
 
-<p>To reset a User&#39;s password when the User <em>is not</em> <a href="#signing-in">authenticated</a> is a two-step process:</p>
+<p>To change an Authenticated User&#39;s password, an Entity for that User, the current Clear-Text Password, and the new Clear-Text Password are required.</p>
 
-<ol>
-<li>Request that a password-reset link be sent to the email address associated with an individual user; and</li>
-<li>Visit the unique link in the email sent in response to the first step to actually change the password.</li>
-</ol>
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
-<h4>Request a reset-password-link email message</h4>
+<h4>Successfully Changing the Password</h4>
+
+<p>If all parameters are valid and the updated User is successfully persisted, the method calls the <strong>required</strong> block with a <code>result</code> whose <code>result.success</code> matcher is yielded a <code>user:</code> parameter with the updated User as its value. From that point, the User is able to Sign In using the User Name and updated Clear-Text Password.</p>
+
+<p>Client code <strong>must</strong> take care not to try to Authenticate using the Encrypted Password in the Entity passed in to this method, as it is no longer current. Either retain the returned User Entity from the method, or read it again from the Repository.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
+
+<h4>Error Conditions</h4>
+
+<h5>Specified User is Guest User</h5>
+
+<p>If the passed-in <code>user</code> is the Guest User (or <code>nil</code>), the method  calls the <strong>required</strong> block with a <code>result</code> whose <code>result.failure</code> matcher is yielded a <code>code:</code> of <code>:invalid_user</code>. No new Entity with updated values is created; no changes are made to the Repository.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
+
+<h5>Invalid Current Clear-Text Password</h5>
+
+<p>If the specified Current Clear-Text Password cannot Authenticate against the encrypted value within the <code>user</code> Entity, the method calls the <strong>required</strong> block with a <code>result</code> whose <code>result.failure</code> matcher is yielded a <code>code:</code> of <code>:bad_password</code>. No new Entity with updated values is created; no changes are made to the Repository.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
+
+<h3>Generate Password Reset Token and Password Reset: Introduction</h3>
 
 <p>Password Reset Tokens are useful for verifying that the person requesting a Password Reset for an existing User is sufficiently likely to be the person who Registered that User or, if not, that no compromise or other harm is done.</p>
 
-<p>Typically, this is done by sending a link through email or other such medium to the address previously associated with the User purportedly requesting the Password Reset. <code>CryptIdent</code> <em>does not</em> automate generation or sending of the email message. What it <em>does</em> provide is a method to generate a new Password Reset Token to be embedded into an HTML anchor link within an email
-that you construct.</p>
+<p>Typically, this is done by sending a link through email or other such medium to the address previously associated with the User purportedly requesting the Password Reset. <code>CryptIdent</code> <em>does not</em> automate generation or sending of the email message. What it <em>does</em> provide is a method to generate a new Password Reset Token to be embedded into such a message, often in the form of an HTML anchor link within an email that you construct. It also provides another method (<code>#reset_password</code>) to actually change the password given a valid, correct token.</p>
 
-<p>It also implements an expiry system, such that if the confirmation of the Password Reset request is not completed within a <a href="#Configuration">configurable</a> time, that the token is no longer valid (and cannot be later reused by unauthorised persons).</p>
+<p>It also implements an expiry system, such that if the confirmation of the Password Reset request is not completed within a <a href="#Configuration">configurable</a> time, that the Token is no longer valid (and cannot be later reused by unauthorised persons).</p>
 
-<h4>Actually reset the password</h4>
+<p><strong>Note that</strong> multiple successful calls to generate a new Password Reset Token for a single User overwrite the data generated by previous calls, invalidating the previously-generated Tokens and resetting the expiry.</p>
 
-<p>The <code>reset_password</code> method is called with the reset token encoded into the URL from the email in the preceding step, along with the clear-text new password and new-password confirmation parameters supplied to the action.</p>
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
-<p>If the token is invalid or has expired, <code>reset_password</code> returns <code>:invalid_token</code> and no changes occur.</p>
+<h3>Generate Password Reset Token</h3>
 
-<p>If the new password and confirmation do not match, <code>reset_password</code> returns <code>:mismatched_password</code> and no changes occur.</p>
+<p>Method involved:</p>
 
-<p>If the clear-text new password and its confirmation match, then the hashed value of that new password is returned, and the <code>session[:current_user]</code> Entity is replaced with an Entity identical except that it has the new value for <code>password_hash</code>.</p>
+<pre class="code ruby"><code class="ruby"><span class='kw'>module</span> <span class='const'><span class='object_link'><a href="CryptIdent.html" title="CryptIdent (module)">CryptIdent</a></span></span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_generate_reset_token'>generate_reset_token</span><span class='lparen'>(</span><span class='id identifier rubyid_user_name'>user_name</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+    <span class='comment'># ...
+</span>  <span class='kw'>end</span>
+<span class='kw'>end</span>
+</code></pre>
 
-<h3>Session Expiration -- TODO: FIXME</h3>
+<h4>Successfully Generating a Token</h4>
+
+<p>Given a <code>user_name</code> parameter that specifies an existing User Name, and a <code>current_user:</code> parameter that is either <code>nil</code> or the Guest User, the method calls the <strong>required</strong> block with a <code>result</code> whose <code>result.success</code> matcher is yielded a <code>user:</code> parameter with a User Entity as its value. That User will be an Entity whose <code>name</code> matches the specified <code>user_name</code> parameter, with (new) values for the <code>token</code> and <code>password_reset_expires_at</code> attributes. The <code>token</code> attribute uniquely identifies the Password Reset request, and the <code>password_reset_expires_at</code> attribute is based on both the current (server-local) time when the updated User Entity was persisted to the Repository, and the <code>:reset_expiry</code> attribute of the configuration.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
+
+<h4>Error Conditions</h4>
+
+<h5>Authenticated User Exists</h5>
+
+<p>If the specified <code>current_user:</code> parameter is a valid User Entity other than the Guest User, then that is presumed to be the Current User of the Application. Authenticated Users are prohibited from requesting Password Resets for other Users; if they wish to change their <em>own</em> Clear-Text Password, there&#39;s a <a href="#password-change">method</a> for that.</p>
+
+<p>In this case, the <strong>required</strong> block will be passed a <code>result</code> whose <code>result.failure</code> matcher is yielded a <code>code:</code> parameter of <code>:user_logged_in</code>, a <code>current_user:</code> parameter matching the passed-in User Entity, and a <code>name:</code> parameter of <code>:unassigned</code> (which must be included in the block parameters but can be ignored thereafter).</p>
+
+<h5>Named User Not Found in Repository</h5>
+
+<p>If the specified <code>user_name</code> parameter value does not match the <code>name</code> of any User in the Repository, then the <strong>required</strong> block will be passed a <code>result</code> whose <code>result.failure</code> matcher is yielded a <code>code:</code> parameter of <code>:user_not_found</code>, a <code>current_user:</code> parameter of the Guest User, and a <code>name:</code> parameter whose value is the passed-in <code>user_name</code> value.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
+
+<h3>Password Reset</h3>
+
+<h4>Overview</h4>
+
+<p>Method involved:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>module</span> <span class='const'><span class='object_link'><a href="CryptIdent.html" title="CryptIdent (module)">CryptIdent</a></span></span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_reset_password'>reset_password</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='comma'>,</span> <span class='id identifier rubyid_new_password'>new_password</span><span class='comma'>,</span> <span class='label'>current_user:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+    <span class='comment'># ...
+</span>  <span class='kw'>end</span> 
+<span class='kw'>end</span>
+</code></pre>
+
+<p>Calling <code>#reset_password</code> is different than calling <code>#change_password</code> in one vital respect: with <code>#change_password</code>, the User involved <strong>must</strong> be the Current User (as presumed by passing the appropriate User Entity in as the <code>current_user:</code> parameter), whereas <code>#reset_password</code> <strong>must not</strong> be called with <em>any</em> User other than the Guest User as the <code>current_user:</code> parameter (and, again presumably, the Current User for the session). How can we assure ourselves that the request is legitimate for a specific User? By use of the Token generated by a previous call to <code>#generate_reset_token</code>, which is used <em>in place of</em> a User Name for this request.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
+
+<h4>Successfully Resetting a Password</h4>
+
+<p>To successfully perform a Password Reset, supply a valid, non-expired Token along with a new Clear-Text Password to the <code>#reset_password</code> method. Once the Token is found in the configuration-default Repository, and is verified not to have Expired, then the Repository will be updated with a record for that User where the <code>password_hash</code> field has been updated to reflect the new Clear-Text Password, and the <code>token</code> and <code>password_reset_expires_at</code> fields will be set to <code>nil</code>.</p>
+
+<p>If all the preceding is successful and the updated User is successfully persisted, the method calls the <strong>required</strong> block with a <code>result</code> whose <code>result.success</code> matcher is yielded a <code>user:</code> parameter with the updated User as its value. From that point, the User is able to Sign In using the User Name and updated Clear-Text Password.</p>
+
+<p>Client code <strong>must</strong> take care not to try to Authenticate using the Encrypted Password in the Entity passed in to this method, as it is no longer current. Either retain the returned User Entity from the method, or read it again from the Repository.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
+
+<h4>Error Conditions</h4>
+
+<h5>Expired Token</h5>
+
+<p>If the passed-in <code>token</code> parameter matches the <code>token</code> field of a record in the Repository <em>and</em> that Token is determined to have Expired, then this method calls the <strong>required</strong> block with a <code>result</code> whose <code>result.failure</code> matcher is yielded a <code>code:</code> parameter of <code>:expired_token</code> and a <code>token:</code> parameter that has the same value as the passed-in <code>token</code> parameter.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
+
+<h5>Token Not Found</h5>
+
+<p>If the passed-in <code>token</code> parameter <em>does not</em> match the <code>token</code> field of any record in the Repository, then this method calls the <strong>required</strong> block with a <code>result</code> whose <code>result.failure</code> matcher is yielded a <code>code:</code> parameter of <code>:token_not_found</code> and a <code>token:</code> parameter that has the same value as the passed-in <code>token</code> parameter.</p>
+
+<h5>Invalid Current User</h5>
+
+<p>If the passed-in <code>current_user:</code> parameter <em>is not</em> either the default <code>nil</code> or the Guest User, then this method calls the <strong>required</strong> block with a <code>result</code> whose <code>result.failure</code> matcher is yielded a <code>code:</code> parameter of <code>:invalid_current_user</code> and a <code>token:</code> parameter that has the same value as the passed-in <code>token</code> parameter.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
+
+<h3>Session Management Overview</h3>
 
 <p>Session management is a necessary part of implementing authentication (and authorisation) within an app. However,  it&#39;s not something that an authentication <em>library</em> can fully implement without making the client application excessively inflexible and brittle.</p>
 
 <p><code>CryptIdent</code> has two convenience methods which <em>help in</em> implementing session-expiration logic; these make use of the <code>session_expiry</code> <a href="#configuration">configuration value</a>.</p>
 
 <ul>
-<li><code>CryptIdent#restart_session_counter</code> resets the session-expiry time to the current time <em>plus</em> the number of seconds specified by the <code>session_expiry</code> configuration value.</li>
+<li><code>CryptIdent#update_session_expiry</code> returns a <code>Hash</code> whose <code>:expires_at</code> value the current time <em>plus</em> the number of seconds specified by the <code>session_expiry</code> configuration value. This can be used to update the corresponding <code>session</code> data which defines the session-expiry time;</li>
 <li><code>CryptIdent#session_expired?</code> returns <code>true</code> if the current time is not less than the session-expiry time; it returns <code>false</code> otherwise.</li>
 </ul>
 
@@ -436,10 +559,16 @@ that you construct.</p>
     <span class='id identifier rubyid_private'>private</span>
 
     <span class='kw'>def</span> <span class='id identifier rubyid_validate_session'>validate_session</span>
-      <span class='kw'>return</span> <span class='id identifier rubyid_restart_session_counter'>restart_session_counter</span> <span class='kw'>unless</span> <span class='id identifier rubyid_session_expired?'>session_expired?</span>
+      <span class='id identifier rubyid_updates'>updates</span> <span class='op'>=</span> <span class='id identifier rubyid_update_session_expiry'>update_session_expiry</span><span class='lparen'>(</span><span class='id identifier rubyid_session'>session</span><span class='rparen'>)</span>
+      <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_session_expired?'>session_expired?</span><span class='lparen'>(</span><span class='id identifier rubyid_session'>session</span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:expires_at</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:expires_at</span><span class='rbracket'>]</span>
+        <span class='kw'>return</span>
+      <span class='kw'>end</span>
 
       <span class='ivar'>@redirect_url</span> <span class='op'>||=</span> <span class='id identifier rubyid_routes'>routes</span><span class='period'>.</span><span class='id identifier rubyid_root_path'>root_path</span>
+      <span class='id identifier rubyid_config'>config</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="CryptIdent.html" title="CryptIdent (module)">CryptIdent</a></span></span><span class='period'>.</span><span class='id identifier rubyid_config'>config</span>
       <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:current_user</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span>
+      <span class='id identifier rubyid_session'>session</span><span class='lbracket'>[</span><span class='symbol'>:expires_at</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_updates'>updates</span><span class='lbracket'>[</span><span class='symbol'>:expires_at</span><span class='rbracket'>]</span>
       <span class='id identifier rubyid_error_message'>error_message</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Your session has expired. You have been signed out.</span><span class='tstring_end'>&#39;</span></span>
       <span class='id identifier rubyid_flash'>flash</span><span class='lbracket'>[</span><span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_error_key'>error_key</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_error_message'>error_message</span>
       <span class='id identifier rubyid_redirect_to'>redirect_to</span> <span class='ivar'>@redirect_url</span>
@@ -448,7 +577,7 @@ that you construct.</p>
 <span class='kw'>end</span>
 </code></pre>
 
-<p>This code should be fairly self-explanatory. Including the module adds the private <code>#validate_session</code> method to the client controller action class, adding a call to that method before the action class&#39; <code>#call</code> method is entered. If the session-expiry time has been previously set and is not before the current time, then that session-expiry time is reset based on the current time, and no further action is taken. Otherwise:</p>
+<p>This code should be fairly self-explanatory. Including the module adds the private <code>#validate_session</code> method to the client controller action class, adding a call to that method before the action class&#39; <code>#call</code> method is entered. (One can argue that this violates the spirit if not the letter of the <a href="https://guides.hanamirb.org/actions/control-flow/">Hanami Guide&#39;s</a> warning not to &quot;use callbacks for model domain logic operations&quot;. We would argue that this callback&#39;s functionality is common to essentially all client applications and, by providing a reference example, allows individual project teams to modify it as required for their use.) If the session-expiry time has been previously set and is not before the current time, then that session-expiry time is reset based on the current time, and no further action is taken. Otherwise:</p>
 
 <ol>
 <li>The <code>current_user</code> setting in the session data is overwritten with the <a href="#configuration"><code>config.guest_user</code></a> value (defaulting to <code>nil</code>);</li>
@@ -458,9 +587,68 @@ that you construct.</p>
 
 <p>This code will be instantly familiar to anyone coming from another framework like Rails, where the conventional way to ensure authentication before a controller action is executed is to add a <code>:before</code> hook. Adding this module to the controller action class is also justifiable Hanami, since it depends on and interacts with session data. (Just don&#39;t let any actual domain logic <a href="http://hanamirb.org/guides/1.2/actions/control-flow/#proc">taint</a> your controller callbacks; that&#39;s begging for difficult-to-debug problems going forward.</p>
 
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
+
+<h3>Session Expired</h3>
+
+<p>Method involved:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>module</span> <span class='const'><span class='object_link'><a href="CryptIdent.html" title="CryptIdent (module)">CryptIdent</a></span></span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_session_expired?'>session_expired?</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+    <span class='comment'># ...
+</span>  <span class='kw'>end</span> 
+<span class='kw'>end</span>
+</code></pre>
+
+<p>This is one of two methods in <code>CryptIdent</code> (the other being <a href="#update-session-expiry"><code>#update_session_expiry</code></a>, below) which <em>does not</em> follow the <code>result</code>/success/failure <a href="#interfaces">monad workflow</a>. Like that method:</p>
+
+<ul>
+<li>there is no success/failure division in the workflow;</li>
+<li>calling this method only makes sense if there is an Authenticated User;</li>
+<li>it is intended for use in session-management code as described in the <a href="#session-management-overview">Overview</a> above.</li>
+</ul>
+
+<p>This method checks the passed-in <code>session_data[:start_time]</code> value against the current time. If the difference is <em>greater than</em> the <a href="#configuration">configured</a> <em>Session Expiry</em> value, then the method returns <code>true</code>; otherwise, it returns <code>false</code>. No change is attempted to the contents of the passed-in <code>session_data</code>.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
+
+<h3>Update Session Expiry</h3>
+
+<h4>Overview</h4>
+
+<p>Method involved:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='kw'>module</span> <span class='const'><span class='object_link'><a href="CryptIdent.html" title="CryptIdent (module)">CryptIdent</a></span></span>
+  <span class='kw'>def</span> <span class='id identifier rubyid_update_session_expiry'>update_session_expiry</span><span class='lparen'>(</span><span class='id identifier rubyid_session_data'>session_data</span><span class='op'>=</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+    <span class='comment'># ...
+</span>  <span class='kw'>end</span> 
+<span class='kw'>end</span>
+</code></pre>
+
+<p>This is one of two methods in <code>CryptIdent</code> (the other being <a href="#session-expired"><code>#session_expired?</code></a>, above) which <em>does not</em> follow the <code>result</code>/success/failure <a href="#interfaces">monad workflow</a>. This is because there is no success/failure division in the workflow. Calling the method only makes sense if there is an Authenticated User, but <em>all this method does</em> is return a <code>Hash</code> as defined below.</p>
+
+<p>It is intended for use in session-management code as described in the <a href="#session-management-overview">Overview</a> above.</p>
+
+<h4>Parameter</h4>
+
+<p>The parameter, <code>session_data</code>, is a Hash-like object which <strong>should</strong> have existing entries for <code>:current_user</code> (defaulting to the Guest User if not found) and for <code>:expires_at</code> (defaulting to the <a href="https://en.wikipedia.org/wiki/Unix_time">epoch</a> if not found).</p>
+
+<h4>Return</h4>
+
+<p>The return value is a <code>Hash</code> which:</p>
+
+<ol>
+<li><code>:current_user</code> value is the same as the passed-in parameter&#39;s <code>:current_user</code> value <em>if</em> that is a Registered User, or the Guest User if it isn&#39;t; and</li>
+<li><code>start_time</code> value is a <code>Time</code> instance based on the current time when called.</li>
+</ol>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
+
 <h1>API Documentation</h1>
 
-<p>See <a href="./docs/index.html">the Documentation Index</a></p>
+<p>See <a href="/CryptIdent.html">the Documentation Index</a>.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
 <h1>Development</h1>
 
@@ -470,23 +658,31 @@ that you construct.</p>
 
 <p>To install this gem onto your local machine, run <code>bin/rake install</code> or <code>bundle exec rake install</code>. To release a new version, update the version number in <code>version.rb</code>, and then run <code>bin/rake release</code> or <code>bundle exec rake release</code>, which will create a Git tag for the version, push Git commits and tags, and push the <code>.gem</code> file to <a href="https://rubygems.org">rubygems.org</a>.</p>
 
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
+
 <h1>Contributing</h1>
 
 <p>Bug reports and pull requests are welcome on GitHub at <a href="https://github.com/jdickey/crypt_ident">https://github.com/jdickey/crypt_ident</a>. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the <a href="http://contributor-covenant.org">Contributor Covenant</a> code of conduct.</p>
 
-<h1>License</h1>
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
-<p>The gem is available as open source under the terms of the <a href="https://opensource.org/licenses/MIT">MIT License</a>.</p>
+<h1>Copyright and License</h1>
+
+<p>This Gem, its source code, and all supporting documents and artefacts are Copyright &copy;2019 by Jeff Dickey. They are available as open source under the terms of the <a href="https://opensource.org/licenses/MIT">MIT License</a>.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 
 <h1>Code of Conduct</h1>
 
 <p>Everyone interacting in the CryptIdent project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the <a href="https://github.com/jdickey/crypt_ident/blob/master/CODE_OF_CONDUCT.md">code of conduct</a>.</p>
+
+<p><sub style="font-size: 0.75rem;"><a href="#CryptIdent">Back to Top</a></sub></p>
 </div></div>
 
       <div id="footer">
-  Generated on Thu Nov 15 00:38:13 2018 by
+  Generated on Thu Feb 28 00:27:40 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.16 (ruby-2.5.3).
+  0.9.18 (ruby-2.6.1).
 </div>
 
     </div>

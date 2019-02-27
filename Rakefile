@@ -18,26 +18,37 @@ class FlogTask < Rake::TaskLib
   attr_accessor :methods_only
 end
 
-Rake::TestTask.new do |t|
-  t.pattern = 'test/**/*_test.rb'
-  t.libs    << 'test'
-  t.warning = false
+namespace :test do
+  Rake::TestTask.new(:unit) do |t|
+    t.description = 'Run unit tests using Entities and a dummied Repository'
+    t.pattern = ['test/crypt_ident_test.rb', 'test/crypt_ident/**/*_test.rb']
+    t.libs    << 'test'
+    t.warning = false
+  end
+
+  Rake::TestTask.new(:integration) do |t|
+    t.description = 'Run integration tests using an actual Hanami Repository ' \
+      'and Entity'
+    t.pattern = 'test/integration/**/*_test.rb'
+    t.libs << 'test'
+    t.warning = false
+  end
 end
 
 FlayTask.new do |t|
   t.verbose = true
-  t.dirs = %w(apps db lib)
+  t.dirs = %w(lib)
 end
 
 FlogTask.new do |t|
   t.verbose = true
-  t.threshold = 200 # default is 200
+  t.threshold = 400 # default is 200
   t.methods_only = true
   t.dirs = %w(lib) # Look, Ma; no tests! Run the tool manually every so often for those.
 end
 
 Inch::Rake::Suggest.new do |suggest|
-  suggest.args = '--pedantic'
+  # suggest.args = '--pedantic'
 end
 
 Reek::Rake::Task.new do |t|
@@ -75,5 +86,8 @@ namespace :minitest do
   end
 end
 
-task default: [:test, :flog, :flay, :reek, :rubocop, :inch]
+desc 'Run both integration and unit tests'
+task test: ['test:integration', 'test:unit']
+
+task default: [:test, 'test:integration', :flog, :flay, :reek, :rubocop, :inch]
 task spec: :test

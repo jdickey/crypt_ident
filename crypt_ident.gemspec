@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Authentication module using BCrypt; initially Hanami-specific.}
   # spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "https://github.com/jdickey/cript_ident"
+  spec.homepage      = "https://github.com/jdickey/crypt_ident"
   spec.license       = "MIT"
   spec.metadata["yard.run"] = "yri" # use "yard" to build full HTML docs.
 
@@ -34,28 +34,47 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency 'bcrypt', '>= 3.1.12'
-  # hanami-model 1.2.0 depends on *18* other Gems. Just as a reminder...
-  spec.add_runtime_dependency 'hanami-model', '>= 1.2.0'
-  spec.add_runtime_dependency 'hanami-controller', '>= 1.2.0'
+  # NOTE: **During development**, we're not specifying Gem versions, because
+  # we're bundling locally using `bin/setup` and `scripts/build-gem-list.rb`.
+  # Before merging back to `master`, at latest, this **must** be updated to show
+  # *minimum* Gem versions; e.g., `'>= 3.1.12'` for `bcrypt`. It Would Be Very
+  # Nice if we had a script to automatically rewrite the Gemspec for us each
+  # way. PRs welcome.
+  #
+  spec.add_runtime_dependency 'bcrypt'
+  spec.add_runtime_dependency 'hanami-model'
+  spec.add_runtime_dependency 'dry-matcher'
+  spec.add_runtime_dependency 'dry-monads'
 
-  spec.add_development_dependency "bundler", '>= 1.16.6'
-  spec.add_development_dependency "rake", '>= 12.3.1'
+  spec.add_development_dependency 'sqlite3'
+  spec.add_development_dependency "bundler", '>= 1.17.2'
+  spec.add_development_dependency "rake", '>= 12.3.2'
   spec.add_development_dependency "minitest", '5.11.3'
   spec.add_development_dependency 'flay', '2.12.0'
   spec.add_development_dependency 'flog', '4.6.2'
   spec.add_development_dependency 'inch', '0.8.0'
+  # spec.add_development_dependency 'minitest-fail-fast' #, '0.1.0'
   spec.add_development_dependency 'minitest-hooks', '1.5.0'
   spec.add_development_dependency 'minitest-matchers', '1.4.1'
-  spec.add_development_dependency 'minitest-reporters', '1.3.5'
-  spec.add_development_dependency 'minitest-tagz', '1.6.0'
-  spec.add_development_dependency 'pry-byebug', '3.6.0'
-  spec.add_development_dependency 'pry-doc', '0.13.5'
-  spec.add_development_dependency 'reek', '5.2.0'
-  spec.add_development_dependency 'rubocop', '0.60.0'
+  spec.add_development_dependency 'minitest-reporters', '1.3.6'
+  spec.add_development_dependency 'minitest-tagz', '1.7.0'
+  # XXX: Great idea; useful; but we've found a way to work around what we were
+  # looking to use this Gem to help with.
+  # spec.add_development_dependency 'monotime' #, '0.6.1'
+  spec.add_development_dependency 'pry-byebug', '3.7.0'
+  spec.add_development_dependency 'pry-doc', '1.0.0'
+  spec.add_development_dependency 'reek', '5.3.1'
+  spec.add_development_dependency 'rubocop', '0.65.0'
   spec.add_development_dependency 'simplecov', '0.16.1'
-  spec.add_development_dependency 'yard', '0.9.16'
+  spec.add_development_dependency 'timecop', '0.9.1'
+  spec.add_development_dependency 'yard', '0.9.18'
   spec.add_development_dependency 'yard-classmethods', '1.0.0'
-  spec.add_development_dependency 'github-markup', '3.0.1'
+  spec.add_development_dependency 'github-markup', '3.0.3'
   spec.add_development_dependency 'redcarpet', '3.4.0'
+
+  spec.add_development_dependency 'guard', '2.15.0'
+  spec.add_development_dependency 'guard-minitest', '2.4.6'
+  spec.add_development_dependency 'guard-rake', '1.0.0'
+  spec.add_development_dependency 'guard-rubocop', '1.3.0'
+  spec.add_development_dependency 'guard-shell', '0.7.1'
 end
