@@ -28,7 +28,7 @@ module CryptIdent
   # Flash index to use for error messages.
   setting :error_key, :error, reader: true
   # Class to use for :repository, which is the *User* Repository. Oops on that.
-  setting :user_repo_class, UserRepository, reader: true
+  setting :user_repo_class, ::UserRepository, reader: true
   setting :guest_user, reader: true
   # Hashing cost for BCrypt. Note that each 1-unit increase *doubles* the
   # processing time needed to encode/decode a password.
