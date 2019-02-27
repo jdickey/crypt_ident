@@ -51,13 +51,8 @@ describe 'Iterating the steps in the Change Password workflow' do
   let(:profile) { 'Profile content would go here.' }
   let(:user_name) { 'J Random User' }
 
-  before do
-    CryptIdent.config.repository = UserRepository.new
-  end
-
   after do
     CryptIdent.config.repository.clear
-    CryptIdent.config.repository = nil
   end
 
   it 'succeeds along the normal path' do

@@ -62,10 +62,6 @@ describe 'Iterating the steps in the New User workflow' do
   let(:password) { 'A Suitably Entropic Passphrase Goes Here' }
   let(:profile) { 'Profile content would go here.' }
 
-  before do
-    CryptIdent.config.repository = UserRepository.new
-  end
-
   after do
     CryptIdent.config.repository.clear
   end

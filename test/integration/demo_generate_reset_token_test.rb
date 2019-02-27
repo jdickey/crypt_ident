@@ -44,7 +44,7 @@
 #
 # ## Cleanup
 #
-# 6. The Repository is cleared and the Repository object deleted.
+# 6. The Repository is cleared.
 #
 # For a further discussion of the rationale for these tests, see the commentary
 # in `register_and_authenticate_test.rb` in this directory.
@@ -81,7 +81,6 @@ describe 'with' do
   let(:user_name) { 'J Random User' }
 
   before do
-    CryptIdent.config.repository = UserRepository.new
     @the_user = set_up_user(user_name, email, profile)
     # Sign In
     CryptIdent.sign_in(@the_user, password) do |result|
@@ -98,7 +97,6 @@ describe 'with' do
     end
     @the_user = nil
     CryptIdent.config.repository.clear
-    CryptIdent.config.repository = nil
   end
 
   describe 'a value for the Current User of' do
