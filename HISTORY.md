@@ -1,5 +1,13 @@
 # CryptIdent Version History
 
+## 0.2.5 (1 March 2019)
+
+This is what should have been 0.2.3. That version attempted to resolve `UserRepository`, used in the `CryptIdent.included` method, at `require` time; instead, by using `Object#const_get`, we now do it at the time the module is included in another (by which time `UserRepository` can be expected to be defined). Meh.
+
+## 0.2.4 (28 February 2019)
+
+Yanked. Disregard.
+
 ## 0.2.3 (28 February 2019)
 
 Beginning with this release, you do not need to (and ordinarily should not) assign to `config.repository` in order for `config.guest_user` to work (or vice versa). This eliminates a noisome bit of ceremony from using the config. See Issue  [#29](https://github.com/jdickey/crypt_ident/issues/29).
