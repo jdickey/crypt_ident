@@ -82,8 +82,6 @@
 
 <p>These either violate current best-practice recommendations from security leaders (e.g., NIST and others no longer recommend password ageing as a defence against cracking) or have other Gems that focus on the features in question (e.g., <a href="https://github.com/bdmac/strong_password"><code>bdmac/strong_password</code></a>).</p>
 
-<p><strong>NOTE:</strong> One feature of this Gem is that most of the <a href="#configuration">configuration</a> <em>should</em> Work Just Fine for most use cases. However, you <strong>must</strong> explicitly initialise the <code>:repository</code> configuration item prior to using the configuration data for the <code>repository</code> or the <code>guest_user</code> entries. We <strong>recommend</strong> assigning this once, during application startup when other configuration setup is being completed.</p>
-
 <h1>Installation</h1>
 
 <p>Add this line to your application&#39;s Gemfile:</p>
@@ -224,8 +222,8 @@
     <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_hashing_cost'>hashing_cost</span> <span class='op'>=</span> <span class='int'>6</span> <span class='comment'># less secure and less resource-intensive
 </span>    <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_token_bytes'>token_bytes</span> <span class='op'>=</span> <span class='int'>20</span>
     <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_reset_expiry'>reset_expiry</span> <span class='op'>=</span> <span class='int'>7200</span> <span class='comment'># two hours; &quot;we run a tight ship here&quot;
-</span>    <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span> <span class='op'>=</span> <span class='const'>MainApp</span><span class='op'>::</span><span class='const'>Repositories</span><span class='op'>::</span><span class='const'>User</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span>
-  <span class='kw'>end</span>
+</span>    <span class='id identifier rubyid_config'>config</span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span> <span class='op'>=</span> <span class='const'>MainApp</span><span class='op'>::</span><span class='const'>Repositories</span><span class='op'>::</span><span class='const'>User</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='period'>.</span><span class='id identifier rubyid_guest_user'>guest_user</span> <span class='comment'># Likewise, *not* conventional
+</span>  <span class='kw'>end</span>
 </code></pre>
 
 <p>would change the configuration as you would expect whenever that code was run. (We <strong>recommend</strong> that this be done inside the <code>controller.prepare</code> block of your Hanami <code>web</code> (or equivalent) app&#39;s <code>application.rb</code> file.)</p>
@@ -682,7 +680,7 @@
 </div></div>
 
       <div id="footer">
-  Generated on Thu Feb 28 00:48:57 2019 by
+  Generated on Thu Feb 28 01:49:08 2019 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.18 (ruby-2.6.1).
 </div>
