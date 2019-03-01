@@ -2,5 +2,5 @@
 
 module CryptIdent
   # Version number for Gem. Uses Semantic Versioning.
-  VERSION = '0.2.4'
+  VERSION = '0.2.5'
 end
