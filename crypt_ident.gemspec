@@ -67,7 +67,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop', '0.65.0'
   spec.add_development_dependency 'simplecov', '0.16.1'
   spec.add_development_dependency 'timecop', '0.9.1'
-  spec.add_development_dependency 'yard', '0.9.18'
+  spec.add_development_dependency 'yard', '0.9.20'
   spec.add_development_dependency 'yard-classmethods', '1.0.0'
   spec.add_development_dependency 'github-markup', '3.0.3'
   spec.add_development_dependency 'redcarpet', '3.4.0'

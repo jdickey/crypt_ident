@@ -224,7 +224,7 @@ GEM
       coercible (~> 1.0)
       descendants_tracker (~> 0.0, >= 0.0.3)
       equalizer (~> 0.0, >= 0.0.9)
-    yard (0.9.18)
+    yard (0.9.20)
     yard-classmethods (1.0.0)
       yard
 
@@ -257,7 +257,7 @@ DEPENDENCIES
   simplecov (= 0.16.1)
   sqlite3
   timecop (= 0.9.1)
-  yard (= 0.9.18)
+  yard (= 0.9.20)
   yard-classmethods (= 1.0.0)
 
 BUNDLED WITH
