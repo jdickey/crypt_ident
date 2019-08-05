@@ -121,13 +121,15 @@ module CryptIdent
       @user = user_from_param(user)
     end
 
+    # rubocop:disable Naming/RescuedExceptionsVariableName
     def call(current_password, new_password)
       verify_preconditions(current_password)
 
       success_result(new_password)
-    rescue LogicError => error
-      failure_result(error.message)
+    rescue LogicError => err
+      failure_result(err.message)
     end
+    # rubocop:enable Naming/RescuedExceptionsVariableName
 
     private
 

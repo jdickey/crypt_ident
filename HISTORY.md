@@ -1,5 +1,9 @@
 # CryptIdent Version History
 
+## 0.2.6 (5 August 2019)
+
+This updates several Gems, eliminating a Gem version (`yard`) which had a CVE open against it. We also took the opportunity to update other outdated direct Gem dependency versions. No functional changes to code or tests were made.
+
 ## 0.2.5 (1 March 2019)
 
 This is what should have been 0.2.3. That version attempted to resolve `UserRepository`, used in the `CryptIdent.included` method, at `require` time; instead, by using `Object#const_get`, we now do it at the time the module is included in another (by which time `UserRepository` can be expected to be defined). Meh.

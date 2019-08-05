@@ -129,14 +129,16 @@ module CryptIdent
       @current_user = :unassigned
     end
 
+    # rubocop:disable Naming/RescuedExceptionsVariableName
     def call(token, new_password, current_user: nil)
       init_ivars(current_user)
       verify_no_current_user(token)
       user = verify_token(token)
       Success(user: update(user, new_password))
-    rescue LogicError => error
-      report_failure(error)
+    rescue LogicError => err
+      report_failure(err)
     end
+    # rubocop:enable Naming/RescuedExceptionsVariableName
 
     private
 

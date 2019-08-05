@@ -136,13 +136,15 @@ module CryptIdent
     # As a reminder, calling `Failure` *does not* interrupt control flow *or*
     # prevent a future `Success` call from overriding the result. This is one
     # case where raising *and catching* an exception is Useful
+    # rubocop:disable Naming/RescuedExceptionsVariableName
     def call(user:, password:, current_user: nil)
       set_ivars(user, password, current_user)
       validate_call_params
       Success(user: user)
-    rescue LogicError => error
-      Failure(code: error.message.to_sym)
+    rescue LogicError => err
+      Failure(code: err.message.to_sym)
     end
+    # rubocop:enable Naming/RescuedExceptionsVariableName
 
     private
 

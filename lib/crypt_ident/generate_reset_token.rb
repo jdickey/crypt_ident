@@ -132,15 +132,17 @@ module CryptIdent
       @user_name = :unassigned
     end
 
+    # rubocop:disable Naming/RescuedExceptionsVariableName
     def call(user_name, current_user: nil)
       init_ivars(user_name, current_user)
       Success(user: updated_user)
-    rescue LogicError => error
+    rescue LogicError => err
       # rubocop:disable Security/MarshalLoad
-      error_data = Marshal.load(error.message)
+      error_data = Marshal.load(err.message)
       # rubocop:enable Security/MarshalLoad
       Failure(error_data)
     end
+    # rubocop:enable Naming/RescuedExceptionsVariableName
 
     private
 
