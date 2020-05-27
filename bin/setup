@@ -23,7 +23,8 @@ if [[ `rbenv --version 2>/dev/null` ]]; then
 fi
 
 ##
-## Install Gems
+## Install Gems. Ignore dependencies here since the built list includes all
+## dependencies.
 ##
 
 echo 'Building list of Gems to install...'

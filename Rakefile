@@ -35,11 +35,6 @@ namespace :test do
   end
 end
 
-FlayTask.new do |t|
-  t.verbose = true
-  t.dirs = %w(lib)
-end
-
 FlogTask.new do |t|
   t.verbose = true
   t.threshold = 400 # default is 200
@@ -48,7 +43,7 @@ FlogTask.new do |t|
 end
 
 Inch::Rake::Suggest.new do |suggest|
-  # suggest.args = '--pedantic'
+  suggest.args = '--pedantic'
 end
 
 Reek::Rake::Task.new do |t|
@@ -64,7 +59,7 @@ RuboCop::RakeTask.new(:rubocop) do |task|
     'lib/**/*.rb',
     'spec/**/*.rb'
   ]
-  task.formatters = ['simple', 'd']
+  task.formatters = ['progress']
   task.fail_on_error = true
   # task.options << '--rails'
   task.options << '--config=.rubocop.yml'
@@ -88,6 +83,16 @@ end
 
 desc 'Run both integration and unit tests'
 task test: ['test:integration', 'test:unit']
+
+# FlayTask.new do |t|
+#   t.verbose = true
+#   t.dirs = %w(lib)
+# end
+
+desc 'Flay run via command line since FlayTask searches *all* as of v2.12.1'
+task :flay do
+  system('bin/flay lib')
+end
 
 task default: [:test, 'test:integration', :flog, :flay, :reek, :rubocop, :inch]
 task spec: :test
