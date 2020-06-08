@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    crypt_ident (0.2.6)
+    crypt_ident (0.2.7)
       bcrypt
       dry-matcher
       dry-monads
